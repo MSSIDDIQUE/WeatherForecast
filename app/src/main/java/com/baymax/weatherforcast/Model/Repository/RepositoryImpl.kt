@@ -22,7 +22,7 @@ class RepositoryImpl(
             persistLatestWeatherReports(latestWeatherReports, recordMapperImpl)
         }
     }
-    override suspend fun getWeather(): LiveData<WeatherData> {
+    override suspend fun getWeather(): LiveData<List<WeatherData>> {
         return withContext(Dispatchers.IO){
             initWeatherData()
             weatherDao.getAllRecords()
@@ -32,7 +32,9 @@ class RepositoryImpl(
     private fun persistLatestWeatherReports(weatherResponse:WeatherResponse,
                                             recordMapperImpl: RecordMapperImpl){
         GlobalScope.launch(Dispatchers.IO) {
-            weatherDao.upsert(recordMapperImpl.toRecordDb(weatherResponse.list.get(0)))
+            for(record in weatherResponse.list){
+                weatherDao.upsert(recordMapperImpl.toRecordDb(record))
+            }
         }
     }
 

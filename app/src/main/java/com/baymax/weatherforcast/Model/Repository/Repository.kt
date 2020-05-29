@@ -4,5 +4,5 @@ import androidx.lifecycle.LiveData
 import com.baymax.weatherforcast.Model.DB.WeatherData
 
 interface Repository {
-    suspend fun getWeather():LiveData<WeatherData>
+    suspend fun getWeather():LiveData<List<WeatherData>>
 }

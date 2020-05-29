@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 
 class HomeFramentViewModel(private val repo: Repository):ViewModel() {
     val weatherData by lazy {
-        liveData<WeatherData>(Dispatchers.IO) {
+        liveData(Dispatchers.IO) {
             val data = repo.getWeather()
             emitSource(data)
         }

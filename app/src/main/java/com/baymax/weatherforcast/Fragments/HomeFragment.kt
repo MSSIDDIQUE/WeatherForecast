@@ -41,9 +41,7 @@ class HomeFragment : Fragment() , KodeinAware{
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         viewModel = ViewModelProvider(this,viewModelFactory).get(HomeFramentViewModel::class.java)
-
         bindUI()
     }
 
@@ -51,19 +49,18 @@ class HomeFragment : Fragment() , KodeinAware{
         val weather = viewModel.weatherData.observe(this@HomeFragment, Observer {
             if(it == null) return@Observer
             location.text = "Hyderabad"
-            date_time.text = it.date_time
+            date_time.text = it[0].date_time
             var inputDate = SimpleDateFormat("yyyy-MM-dd")
-            var date = inputDate.parse(it.date_time)
+            var date = inputDate.parse(it[0].date_time)
             var outputDate = SimpleDateFormat("EEEE")
             day.text = outputDate.format(date)
-            humidity_value.text = it.humidity.toString()+"%"
-            wind_speed_value.text = it.wind_speed.toString()+"Kmph"
-            temp.text = Math.round((it.temp-273.15)).toString()+"°"
-            min_temp_value.text = Math.round((it.min_temp-273.15)).toString()+"°"
-            max_temp_value.text = Math.round((it.max_temp-273.15)).toString()+"°"
-            description.text = it.weather_desc
+            humidity_value.text = it[0].humidity.toString()+"%"
+            wind_speed_value.text = it[0].wind_speed.toString()+"Kmph"
+            temp.text = Math.round((it[0].temp-273.15)).toString()+"°"
+            min_temp_value.text = Math.round((it[0].min_temp-273.15)).toString()+"°"
+            max_temp_value.text = Math.round((it[0].max_temp-273.15)).toString()+"°"
+            description.text = it[0].weather_desc
         })
-
     }
 
 }

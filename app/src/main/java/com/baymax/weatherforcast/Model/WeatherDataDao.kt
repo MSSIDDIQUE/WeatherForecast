@@ -11,5 +11,5 @@ interface WeatherDataDao {
     fun upsert(data: RecordDb)
 
     @Query("Select * from Record")
-    fun getAllRecords():LiveData<WeatherData>
+    fun getAllRecords():LiveData<List<WeatherData>>
 }
