@@ -3,7 +3,7 @@ package com.baymax.weatherforcast.Model.DB
 import com.baymax.weatherforcast.Model.Network.Response.Coord
 
 
-data class City(
+data class CityDb(
     val coord: Coord,
     val country: String,
     val id: Int,

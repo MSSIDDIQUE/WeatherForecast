@@ -2,9 +2,7 @@ package com.baymax.weatherforcast.Model
 
 import android.util.Log
 import com.baymax.weatherforcast.Model.Network.ConnectivityInterceptor
-import com.baymax.weatherforcast.Model.Network.ConnectivityInterceptorImpl
 import com.baymax.weatherforcast.Model.Network.Response.WeatherResponse
-import com.google.gson.Gson
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor

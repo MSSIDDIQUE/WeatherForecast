@@ -1,7 +1,6 @@
-package com.baymax.weatherforcast.Model.DB
+package com.baymax.weatherforcast.Model.Network.Response
 
 
-import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
 
 data class Main(
@@ -21,6 +20,3 @@ data class Main(
     @SerializedName("temp_min")
     val tempMin: Double
 )
-{
-
-}

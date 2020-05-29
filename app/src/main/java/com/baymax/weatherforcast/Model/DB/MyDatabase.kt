@@ -4,16 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.baymax.weatherforcast.Model.DB.Entity.Record
-import com.baymax.weatherforcast.Model.DB.Entity.Weather
-import com.baymax.weatherforcast.Model.WetherDataDao
+import com.baymax.weatherforcast.Model.DB.Entity.RecordDb
+import com.baymax.weatherforcast.Model.WeatherDataDao
 
 @Database(
-    entities = [Record::class, Weather::class],
+    entities = [RecordDb::class],
     version = 1
 )
 abstract class MyDatabase: RoomDatabase() {
-    abstract fun weatherDataDao() : WetherDataDao
+    abstract fun weatherDataDao() : WeatherDataDao
 
     companion object{
         @Volatile private var instance: MyDatabase ?= null

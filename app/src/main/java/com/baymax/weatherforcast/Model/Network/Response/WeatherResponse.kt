@@ -1,10 +1,7 @@
 package com.baymax.weatherforcast.Model.Network.Response
 
-
-import com.baymax.weatherforcast.Model.DB.City
-import com.baymax.weatherforcast.Model.DB.Entity.Record
-import com.baymax.weatherforcast.Model.DB.WeatherRecord
-
+import com.baymax.weatherforcast.Model.Network.Response.Record
+import com.google.gson.annotations.SerializedName
 
 data class WeatherResponse(
     val city: City,
@@ -13,6 +10,3 @@ data class WeatherResponse(
     val list: List<Record>,
     val message: Int
 )
-{
-
-}
