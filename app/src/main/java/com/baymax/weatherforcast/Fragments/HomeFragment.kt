@@ -36,27 +36,6 @@ class HomeFragment : Fragment() , KodeinAware{
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val weatherApiService = WeatherApiService(ConnectivityInterceptorImpl(this.context!!))
-        val weatherNetworkAbstractions = WeatherNetworkAbstractionsImpl(weatherApiService)
-//        weatherNetworkAbstractions.downloadedWeather.observe(this@HomeFragment, Observer {
-//            location.text = it.city.name
-//            date_time.text = it.list.get(0).dtTxt
-//            var inputDate = SimpleDateFormat("yyyy-MM-dd")
-//            var date = inputDate.parse(it.list.get(0).dtTxt)
-//            var outputDate = SimpleDateFormat("EEEE")
-//            day.text = outputDate.format(date)
-//            humidity_value.text = it.list.get(0).main.humidity.toString()+"%"
-//            wind_speed_value.text = it.list.get(0).wind.speed.toString()+"Kmph"
-//            temp.text = Math.round((it.list.get(0).main.temp-273.15)).toString()+"°"
-//            min_temp_value.text = Math.round((it.list.get(0).main.tempMin-273.15)).toString()+"°"
-//            max_temp_value.text = Math.round((it.list.get(0).main.tempMax-273.15)).toString()+"°"
-//            description.text = it.list.get(0).weather.get(0).description
-//        })
-//        GlobalScope.launch(Dispatchers.Main) {
-//            RepositoryImpl(MyDatabase(context!!).weatherDataDao(),weatherNetworkAbstractions,
-//                RecordMapperImpl(), WeatherMapperImpl()
-//            )
-//        }
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
