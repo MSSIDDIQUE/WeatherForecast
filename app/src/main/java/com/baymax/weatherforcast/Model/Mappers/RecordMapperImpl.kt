@@ -14,5 +14,5 @@ class RecordMapperImpl : RecordMapper {
             record.wind.deg,
             record.wind.speed,
             record.weather.get(0).description,
-            record.weather.get(0).icon)
+            "https://openweathermap.org/img/wn/"+record.weather.get(0).icon+"@2x.png")
 }

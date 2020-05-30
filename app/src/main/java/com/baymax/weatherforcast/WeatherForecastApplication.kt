@@ -11,6 +11,7 @@ import com.baymax.weatherforcast.Model.Repository.Repository
 import com.baymax.weatherforcast.Model.Repository.RepositoryImpl
 import com.baymax.weatherforcast.Model.WeatherApiService
 import com.baymax.weatherforcast.ViewModel.HomeFramentViewModelFactory
+import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -30,7 +31,11 @@ class WeatherForecastApplication:Application(), KodeinAware {
         bind() from singleton { RecordMapperImpl() }
         bind<Repository>() with singleton { RepositoryImpl(instance(),instance(),instance()) }
         bind() from provider { HomeFramentViewModelFactory(instance()) }
+    }
 
+    override fun onCreate() {
+        super.onCreate()
+        AndroidThreeTen.init(this)
     }
 
 }
