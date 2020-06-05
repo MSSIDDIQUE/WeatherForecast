@@ -8,6 +8,19 @@
     android:elevation="-10dp"
     tools:context=".Fragments.HomeFragment">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:visibility="visible"
+        android:elevation="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
@@ -25,15 +38,256 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_temp"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:background="@android:color/holo_blue_bright"
+                app:cardBackgroundColor="@android:color/holo_blue_dark"
                 app:cardCornerRadius="30dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="5dp"
                     android:background="@android:color/holo_blue_dark">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/card_sunset"
+                        app:layout_constraintEnd_toStartOf="@id/c2"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/c2">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c1"
+                        app:layout_constraintEnd_toStartOf="@id/c3"
+                        app:layout_constraintStart_toEndOf="@id/c1"
+                        app:layout_constraintTop_toBottomOf="@id/c3">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c7"
+                        app:layout_constraintEnd_toStartOf="@id/c7"
+                        app:layout_constraintStart_toEndOf="@id/c5"
+                        app:layout_constraintTop_toBottomOf="@id/location">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c2"
+                        app:layout_constraintEnd_toStartOf="@id/c4"
+                        app:layout_constraintStart_toEndOf="@id/c2"
+                        app:layout_constraintTop_toBottomOf="@id/c4">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c3"
+                        app:layout_constraintEnd_toStartOf="@id/c5"
+                        app:layout_constraintStart_toEndOf="@id/c3"
+                        app:layout_constraintTop_toBottomOf="@id/c5">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c4"
+                        app:layout_constraintEnd_toStartOf="@id/c6"
+                        app:layout_constraintStart_toEndOf="@id/c4"
+                        app:layout_constraintTop_toBottomOf="@id/location">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c8"
+                        app:layout_constraintEnd_toStartOf="@id/c8"
+                        app:layout_constraintStart_toEndOf="@id/c6"
+                        app:layout_constraintTop_toBottomOf="@id/c6">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c9"
+                        app:layout_constraintEnd_toStartOf="@id/c9"
+                        app:layout_constraintStart_toEndOf="@id/c7"
+                        app:layout_constraintTop_toBottomOf="@id/c7">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/c10"
+                        app:layout_constraintEnd_toStartOf="@id/c10"
+                        app:layout_constraintStart_toEndOf="@id/c8"
+                        app:layout_constraintTop_toBottomOf="@id/c8">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/c10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="30dp"
+                        app:cardBackgroundColor="#ffffff"
+                        app:layout_constraintBottom_toTopOf="@id/card_sunrise"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/c9">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="3dp"
+                            android:layout_height="3dp"
+                            android:text="TextView" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/sunset_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sunset"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="@+id/card_sunrise"
+                        app:layout_constraintStart_toStartOf="@+id/card_sunrise"
+                        app:layout_constraintTop_toBottomOf="@+id/card_sunrise" />
+
+                    <TextView
+                        android:id="@+id/sunrise_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sunrise"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="@+id/card_sunset"
+                        app:layout_constraintStart_toStartOf="@+id/card_sunset"
+                        app:layout_constraintTop_toBottomOf="@+id/card_sunset" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_sunset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@color/common_google_signin_btn_text_dark_default"
+                        app:cardBackgroundColor="@color/common_google_signin_btn_text_dark_default"
+                        app:cardCornerRadius="25dp"
+                        app:cardElevation="20dp"
+                        app:layout_constraintBottom_toTopOf="@+id/min_temp"
+                        app:layout_constraintEnd_toStartOf="@+id/min_temp"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ImageView
+                            android:id="@+id/sunrise_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@drawable/humidity_icon"
+                            app:srcCompat="@drawable/icons_sunrise_50" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_sunrise"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@color/common_google_signin_btn_text_dark_default"
+                        app:cardBackgroundColor="@color/common_google_signin_btn_text_dark_default"
+                        app:cardCornerRadius="25dp"
+                        app:cardElevation="20dp"
+                        app:layout_constraintBottom_toTopOf="@+id/max_temp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/max_temp">
+
+                        <ImageView
+                            android:id="@+id/sunset_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@drawable/humidity_icon"
+                            app:srcCompat="@drawable/icons_sunset_50" />
+                    </androidx.cardview.widget.CardView>
 
                     <TextView
                         android:id="@+id/description"
@@ -44,7 +298,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/temp" />
 
-                    <TextView
+                    <Button
                         android:id="@+id/location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,7 +352,7 @@
                         android:id="@+id/min_temp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:layout_margin="20dp"
                         android:text="Min"
                         android:textColor="@color/cardview_light_background"
                         android:textSize="20dp"
@@ -111,7 +365,6 @@
                         android:id="@+id/min_temp_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
                         android:text="12"
                         android:textSize="20dp"
                         app:layout_constraintEnd_toEndOf="@id/min_temp"
@@ -122,7 +375,7 @@
                         android:id="@+id/max_temp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:layout_margin="20dp"
                         android:text="Max"
                         android:textColor="@color/cardview_light_background"
                         android:textSize="20dp"
@@ -135,23 +388,25 @@
                         android:id="@+id/max_temp_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
                         android:text="24"
                         android:textSize="20dp"
                         app:layout_constraintEnd_toEndOf="@id/max_temp"
                         app:layout_constraintStart_toStartOf="@+id/max_temp"
                         app:layout_constraintTop_toBottomOf="@id/max_temp" />
 
-                    <ImageView
-                        android:id="@+id/weather_icon"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_margin="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
-                        android:src="@drawable/humidity_icon"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="185dp" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_begin="110dp" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -160,7 +415,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_extra"
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 app:cardCornerRadius="30dp">
 
@@ -169,102 +424,112 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/holo_blue_dark">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/holo_blue_dark"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_wind"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:layout_margin="20dp"
+                        app:cardCornerRadius="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView11"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/humidity_icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="50dp"
-                            android:src="@drawable/humidity_icon"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/humidity"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Humidity"
-                            android:textColor="@color/design_default_color_background"
-                            android:textStyle="bold"
-                            app:layout_constraintEnd_toEndOf="@+id/humidity_icon"
-                            app:layout_constraintStart_toStartOf="@+id/humidity_icon"
-                            app:layout_constraintTop_toBottomOf="@+id/humidity_icon" />
-
-                        <TextView
-                            android:id="@+id/humidity_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:text="63%"
-                            app:layout_constraintEnd_toEndOf="@+id/humidity"
-                            app:layout_constraintStart_toStartOf="@+id/humidity"
-                            app:layout_constraintTop_toBottomOf="@id/humidity" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/holo_blue_dark"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/textView11"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageView
-                            android:id="@+id/wind_speed_icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="50dp"
-                            android:src="@drawable/wind_icon"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/background_light">
 
-                        <TextView
-                            android:id="@+id/wind_speed"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Wind tSpeed"
-                            android:textColor="@color/design_default_color_background"
-                            android:textStyle="bold"
-                            app:layout_constraintEnd_toEndOf="@+id/wind_speed_icon"
-                            app:layout_constraintStart_toStartOf="@+id/wind_speed_icon"
-                            app:layout_constraintTop_toBottomOf="@id/wind_speed_icon" />
+                            <ImageView
+                                android:id="@+id/wind_speed_icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="50dp"
+                                android:src="@drawable/wind_icon"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/icons_wind_50" />
 
-                        <TextView
-                            android:id="@+id/wind_speed_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:text="300 KMPH"
-                            app:layout_constraintEnd_toEndOf="@+id/wind_speed"
-                            app:layout_constraintStart_toStartOf="@+id/wind_speed"
-                            app:layout_constraintTop_toBottomOf="@id/wind_speed" />
+                            <TextView
+                                android:id="@+id/wind_speed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Wind tSpeed"
+                                android:textColor="@color/design_default_color_on_secondary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="@+id/wind_speed_icon"
+                                app:layout_constraintStart_toStartOf="@+id/wind_speed_icon"
+                                app:layout_constraintTop_toBottomOf="@id/wind_speed_icon" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/wind_speed_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="300 KMPH"
+                                android:textColor="@color/design_default_color_on_secondary"
+                                app:layout_constraintEnd_toEndOf="@+id/wind_speed"
+                                app:layout_constraintStart_toStartOf="@+id/wind_speed"
+                                app:layout_constraintTop_toBottomOf="@id/wind_speed" />
 
-                    <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_margin="10dp"
-                        android:background="@color/design_default_color_on_primary"
-                        android:text="TextView"
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_humidity"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:layout_margin="20dp"
+                        app:cardCornerRadius="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/background_light">
+
+                            <ImageView
+                                android:id="@+id/humidity_icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="50dp"
+                                android:src="@drawable/humidity_icon"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/icons_dew_point_50" />
+
+                            <TextView
+                                android:id="@+id/humidity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Humidity"
+                                android:textColor="@color/design_default_color_on_secondary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="@+id/humidity_icon"
+                                app:layout_constraintStart_toStartOf="@+id/humidity_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/humidity_icon" />
+
+                            <TextView
+                                android:id="@+id/humidity_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="63%"
+                                android:textColor="@color/design_default_color_on_secondary"
+                                app:layout_constraintEnd_toEndOf="@+id/humidity"
+                                app:layout_constraintStart_toStartOf="@+id/humidity"
+                                app:layout_constraintTop_toBottomOf="@id/humidity" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -273,12 +538,14 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp" />
             </RelativeLayout>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.baymax.weatherforcast
 
 import android.app.Application
+import android.content.Context
 import com.baymax.weatherforcast.Model.DB.MyDatabase
 import com.baymax.weatherforcast.Model.Mappers.RecordMapperImpl
 import com.baymax.weatherforcast.Model.Network.ConnectivityInterceptor
@@ -10,7 +11,10 @@ import com.baymax.weatherforcast.Model.Network.WeatherNetworkAbstractionsImpl
 import com.baymax.weatherforcast.Model.Repository.Repository
 import com.baymax.weatherforcast.Model.Repository.RepositoryImpl
 import com.baymax.weatherforcast.Model.WeatherApiService
+import com.baymax.weatherforcast.Utils.Providers.LocationProvider
+import com.baymax.weatherforcast.Utils.Providers.LocationProviderImpl
 import com.baymax.weatherforcast.ViewModel.HomeFramentViewModelFactory
+import com.google.android.gms.location.LocationServices
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -28,8 +32,10 @@ class WeatherForecastApplication:Application(), KodeinAware {
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { WeatherApiService(instance())}
         bind<WeatherNetworkAbstractions>() with singleton { WeatherNetworkAbstractionsImpl(instance()) }
+        bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
+        bind<LocationProvider>() with singleton { LocationProviderImpl(instance(),instance()) }
         bind() from singleton { RecordMapperImpl() }
-        bind<Repository>() with singleton { RepositoryImpl(instance(),instance(),instance()) }
+        bind<Repository>() with singleton { RepositoryImpl(instance(),instance(),instance(), instance()) }
         bind() from provider { HomeFramentViewModelFactory(instance()) }
     }
 

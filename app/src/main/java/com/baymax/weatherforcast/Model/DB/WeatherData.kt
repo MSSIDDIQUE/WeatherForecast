@@ -18,7 +18,23 @@ class WeatherData(
     @ColumnInfo(name = "speed")
     val wind_speed:Double,
     @ColumnInfo(name = "dtTxt")
-    val date_time:String
+    val date_time:String,
+    @ColumnInfo(name = "lat")
+    val lat:Double,
+    @ColumnInfo(name = "lon")
+    val lon:Double,
+    @ColumnInfo(name = "country")
+    val country: String,
+    @ColumnInfo(name = "name")
+    val name: String,
+    @ColumnInfo(name = "population")
+    val population: Int,
+    @ColumnInfo(name = "sunrise")
+    val sunrise: Int,
+    @ColumnInfo(name = "sunset")
+    val sunset: Int,
+    @ColumnInfo(name = "timezone")
+    val timezone: Int
 ) {
 
 }

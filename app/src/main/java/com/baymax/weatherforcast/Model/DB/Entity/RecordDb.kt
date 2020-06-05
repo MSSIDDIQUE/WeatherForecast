@@ -24,7 +24,15 @@ data class RecordDb(
     @SerializedName("description")
     val weather_description: String,
     @SerializedName("icon")
-    val weather_icon: String
+    val weather_icon: String,
+    val lat:Double,
+    val lon:Double,
+    val country: String,
+    val name: String,
+    val population: Int,
+    val sunrise: Int,
+    val sunset: Int,
+    val timezone: Int
 )
 {
 

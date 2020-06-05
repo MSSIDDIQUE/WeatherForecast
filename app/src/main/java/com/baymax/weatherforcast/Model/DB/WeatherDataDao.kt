@@ -1,4 +1,4 @@
-package com.baymax.weatherforcast.Model
+package com.baymax.weatherforcast.Model.DB
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

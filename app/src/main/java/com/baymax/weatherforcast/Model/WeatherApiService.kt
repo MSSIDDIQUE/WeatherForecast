@@ -31,7 +31,7 @@ interface WeatherApiService {
                     .newBuilder()
                     .addQueryParameter("appid", api_key)
                     .build()
-                Log.d("Saquib",url.toString())
+                Log.d("(Saquib)",url.toString())
                 val request = chain.request()
                     .newBuilder()
                     .url(url)
