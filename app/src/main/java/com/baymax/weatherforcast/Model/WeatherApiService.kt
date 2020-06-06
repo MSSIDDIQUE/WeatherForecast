@@ -1,8 +1,7 @@
 package com.baymax.weatherforcast.Model
 
-import android.util.Log
 import com.baymax.weatherforcast.Model.Network.ConnectivityInterceptor
-import com.baymax.weatherforcast.Model.Network.Response.WeatherResponse
+import com.baymax.weatherforcast.Model.Response.WeatherResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
@@ -31,7 +30,6 @@ interface WeatherApiService {
                     .newBuilder()
                     .addQueryParameter("appid", api_key)
                     .build()
-                Log.d("(Saquib)",url.toString())
                 val request = chain.request()
                     .newBuilder()
                     .url(url)

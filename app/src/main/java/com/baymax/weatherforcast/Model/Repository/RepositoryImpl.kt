@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.baymax.weatherforcast.Model.DB.WeatherData
 import com.baymax.weatherforcast.Model.Mappers.RecordMapperImpl
-import com.baymax.weatherforcast.Model.Network.Response.WeatherResponse
+import com.baymax.weatherforcast.Model.Response.WeatherResponse
 import com.baymax.weatherforcast.Model.Network.WeatherNetworkAbstractions
 import com.baymax.weatherforcast.Model.DB.WeatherDataDao
 import com.baymax.weatherforcast.Utils.Providers.LocationProvider
@@ -37,8 +37,14 @@ class RepositoryImpl(
     private fun persistLatestWeatherReports(weatherResponse:WeatherResponse,
                                             recordMapperImpl: RecordMapperImpl){
         GlobalScope.launch(Dispatchers.IO) {
-            for(record in weatherResponse.list){
-                weatherDao.upsert(recordMapperImpl.toRecordDb(record,weatherResponse.city))
+            Log.d("(Saquib)","The size of weather response is "+weatherResponse.list.size)
+            for(i in 0..(weatherResponse.list.size-1)){
+                if(i==0) {
+                    weatherDao.updateRecord(recordMapperImpl.toRecordDb(weatherResponse.list.get(i),weatherResponse.city))
+                }
+                else{
+                    weatherDao.upsert(recordMapperImpl.toRecordDb(weatherResponse.list.get(i),weatherResponse.city))
+                }
             }
         }
     }

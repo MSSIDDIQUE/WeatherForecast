@@ -1,4 +1,4 @@
-package com.baymax.weatherforcast.Model.Network.Response
+package com.baymax.weatherforcast.Model.Response
 
 
 import com.google.gson.annotations.SerializedName

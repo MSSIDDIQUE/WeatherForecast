@@ -3,9 +3,7 @@ package com.baymax.weatherforcast.Model.Network
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations
-import com.baymax.weatherforcast.Model.Network.Response.WeatherResponse
+import com.baymax.weatherforcast.Model.Response.WeatherResponse
 import com.baymax.weatherforcast.Model.WeatherApiService
 import com.baymax.weatherforcast.Utils.Exceptions.NoConnectivityException
 

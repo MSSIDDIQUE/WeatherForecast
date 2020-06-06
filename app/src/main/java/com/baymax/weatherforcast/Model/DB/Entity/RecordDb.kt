@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "Record")
 data class RecordDb(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     val rid:Long,
     @SerializedName("dt_txt")
     val dtTxt: String,

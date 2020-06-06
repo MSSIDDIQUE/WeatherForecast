@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,11 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.baymax.weatherforcast.Adapter.WeatherListAdapter
 import com.baymax.weatherforcast.Model.DB.WeatherData
 import com.baymax.weatherforcast.R
-import com.baymax.weatherforcast.Utils.locations
 import com.baymax.weatherforcast.ViewModel.HomeFramentViewModel
 import com.baymax.weatherforcast.ViewModel.HomeFramentViewModelFactory
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +26,6 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.kcontext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -64,7 +59,8 @@ class HomeFragment : Fragment() , KodeinAware{
 
         val weatherReport = viewModel.weatherData
         weatherReport.observe(this@HomeFragment, Observer {
-            if(it == null) return@Observer
+            if(it == null||it.size==0) return@Observer
+            Log.d("(Saquib)","the size of the list in fragement is "+it.size)
             Picasso.get().load(R.drawable.icons_sunrise_50).centerCrop().fit().into(sunrise_icon)
             Picasso.get().load(R.drawable.icons_sunset_50).centerCrop().fit().into(sunset_icon)
             Picasso.get().load(R.drawable.icons_dew_point_50).centerCrop().fit().into(humidity_icon)
@@ -93,21 +89,17 @@ class HomeFragment : Fragment() , KodeinAware{
     private fun getRecentTime(list:List<WeatherData>):String{
         val times : TreeSet<LocalDateTime> = TreeSet<LocalDateTime>()
         val current = LocalDateTime.now()
-        Log.d("(Saquib)","The current date before formatting is "+current.toString())
         var inputDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         var date = current.format(inputDate)
-        Log.d("(Saquib)", "The current date after formatting is "+date.toString())
         for(it in list){
             times.add(LocalDateTime.parse(it.date_time.replace(" ","T")))
         }
-        Log.d("(Saquib)","Size of the treeset is "+times.size)
         val recent = times.floor(LocalDateTime.parse(date.replace(" ","T")))
         if(recent == null) {
             return times?.first().toString().replace("T"," ")
         }
         return recent?.toString().replace("T"," ")
     }
-
 
     private fun getTimeFromTimestamp(s: String): String? {
         try {
