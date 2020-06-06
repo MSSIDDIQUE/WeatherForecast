@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.baymax.weatherforcast.Adapter.WeatherListAdapter
 import com.baymax.weatherforcast.Model.DB.WeatherData
@@ -55,11 +56,11 @@ class HomeFragment : Fragment() , KodeinAware{
         bindUI()
     }
 
-    private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
+    private fun bindUI() = lifecycleScope.launch(Dispatchers.Main) {
 
         val weatherReport = viewModel.weatherData
         weatherReport.observe(this@HomeFragment, Observer {
-            if(it == null||it.size==0) return@Observer
+            if(it == null||it.size<40) return@Observer
             Log.d("(Saquib)","the size of the list in fragement is "+it.size)
             Picasso.get().load(R.drawable.icons_sunrise_50).centerCrop().fit().into(sunrise_icon)
             Picasso.get().load(R.drawable.icons_sunset_50).centerCrop().fit().into(sunset_icon)
