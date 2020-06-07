@@ -42,17 +42,24 @@ class WeatherListAdapter(private val data:ArrayList<WeatherData>, private val re
             Picasso.get().load(data.weather_icon).centerCrop().fit().into(itemView.list_weather_icon)
             val calculted_day = LocalDateTime.parse(data.date_time.replace( " ","T")).dayOfWeek.toString()
             if(calculted_day.equals((dayOfWeek).toString())) {
-                itemView.list_day.text = "TODAY"
+                itemView.list_day.text = "Today"
             }
             else if(calculted_day.equals((dayOfWeek+1).toString())){
-                itemView.list_day.text = "TOMORROW"
+                itemView.list_day.text = "Tomorrow"
             }
             else{
-                itemView.list_day.text = calculted_day
+                itemView.list_day.text = toStandardString(calculted_day)
             }
             itemView.list_description.setText(data.weather_desc)
             itemView.list_temp.setText(Math.round((data.temp-273.15)).toString()+"°")
         }
 
+        private fun toStandardString(s:String):String{
+            val cap: String = s.toLowerCase().substring(0, 1).toUpperCase() + s.toLowerCase().substring(1)
+            return cap
+        }
+
     }
+
+
 }

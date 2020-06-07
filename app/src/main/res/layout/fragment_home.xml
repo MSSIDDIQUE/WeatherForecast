@@ -445,8 +445,8 @@
 
                             <ImageView
                                 android:id="@+id/wind_speed_icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
                                 android:layout_marginBottom="50dp"
                                 android:src="@drawable/wind_icon"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -497,8 +497,8 @@
 
                             <ImageView
                                 android:id="@+id/humidity_icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
                                 android:layout_marginBottom="50dp"
                                 android:src="@drawable/humidity_icon"
                                 app:layout_constraintBottom_toBottomOf="parent"

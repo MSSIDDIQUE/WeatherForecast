@@ -37,7 +37,6 @@ class RepositoryImpl(
     private fun persistLatestWeatherReports(weatherResponse:WeatherResponse,
                                             recordMapperImpl: RecordMapperImpl){
         GlobalScope.launch(Dispatchers.IO) {
-            Log.d("(Saquib)","The size of weather response is "+weatherResponse.list.size)
             for(i in 0..(weatherResponse.list.size-1)){
                 if(i==0) {
                     weatherDao.updateRecord(recordMapperImpl.toRecordDb(weatherResponse.list.get(i),weatherResponse.city))

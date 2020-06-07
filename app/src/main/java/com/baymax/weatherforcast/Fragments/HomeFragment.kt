@@ -1,8 +1,6 @@
 package com.baymax.weatherforcast.Fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +17,6 @@ import com.baymax.weatherforcast.ViewModel.HomeFramentViewModelFactory
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -29,7 +26,6 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class HomeFragment : Fragment() , KodeinAware{
@@ -61,7 +57,6 @@ class HomeFragment : Fragment() , KodeinAware{
         val weatherReport = viewModel.weatherData
         weatherReport.observe(this@HomeFragment, Observer {
             if(it == null||it.size<40) return@Observer
-            Log.d("(Saquib)","the size of the list in fragement is "+it.size)
             Picasso.get().load(R.drawable.icons_sunrise_50).centerCrop().fit().into(sunrise_icon)
             Picasso.get().load(R.drawable.icons_sunset_50).centerCrop().fit().into(sunset_icon)
             Picasso.get().load(R.drawable.icons_dew_point_50).centerCrop().fit().into(humidity_icon)
@@ -69,7 +64,7 @@ class HomeFragment : Fragment() , KodeinAware{
             val recentDate = getRecentTime(it)
             val recentWeatherReport = it.filter { it.date_time.contains(recentDate) }
             date_time.text = recentDate
-            day.text = LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek.toString()
+            day.text = toStandardString(LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek.toString())
             humidity_value.text = recentWeatherReport[0].humidity.toString()+"%"
             wind_speed_value.text = recentWeatherReport[0].wind_speed.toString()+"Kmph"
             temp.text = Math.round((recentWeatherReport[0].temp-273.15)).toString()+"°"
@@ -112,5 +107,8 @@ class HomeFragment : Fragment() , KodeinAware{
         }
     }
 
-
+    private fun toStandardString(s:String):String{
+        val cap: String = s.toLowerCase().substring(0, 1).toUpperCase() + s.toLowerCase().substring(1)
+        return cap
+    }
 }
