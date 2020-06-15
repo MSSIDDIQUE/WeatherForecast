@@ -30,6 +30,10 @@ As the name suggest it is a weather forecast application that is using openweath
 ![App Architecture (3)](https://user-images.githubusercontent.com/24757345/84696274-e19fe200-af69-11ea-91dd-f0d81238be11.png)
 
 
+## App Screenshots
+
+![Webp net-resizeimage (3)](https://user-images.githubusercontent.com/24757345/84698077-d39f9080-af6c-11ea-88a5-10c49d66008f.jpg)![Webp net-resizeimage (2)](https://user-images.githubusercontent.com/24757345/84698087-d8644480-af6c-11ea-8924-36d7307b2dfc.jpg)![Webp net-resizeimage (1)](https://user-images.githubusercontent.com/24757345/84698099-dbf7cb80-af6c-11ea-96d4-61afd1e6e3ca.jpg)
+
 ## Have a look on the android app
 
 https://play.google.com/store/apps/details?id=com.baymax.weatherforcast
