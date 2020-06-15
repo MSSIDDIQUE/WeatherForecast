@@ -26,6 +26,9 @@ i used android achitectural components like
 
 3.viewmodels
 
+**Flow chart**
+
+![App Architecture (3)](https://user-images.githubusercontent.com/24757345/84696274-e19fe200-af69-11ea-91dd-f0d81238be11.png)
 
 **Have a look**
 
