@@ -42,16 +42,20 @@ class LocationProviderImpl(
 
         if (isUsingDeviceLocation()) {
             try {
+                Log.d("(Saquib)", "Try block is executed in location provider")
                 val deviceLocation = getLastDeviceLocation().await()
                     ?: return getCustomLocationName()
-                Log.d("(Saquib)", "The device lat, lon are "+deviceLocation.latitude+" "+deviceLocation.longitude)
                 val location = getDeviceCityName(deviceLocation.latitude,deviceLocation.longitude)
+                Log.d("(Saquib)", "The device location is "+location)
+                preferences.edit().putString(CUSTOM_LOCATION,location).apply()
                 return location
             } catch (e: LocationPermissionNotGrantedException) {
+                Log.d("(Saquib)", "catching exception in location provider "+e.printStackTrace())
                 return getCustomLocationName()
             }
         }
         else
+            Log.d("(Saquib)","not using device location")
             return getCustomLocationName()
     }
 
@@ -70,11 +74,12 @@ class LocationProviderImpl(
     }
 
     private fun isUsingDeviceLocation(): Boolean {
+        Log.d("(Saquib)","isUsingDevieceLocation is "+preferences.getBoolean(USE_DEVICE_LOCATION,true))
         return preferences.getBoolean(USE_DEVICE_LOCATION, true)
     }
 
     private fun getCustomLocationName(): String {
-        return "Delhi"
+        return preferences.getString(CUSTOM_LOCATION,"Delhi")!!
     }
 
     @SuppressLint("MissingPermission")

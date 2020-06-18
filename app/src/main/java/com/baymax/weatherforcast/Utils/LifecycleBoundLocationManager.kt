@@ -1,6 +1,7 @@
 package com.baymax.weatherforcast.Utils
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -20,14 +21,15 @@ class LifecycleBoundLocationManager(
     }
 
     private val locationRequest = LocationRequest().apply {
-        interval = 5000
-        fastestInterval = 5000
-        priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        interval = 2000
+        fastestInterval = 2000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
+        Log.d("(Saquib)","statLocationUpdates is called")
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 

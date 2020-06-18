@@ -21,14 +21,12 @@ class WeatherListAdapter(private val data:ArrayList<WeatherData>, private val re
 
 
     override fun getItemCount(): Int {
-        Log.d("###","toatat no of items in the list is "+data.size)
         return data.size
     }
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
         val weather_data = data[position]
         val day = LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek
-        Log.d("(Saquib)", "the Day is "+day.toString())
         holder.bindData(weather_data,day)
     }
 
@@ -60,6 +58,4 @@ class WeatherListAdapter(private val data:ArrayList<WeatherData>, private val re
         }
 
     }
-
-
 }
