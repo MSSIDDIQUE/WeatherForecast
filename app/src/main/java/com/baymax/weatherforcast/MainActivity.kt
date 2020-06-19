@@ -54,16 +54,12 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult?) {
             super.onLocationResult(p0)
-            Log.d("(Saquib)","Location callback is called ")
             if(p0!=null){
-
-                Log.d("(Saquib)","Location is not null")
                 val preference = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                 preference.edit().putString("CUSTOM_LOCATION",getDeviceCityName(p0.lastLocation.latitude,p0.lastLocation.latitude)).apply()
                 progressBar.visibility = View.VISIBLE
                 lifecycleScope.launch {
                     delay(3000.toLong())
-                    Log.d("(Saquib)","the fetched loction is "+locationProvider.getPreferredLocationString())
                     weatherNetworkAbstractions.fetchWeather(locationProvider.getPreferredLocationString())
                     progressBar.visibility = View.GONE
                 }
@@ -161,7 +157,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         val geocoder = Geocoder(this, Locale.getDefault())
         val addresses: List<Address> = geocoder.getFromLocation(lat, lon, 5)
         val cityName: String = addresses[0].locality
-        Log.d("(Saquib)","the city name is "+cityName)
         return cityName
     }
 
@@ -203,7 +198,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     private fun turnOnGPS(){
-        Log.d("(Saquib)","turning on GPS")
         val mLocationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
@@ -217,11 +211,9 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
         result.addOnCompleteListener { task ->
             try {
-                Log.d("(Saquib)","onComplete Listener is called")
                 val response =
                     task.getResult(ApiException::class.java)
             } catch (ex: ApiException) {
-                Log.d("(Saquib)","Catching exception"+ex.printStackTrace())
                 when (ex.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
                         val resolvableApiException =
@@ -247,7 +239,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 progressBar.visibility = View.VISIBLE
                 lifecycleScope.launch {
                     delay(3000.toLong())
-                    Log.d("(Saquib)","the fetched loction is "+locationProvider.getPreferredLocationString())
                     weatherNetworkAbstractions.fetchWeather(locationProvider.getPreferredLocationString())
                     val preference = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     preference.edit().putString("CUSTOM_LOCATION",locationProvider.getPreferredLocationString()).apply()

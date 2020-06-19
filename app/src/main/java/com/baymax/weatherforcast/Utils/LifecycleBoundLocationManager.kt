@@ -29,7 +29,6 @@ class LifecycleBoundLocationManager(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
-        Log.d("(Saquib)","statLocationUpdates is called")
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 

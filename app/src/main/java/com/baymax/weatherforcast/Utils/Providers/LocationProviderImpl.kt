@@ -42,15 +42,12 @@ class LocationProviderImpl(
 
         if (isUsingDeviceLocation()) {
             try {
-                Log.d("(Saquib)", "Try block is executed in location provider")
                 val deviceLocation = getLastDeviceLocation().await()
                     ?: return getCustomLocationName()
                 val location = getDeviceCityName(deviceLocation.latitude,deviceLocation.longitude)
-                Log.d("(Saquib)", "The device location is "+location)
                 preferences.edit().putString(CUSTOM_LOCATION,location).apply()
                 return location
             } catch (e: LocationPermissionNotGrantedException) {
-                Log.d("(Saquib)", "catching exception in location provider "+e.printStackTrace())
                 return getCustomLocationName()
             }
         }
