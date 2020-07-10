@@ -14,7 +14,6 @@ import org.threeten.bp.LocalDateTime
 
 class WeatherListAdapter(private val data:ArrayList<WeatherData>, private val recentDate:String): RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder> (){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
-
         val inflatedView = parent.inflate(R.layout.weather_row_item, false)
         return WeatherViewHolder(inflatedView)
     }

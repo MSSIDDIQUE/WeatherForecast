@@ -1,6 +1,7 @@
 package com.baymax.weatherforcast.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,13 +56,14 @@ class HomeFragment : Fragment() , KodeinAware{
     private fun bindUI() = lifecycleScope.launch(Dispatchers.Main) {
 
         val weatherReport = viewModel.weatherData
-        weatherReport.observe(this@HomeFragment, Observer {
+        weatherReport.observe(requireActivity(), Observer {
             if(it == null||it.size<40) return@Observer
             Picasso.get().load(R.drawable.icons_sunrise_50).centerCrop().fit().into(sunrise_icon)
             Picasso.get().load(R.drawable.icons_sunset_50).centerCrop().fit().into(sunset_icon)
             Picasso.get().load(R.drawable.icons_dew_point_50).centerCrop().fit().into(humidity_icon)
             Picasso.get().load(R.drawable.icons_wind_50).centerCrop().fit().into(wind_speed_icon)
             val recentDate = getRecentTime(it)
+            Log.d("(Saquib)","the recent date is "+recentDate)
             val recentWeatherReport = it.filter { it.date_time.contains(recentDate) }
             date_time.text = recentDate
             day.text = toStandardString(LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek.toString())
@@ -87,14 +89,16 @@ class HomeFragment : Fragment() , KodeinAware{
         val current = LocalDateTime.now()
         var inputDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         var date = current.format(inputDate)
+        Log.d("(Saquib)","date is "+date.toString());
         for(it in list){
             times.add(LocalDateTime.parse(it.date_time.replace(" ","T")))
         }
         val recent = times.floor(LocalDateTime.parse(date.replace(" ","T")))
-        if(recent == null) {
+        var recentDateString = recent.format(inputDate)
+        if(recentDateString == null) {
             return times?.first().toString().replace("T"," ")
         }
-        return recent?.toString().replace("T"," ")
+        return recentDateString?.toString().replace("T"," ")
     }
 
     private fun getTimeFromTimestamp(s: String): String? {

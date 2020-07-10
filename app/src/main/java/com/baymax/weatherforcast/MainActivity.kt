@@ -21,7 +21,6 @@ import com.baymax.weatherforcast.Model.Network.WeatherNetworkAbstractions
 import com.baymax.weatherforcast.Utils.LifecycleBoundLocationManager
 import com.baymax.weatherforcast.Utils.Providers.LocationProvider
 import com.baymax.weatherforcast.Utils.Providers.PreferenceProvider
-import com.baymax.weatherforcast.Utils.locations
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -51,25 +50,27 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private val locationProvider: LocationProvider by instance()
     private val preferenceProvider:PreferenceProvider by instance()
     override val kodein by kodein()
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(p0: LocationResult?) {
-            super.onLocationResult(p0)
-            if(p0!=null){
-                val preference = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                preference.edit().putString("CUSTOM_LOCATION",getDeviceCityName(p0.lastLocation.latitude,p0.lastLocation.latitude)).apply()
-                progressBar.visibility = View.VISIBLE
-                lifecycleScope.launch {
-                    delay(3000.toLong())
-                    weatherNetworkAbstractions.fetchWeather(locationProvider.getPreferredLocationString())
-                    progressBar.visibility = View.GONE
-                }
-            }
-        }
-    }
+    private lateinit var locationCallback : LocationCallback
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult?) {
+                super.onLocationResult(p0)
+                if(p0!=null){
+                    Log.d("(Saquib)", "Location callback is called");
+                    val preference = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+                    preference.edit().putString("CUSTOM_LOCATION",getDeviceCityName(p0.lastLocation.latitude,p0.lastLocation.latitude)).apply()
+                    progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch {
+                        delay(3000.toLong())
+                        weatherNetworkAbstractions.fetchWeather(locationProvider.getPreferredLocationString())
+                        progressBar.visibility = View.GONE
+                    }
+                }
+            }
+        }
         location.setOnClickListener {
             createDailog()
             alertDialog.show()
@@ -134,13 +135,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         return json
     }
 
-    private fun getCountries(array:List<locations>) : ArrayList<String>{
-        val countries = ArrayList<String>()
-        for(country in array){
-            countries.add(country.country)
-        }
-        return countries
-    }
+//    private fun getCountries(array:List<locations>) : ArrayList<String>{
+//        val countries = ArrayList<String>()
+//        for(country in array){
+//            countries.add(country.country)
+//        }
+//        return countries
+//    }
 
     private fun getCities(map:HashMap<String,ArrayList<String>>) : ArrayList<String>{
         val countries = ArrayList<String>()
