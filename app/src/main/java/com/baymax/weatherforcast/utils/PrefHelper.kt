@@ -11,6 +11,7 @@ class PrefHelper(val context:Context) {
     companion object keys{
         val API_KEY :String = "api_key"
         val LOCATION : String = "current_location"
+        val LOCATION_PERMISSION: String = "location_permission"
     }
     val masterKeyAlias:String by lazy {
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -27,5 +28,6 @@ class PrefHelper(val context:Context) {
     init {
         sharedPref.edit()[API_KEY] = "5f3f95dcfb462c164ddfce910fffe503"
         sharedPref.edit()[LOCATION] = "London"
+        sharedPref.edit()[LOCATION_PERMISSION] = false
     }
 }

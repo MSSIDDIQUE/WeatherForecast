@@ -1,11 +1,15 @@
 package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 
+import android.app.Activity
+import android.content.Intent
+import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +21,14 @@ import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.api.response.Record
 import com.baymax.weatherforcast.data.Result
 import com.baymax.weatherforcast.ui.activities.MainActivity
+import com.baymax.weatherforcast.utils.PrefHelper
+import com.baymax.weatherforcast.utils.get
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -53,12 +65,50 @@ class HomeFragment : Fragment() , KodeinAware{
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this,viewModelFactory).get(HomeFramentViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(),viewModelFactory).get(HomeFramentViewModel::class.java)
         main_activity  = (requireActivity() as MainActivity)
-        if(!main_activity.isGPSActive()){
-            main_activity.requestLocationPermission()
+        main_activity.run {
+            val permissions_granted = hasLocationPermission()
+            val gps_active = isGPSActive()
+            if(permissions_granted && gps_active){
+                viewModel.setGpsStatus(true)
+            }
+            if(!permissions_granted){
+                Log.d("(Saquib)","first satisfied ")
+                requestLocationPermission()
+            }
+            else if(!gps_active){
+                Log.d("(Saquib)","second satisfied")
+                turnOnGPS()
+            }
         }
-        bindUI()
+        if(main_activity.isOnline(requireContext())){
+            viewModel.isGpsEnabled.observe(requireActivity(), Observer {
+                progressBar.visibility = View.VISIBLE
+                loading_text.visibility = View.VISIBLE
+                if(it){
+                    Log.d("(Saquib)","Observing Location")
+                    observeData()
+                }
+            })
+        }
+        else{
+            val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
+                "No Internet Connection"
+            )
+            findNavController().navigate(direction)
+            Snackbar.make(
+                requireActivity().main_layout,
+                "No Internet Connection",
+                Snackbar.LENGTH_LONG).setAction(
+                "Retry",
+                View.OnClickListener {
+                    findNavController().navigate(
+                        R.id.action_error_fragment_to_home_fragment
+                    )
+                }
+            ).show()
+        }
     }
 
     private fun loadIcons(){
@@ -68,7 +118,8 @@ class HomeFragment : Fragment() , KodeinAware{
         Picasso.get().load(R.drawable.icons_wind_50).centerCrop().fit().into(wind_speed_icon)
     }
 
-    fun oberveData(){
+    fun observeData(){
+        Log.d("(Saquib)","observing Data ")
         viewModel.location.observe(requireActivity(), Observer {city->
             Log.d("(Saquib)","the name of the city is $city")
             viewModel.getWeatherOfCity(city).observe(requireActivity(), Observer {result->
@@ -111,21 +162,25 @@ class HomeFragment : Fragment() , KodeinAware{
                         loading_text.visibility = View.VISIBLE
                     }
                     Result.Status.ERROR->{
-                        Snackbar.make(main_layout, "Permissions not granted!", Snackbar.LENGTH_LONG).show()
-                        findNavController().navigate(R.id.action_homeFragment_to_errorFragment)
+                        val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
+                            "Something went wrong!"
+                        )
+                        findNavController().navigate(direction)
+                        Snackbar.make(
+                            requireActivity().main_layout,
+                            "No Internet Connection",
+                            Snackbar.LENGTH_LONG).setAction(
+                            "Retry",
+                            View.OnClickListener {
+                                findNavController().navigate(
+                                    R.id.action_error_fragment_to_home_fragment
+                                )
+                            }
+                        ).show()
                     }
                 }
             })
         })
-    }
-
-    private fun bindUI() = lifecycleScope.launch(Dispatchers.Main) {
-        if(!main_activity.hasLocationPermission()){
-            main_activity.requestLocationPermission()
-        }
-        else{
-            oberveData()
-        }
     }
 
     private fun getRecentTime(list:List<Record>):String{

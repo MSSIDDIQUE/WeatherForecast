@@ -11,12 +11,19 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_errorFragment"
+            android:id="@+id/action_home_fragment_to_error_fragment"
             app:destination="@id/errorFragment" />
     </fragment>
     <fragment
         android:id="@+id/errorFragment"
         android:name="com.baymax.weatherforcast.ui.fragments.error_fragment.ErrorFragment"
         android:label="fragment_error"
-        tools:layout="@layout/fragment_error" />
+        tools:layout="@layout/fragment_error" >
+        <action
+            android:id="@+id/action_error_fragment_to_home_fragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="error_msg"
+            app:argType="string" />
+    </fragment>
 </navigation>

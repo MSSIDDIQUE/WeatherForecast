@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="-10dp"
+    android:tag="HomeFragment"
     tools:context=".ui.fragments.home_fragment.ui.HomeFragment">
 
     <com.airbnb.lottie.LottieAnimationView
@@ -28,7 +29,7 @@
         android:elevation="10dp"
         android:text="Loading..."
         android:textAlignment="center"
-        android:textColor="#9575CD"
+        android:textColor="#D81B60"
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@id/progressBar"

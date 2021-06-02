@@ -4,24 +4,26 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender.SendIntentException
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRemoteDataSource
-import com.baymax.weatherforcast.utils.providers.PreferenceProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -39,8 +41,8 @@ import java.io.InputStream
 import java.util.*
 import kotlin.collections.ArrayList
 import com.baymax.weatherforcast.R
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragment
-import com.baymax.weatherforcast.utils.PrefHelper
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
 
 
 class MainActivity : AppCompatActivity(), KodeinAware {
@@ -54,21 +56,60 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
     private lateinit var alertDialog:AlertDialog
-    private val fusedLocationProviderClient :FusedLocationProviderClient by instance()
-    private val weatherNetworkAbstractions :WeatherRemoteDataSource by instance()
-    private val prefHelper:PrefHelper by instance()
+    private val viewModelFactory: HomeFramentViewModelFactory by instance()
+    private lateinit var viewModel: HomeFramentViewModel
     override val kodein by kodein()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        location.setOnClickListener {
-            createDailog()
-            alertDialog.show()
+        viewModel = ViewModelProvider(this,viewModelFactory).get(HomeFramentViewModel::class.java)
+//        location.setOnClickListener {
+//            createDailog()
+//            alertDialog.show()
+//        }
+    }
+
+
+    fun turnOnGPS(){
+        Log.d("(Saquib)","turningOn Gps ")
+        val mLocationRequest = LocationRequest.create()
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            .setInterval(10 * 1000.toLong())
+            .setFastestInterval(1 * 1000.toLong())
+        val settingsBuilder = LocationSettingsRequest.Builder()
+            .addLocationRequest(mLocationRequest)
+        settingsBuilder.setAlwaysShow(true)
+        val result =
+            LocationServices.getSettingsClient(this)
+                .checkLocationSettings(settingsBuilder.build())
+
+        result.addOnCompleteListener { task ->
+            try {
+                val response =
+                    task.getResult(ApiException::class.java)
+            } catch (ex: ApiException) {
+                when (ex.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
+                        val resolvableApiException =
+                            ex as ResolvableApiException
+                        resolvableApiException
+                            .startResolutionForResult(
+                                this,
+                                LOCATION_SETTINGS_REQUEST
+                            )
+                    } catch (e: IntentSender.SendIntentException) {
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                    }
+                }
+            }
         }
     }
 
+
     fun requestLocationPermission() {
+        Log.d("(Saquib)","requesting permission ")
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
@@ -106,13 +147,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                         all_permissions_granted = false
                     }
                 }
-                if (all_permissions_granted) {
+                if (all_permissions_granted && (!isGPSActive())) {
                     turnOnGPS()
                 }
                 else{
                     Snackbar.make(main_layout, "Provide all the permissions", Snackbar.LENGTH_LONG).show()
-                    createDailog()
-                    alertDialog.show()
+                    /*createDailog()
+                    alertDialog.show()*/
                 }
             }
         }
@@ -156,7 +197,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         return cityName
     }
 
-    private fun createDailog(){
+/*    private fun createDailog(){
         val dialogView = layoutInflater.inflate(R.layout.custom_dialogue,null,false)
         val locations_array: HashMap<String, ArrayList<String>> = Gson().fromJson(
             getJsonData(),
@@ -193,7 +234,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             .setNegativeButton("Cancel"){ dailogInterface, which->
             }
             .create()
-    }
+    }*/
 
     fun isGPSActive():Boolean{
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -206,59 +247,47 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         return gps_enabled
     }
 
-
-    private fun turnOnGPS(){
-        val mLocationRequest = LocationRequest.create()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setInterval(10 * 1000.toLong())
-            .setFastestInterval(1 * 1000.toLong())
-        val settingsBuilder = LocationSettingsRequest.Builder()
-            .addLocationRequest(mLocationRequest)
-        settingsBuilder.setAlwaysShow(true)
-        val result =
-            LocationServices.getSettingsClient(this)
-                .checkLocationSettings(settingsBuilder.build())
-
-        result.addOnCompleteListener { task ->
-            try {
-                val response =
-                    task.getResult(ApiException::class.java)
-            } catch (ex: ApiException) {
-                when (ex.statusCode) {
-                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-                        val resolvableApiException =
-                            ex as ResolvableApiException
-                        resolvableApiException
-                            .startResolutionForResult(
-                                this,
-                                LOCATION_SETTINGS_REQUEST
-                            )
-                    } catch (e: SendIntentException) {
-                    }
-                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-                    }
+    fun isOnline(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
                 }
             }
         }
+        return false
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                progressBar.visibility = View.VISIBLE
-                loading_text.visibility = View.VISIBLE
+                Log.d("(Saquib)","Permission Granted")
+                viewModel.setGpsStatus(true)
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                progressBar.visibility = View.GONE
-                loading_text.visibility = View.GONE
-                Snackbar.make(main_layout, "Permissions not granted!", Snackbar.LENGTH_LONG).show()
-                //prefHelper.sharedPref[PrefHelper.LOCATION]
-                /*
-                createDailog()
-                alertDialog.show()
-                */
+                Log.d("(Saquib)","Permission Not Granted")
+                Snackbar.make(main_layout, "Please turn on you GPS!", Snackbar.LENGTH_LONG).setAction("Retry",
+                    View.OnClickListener {
+                        turnOnGPS()
+                    }).show()
+                viewModel.setGpsStatus(false)
+                /*createDailog()
+                alertDialog.show()*/
             }
         }
     }
+    
 }

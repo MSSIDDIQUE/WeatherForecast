@@ -14,9 +14,16 @@ import kotlinx.coroutines.launch
 class HomeFramentViewModel(
     private val useCase: LocationProviderUseCase,
     private val repo: WeatherRepository): ViewModel() {
+    var isGpsEnabled = MutableLiveData<Boolean>()
+
+    fun setGpsStatus(value:Boolean){
+        isGpsEnabled.postValue(value)
+        Log.d("(Saquib)","gpsStatus updated Successfully")
+    }
     val location by lazy {
         useCase.fetchUpdates().asLiveData()
     }
+
 /*
 
     val weatherData by lazy {
