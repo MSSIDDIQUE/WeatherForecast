@@ -27,7 +27,6 @@ class WeatherRemoteDataSource(
     }
 
     suspend fun fetchWeatherOfCity(city:String) = getResult{
-        Log.d("(Saquib)","The fetchWeather method is called for city $city")
         weatherApiService.getWeatherOfCity(city)
     }
 }

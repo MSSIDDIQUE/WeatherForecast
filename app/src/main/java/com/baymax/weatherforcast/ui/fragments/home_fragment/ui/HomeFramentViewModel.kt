@@ -18,7 +18,6 @@ class HomeFramentViewModel(
 
     fun setGpsStatus(value:Boolean){
         isGpsEnabled.postValue(value)
-        Log.d("(Saquib)","gpsStatus updated Successfully")
     }
     val location by lazy {
         useCase.fetchUpdates().asLiveData()

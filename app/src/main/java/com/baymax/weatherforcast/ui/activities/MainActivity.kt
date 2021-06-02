@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
 
     fun turnOnGPS(){
-        Log.d("(Saquib)","turningOn Gps ")
         val mLocationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
@@ -100,7 +99,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
 
     fun requestLocationPermission() {
-        Log.d("(Saquib)","requesting permission ")
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
@@ -138,8 +136,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                         all_permissions_granted = false
                     }
                 }
-                if (all_permissions_granted && (!isGPSActive())) {
-                    turnOnGPS()
+                if (all_permissions_granted) {
+                    if(!isGPSActive()){
+                        turnOnGPS()
+                    }
+                    else{
+                        viewModel.setGpsStatus(true)
+                    }
                 }
                 else{
                     Snackbar.make(main_layout, "Provide all the permissions", Snackbar.LENGTH_LONG).show()
@@ -265,11 +268,9 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                Log.d("(Saquib)","Permission Granted")
                 viewModel.setGpsStatus(true)
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                Log.d("(Saquib)","Permission Not Granted")
                 Snackbar.make(main_layout, "Please turn on you GPS!", Snackbar.LENGTH_LONG).setAction("Retry",
                     View.OnClickListener {
                         turnOnGPS()

@@ -74,11 +74,9 @@ class HomeFragment : Fragment() , KodeinAware{
                 viewModel.setGpsStatus(true)
             }
             if(!permissions_granted){
-                Log.d("(Saquib)","first satisfied ")
                 requestLocationPermission()
             }
             else if(!gps_active){
-                Log.d("(Saquib)","second satisfied")
                 turnOnGPS()
             }
         }
@@ -87,7 +85,6 @@ class HomeFragment : Fragment() , KodeinAware{
                 progressBar.visibility = View.VISIBLE
                 loading_text.visibility = View.VISIBLE
                 if(it){
-                    Log.d("(Saquib)","Observing Location")
                     observeData()
                 }
             })
@@ -119,9 +116,7 @@ class HomeFragment : Fragment() , KodeinAware{
     }
 
     fun observeData(){
-        Log.d("(Saquib)","observing Data ")
         viewModel.location.observe(requireActivity(), Observer {city->
-            Log.d("(Saquib)","the name of the city is $city")
             viewModel.getWeatherOfCity(city).observe(requireActivity(), Observer {result->
                 when(result.status){
                     Result.Status.SUCCESS->result.data?.let { data->
@@ -188,7 +183,6 @@ class HomeFragment : Fragment() , KodeinAware{
         val current = LocalDateTime.now()
         var inputDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         var date = current.format(inputDate)
-        Log.d("(Saquib)","date is "+date.toString());
         for(it in list){
             times.add(LocalDateTime.parse(it.dtTxt.replace(" ","T")))
         }

@@ -43,7 +43,6 @@ class LocationProviderUseCase(
                 try {
                     this@callbackFlow.trySend(getDeviceCityName(userLocation)).isSuccess
                 }catch (e:Exception){
-                    Log.d("(Saquib)","error in fetching the location ${e.message.toString()}")
                 }
             }
         }
@@ -67,7 +66,6 @@ class LocationProviderUseCase(
             location.longitude,
             5)
         val cityName: String = addresses[0].locality
-        Log.d("(Saquib)","the city name is "+cityName)
         return cityName
     }
 }
