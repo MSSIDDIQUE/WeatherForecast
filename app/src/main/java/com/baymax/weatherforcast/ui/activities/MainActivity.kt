@@ -180,9 +180,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 }
                 else{
                     progressBar.visibility = View.VISIBLE
+                    loading_text.visibility = View.VISIBLE
                     lifecycleScope.launch {
                         weatherNetworkAbstractions.fetchWeather(dialogView.city.text.toString().trim())
                         progressBar.visibility = View.GONE
+                        loading_text.visibility = View.GONE
                     }
                     val preference = PreferenceManager.getDefaultSharedPreferences(this)
                     preference.edit().putString("CUSTOM_LOCATION",dialogView.city.text.toString().trim()).apply()
@@ -245,9 +247,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 progressBar.visibility = View.VISIBLE
+                loading_text.visibility = View.VISIBLE
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 progressBar.visibility = View.GONE
+                loading_text.visibility = View.GONE
                 Snackbar.make(main_layout, "Permissions not granted!", Snackbar.LENGTH_LONG).show()
                 //prefHelper.sharedPref[PrefHelper.LOCATION]
                 /*

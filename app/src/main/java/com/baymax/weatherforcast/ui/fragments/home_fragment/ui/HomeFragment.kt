@@ -104,9 +104,11 @@ class HomeFragment : Fragment() , KodeinAware{
                             adapter = weather_adapter
                         }
                         progressBar.visibility = View.GONE
+                        loading_text.visibility = View.GONE
                     }
                     Result.Status.LOADING->{
                         progressBar.visibility = View.VISIBLE
+                        loading_text.visibility = View.VISIBLE
                     }
                     Result.Status.ERROR->{
                         Snackbar.make(main_layout, "Permissions not granted!", Snackbar.LENGTH_LONG).show()
