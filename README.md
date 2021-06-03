@@ -3,6 +3,7 @@
 As the name suggest it is a weather forecast application that is using openweathermap.org/api for fetching weather, this api provides the weather in every 3 hours for every city in the world
 
 
+
 ## Technical details
 
 *Language used* : kotlin
