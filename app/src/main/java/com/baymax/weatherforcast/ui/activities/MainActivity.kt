@@ -145,7 +145,10 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                     }
                 }
                 else{
-                    Snackbar.make(main_layout, "Provide all the permissions", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(
+                        main_layout,
+                        "Provide all the permissions",
+                        Snackbar.LENGTH_LONG).show()
                     /*createDailog()
                     alertDialog.show()*/
                 }
@@ -271,10 +274,15 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 viewModel.setGpsStatus(true)
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                Snackbar.make(main_layout, "Please turn on you GPS!", Snackbar.LENGTH_LONG).setAction("Retry",
+                Snackbar.make(
+                    main_layout,
+                    "Please turn on you GPS!",
+                    Snackbar.LENGTH_LONG).setAction(
+                    "Retry",
                     View.OnClickListener {
                         turnOnGPS()
-                    }).show()
+                    }
+                ).show()
                 viewModel.setGpsStatus(false)
                 /*createDailog()
                 alertDialog.show()*/

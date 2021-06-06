@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="location"
+            type="com.baymax.weatherforcast.api.response.City" />
+
+        <variable
+            name="weather"
+            type="com.baymax.weatherforcast.api.response.Record" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_dark">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c1"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_marginStart="30dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/card_sunrise"
+            app:layout_constraintEnd_toStartOf="@id/c2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/c2" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c2"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/c1"
+            app:layout_constraintEnd_toStartOf="@id/c3"
+            app:layout_constraintStart_toEndOf="@id/c1"
+            app:layout_constraintTop_toBottomOf="@id/c3" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c3"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/c2"
+            app:layout_constraintEnd_toStartOf="@id/location"
+            app:layout_constraintStart_toEndOf="@id/c2"
+            app:layout_constraintTop_toBottomOf="@id/location" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c8"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/c9"
+            app:layout_constraintEnd_toStartOf="@id/c9"
+            app:layout_constraintStart_toEndOf="@id/location"
+            app:layout_constraintTop_toBottomOf="@id/location" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c9"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/c10"
+            app:layout_constraintEnd_toStartOf="@id/c10"
+            app:layout_constraintStart_toEndOf="@id/c8"
+            app:layout_constraintTop_toBottomOf="@id/c8" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c10"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_marginEnd="30dp"
+            app:cardBackgroundColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@id/card_sunset"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/c9" />
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_sunrise"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/common_google_signin_btn_text_dark_default"
+            app:cardBackgroundColor="@color/common_google_signin_btn_text_dark_default"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="20dp"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_2">
+
+            <ImageView
+                android:id="@+id/sunrise_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                app:srcCompat="@drawable/icons_sunrise_50" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/sunrise_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_background"
+            android:textStyle="bold"
+            app:timeFromTimeStamp="@{Integer.toString(location.sunrise)+` AM`}"
+            app:layout_constraintEnd_toEndOf="@+id/card_sunrise"
+            app:layout_constraintStart_toStartOf="@+id/card_sunrise"
+            app:layout_constraintTop_toBottomOf="@+id/card_sunrise" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_sunset"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/common_google_signin_btn_text_dark_default"
+            app:cardBackgroundColor="@color/common_google_signin_btn_text_dark_default"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="20dp"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_2">
+
+            <ImageView
+                android:id="@+id/sunset_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                app:srcCompat="@drawable/icons_sunset_50" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/sunset_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_background"
+            android:textStyle="bold"
+            app:timeFromTimeStamp="@{Integer.toString(location.sunset)+` PM`}"
+            app:layout_constraintEnd_toEndOf="@+id/card_sunset"
+            app:layout_constraintStart_toStartOf="@+id/card_sunset"
+            app:layout_constraintTop_toBottomOf="@+id/card_sunset" />
+
+        <TextView
+            android:id="@+id/description_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@{weather.weather.get(0).description}"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="16sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/temp_value" />
+
+        <Button
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@{location.name}"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_1" />
+
+        <TextView
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Monday"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@{weather.dtTxt}"
+            app:layout_constraintBottom_toTopOf="@id/location"
+            app:layout_constraintEnd_toEndOf="@id/location"
+            app:layout_constraintStart_toStartOf="@id/location"
+            app:layout_constraintTop_toBottomOf="@id/day" />
+
+        <TextView
+            android:id="@+id/temp_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@{Double.toString(Math.round(weather.main.temp-273.15))+`°C`}"
+            android:textAlignment="center"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/location"
+            app:layout_constraintStart_toStartOf="@id/location"
+            app:layout_constraintTop_toBottomOf="@+id/location" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.40" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.70" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

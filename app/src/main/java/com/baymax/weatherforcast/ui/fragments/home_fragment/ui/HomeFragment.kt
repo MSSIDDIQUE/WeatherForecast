@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -12,11 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.api.response.Record
 import com.baymax.weatherforcast.data.Result
+import com.baymax.weatherforcast.databinding.FragmentHomeBinding
 import com.baymax.weatherforcast.ui.activities.MainActivity
 import com.google.android.material.snackbar.Snackbar
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -36,17 +36,22 @@ class HomeFragment : Fragment() , KodeinAware{
     private lateinit var weather_adapter: WeatherListAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var main_activity: MainActivity
+    private var _binding: FragmentHomeBinding? = null
+    private val binding  get() = _binding!!
 
     private val viewModelFactory: HomeFramentViewModelFactory by instance()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        super.onCreateView(inflater, container, savedInstanceState)
+        _binding = FragmentHomeBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity(),viewModelFactory).get(HomeFramentViewModel::class.java)
         main_activity  = (requireActivity() as MainActivity)
         main_activity.run {
@@ -64,10 +69,11 @@ class HomeFragment : Fragment() , KodeinAware{
         }
         if(main_activity.isOnline(requireContext())){
             viewModel.isGpsEnabled.observe(requireActivity(), Observer {
-                progressBar.visibility = View.VISIBLE
-                loading_text.visibility = View.VISIBLE
-                if(it){
-                    observeData()
+                binding.apply {
+                    progressBar.visibility = View.VISIBLE
+                    if(it){
+                        observeData()
+                    }
                 }
             })
         }
@@ -77,7 +83,7 @@ class HomeFragment : Fragment() , KodeinAware{
             )
             findNavController().navigate(direction)
             Snackbar.make(
-                requireActivity().main_layout,
+                main_layout,
                 "No Internet Connection",
                 Snackbar.LENGTH_LONG).setAction(
                 "Retry",
@@ -90,13 +96,6 @@ class HomeFragment : Fragment() , KodeinAware{
         }
     }
 
-    private fun loadIcons(){
-        Picasso.get().load(R.drawable.icons_sunrise_50).centerCrop().fit().into(sunrise_icon)
-        Picasso.get().load(R.drawable.icons_sunset_50).centerCrop().fit().into(sunset_icon)
-        Picasso.get().load(R.drawable.icons_dew_point_50).centerCrop().fit().into(humidity_icon)
-        Picasso.get().load(R.drawable.icons_wind_50).centerCrop().fit().into(wind_speed_icon)
-    }
-
     fun observeData(){
         viewModel.location.observe(requireActivity(), Observer {city->
             viewModel.getWeatherOfCity(city).observe(requireActivity(), Observer {result->
@@ -105,9 +104,11 @@ class HomeFragment : Fragment() , KodeinAware{
                         if(data.list.isEmpty() || data.list.size<40){
                             return@Observer
                         }
-                        loadIcons()
                         val recentDate = getRecentTime(data.list)
-                        val recentWeatherReport = data.list.filter { it.dtTxt.contains(recentDate) }
+                        val recentWeatherReport = data.list.filter { it.dtTxt.contains(recentDate) }.get(0)
+                        binding.location = data.city
+                        binding.currentweather = recentWeatherReport
+                        /*
                         date_time.text = recentDate
                         wind_speed_value.text = data.list.get(0).wind.speed.toString()+"Kmph"
                         day.text = toStandardString(LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek.toString())
@@ -123,20 +124,23 @@ class HomeFragment : Fragment() , KodeinAware{
                             sunrise_text.text = getTimeFromTimestamp(sunrise.toString())+" AM"
                             sunset_text.text = getTimeFromTimestamp(sunset.toString())+" PM"
                         }
+                        */
                         weather_adapter = WeatherListAdapter(data.list.filter {
                             it.dtTxt.contains(recentDate.split(" ")[1])
                         } as ArrayList<Record>,recentDate)
                         linearLayoutManager = LinearLayoutManager(context)
-                        recycler_view.apply {
-                            layoutManager = linearLayoutManager
-                            adapter = weather_adapter
+                        binding.apply {
+                            recyclerView.apply {
+                                layoutManager = linearLayoutManager
+                                adapter = weather_adapter
+                            }
+                            progressBar.visibility = View.GONE
                         }
-                        progressBar.visibility = View.GONE
-                        loading_text.visibility = View.GONE
                     }
                     Result.Status.LOADING->{
-                        progressBar.visibility = View.VISIBLE
-                        loading_text.visibility = View.VISIBLE
+                        binding.apply {
+                            progressBar.visibility = View.VISIBLE
+                        }
                     }
                     Result.Status.ERROR->{
                         val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
@@ -189,5 +193,10 @@ class HomeFragment : Fragment() , KodeinAware{
     private fun toStandardString(s:String):String{
         val cap: String = s.toLowerCase().substring(0, 1).toUpperCase() + s.toLowerCase().substring(1)
         return cap
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
