@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +22,6 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.kcontext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -123,23 +121,6 @@ class HomeFragment : Fragment() , KodeinAware{
                             }
                             progressBar.visibility = View.GONE
                         }
-                        /*
-                        date_time.text = recentDate
-                        wind_speed_value.text = data.list.get(0).wind.speed.toString()+"Kmph"
-                        day.text = toStandardString(LocalDateTime.parse(recentDate.replace( " ","T")).dayOfWeek.toString())
-                        recentWeatherReport[0].main.run{
-                            humidity_value.text = humidity.toString()+"%"
-                            temp_value.text = Math.round((temp-273.15)).toString()+"°"
-                            min_temp_value.text = Math.round(tempMin-273.15).toString()+"°"
-                            max_temp_value.text = Math.round((tempMax-273.15)).toString()+"°"
-                        }
-                        description_value.text = recentWeatherReport[0].weather[0].description
-                        data.city.run{
-                            location.text = data.city.name
-                            sunrise_text.text = getTimeFromTimestamp(sunrise.toString())+" AM"
-                            sunset_text.text = getTimeFromTimestamp(sunset.toString())+" PM"
-                        }
-                        */
                     }
                     Result.Status.LOADING->{
                         binding.apply {
@@ -182,11 +163,6 @@ class HomeFragment : Fragment() , KodeinAware{
             return times?.first().toString().replace("T"," ")
         }
         return recentDateString?.toString().replace("T"," ")
-    }
-
-    private fun toStandardString(s:String):String{
-        val cap: String = s.toLowerCase().substring(0, 1).toUpperCase() + s.toLowerCase().substring(1)
-        return cap
     }
 
     override fun onDestroy() {
