@@ -105,9 +105,24 @@ class HomeFragment : Fragment() , KodeinAware{
                             return@Observer
                         }
                         val recentDate = getRecentTime(data.list)
-                        val recentWeatherReport = data.list.filter { it.dtTxt.contains(recentDate) }.get(0)
-                        binding.location = data.city
-                        binding.currentweather = recentWeatherReport
+                        val recentWeatherReport = data.list.filter {
+                            it.dtTxt.contains(recentDate)
+                        }.get(0)
+                        weather_adapter = WeatherListAdapter(data.list.filter {
+                            it.dtTxt.contains(
+                                recentDate.split(" ")[1]
+                            )
+                        } as ArrayList<Record>,recentDate)
+                        linearLayoutManager = LinearLayoutManager(context)
+                        binding.apply {
+                            location = data.city
+                            currentweather = recentWeatherReport
+                            recyclerView.apply {
+                                layoutManager = linearLayoutManager
+                                adapter = weather_adapter
+                            }
+                            progressBar.visibility = View.GONE
+                        }
                         /*
                         date_time.text = recentDate
                         wind_speed_value.text = data.list.get(0).wind.speed.toString()+"Kmph"
@@ -125,17 +140,6 @@ class HomeFragment : Fragment() , KodeinAware{
                             sunset_text.text = getTimeFromTimestamp(sunset.toString())+" PM"
                         }
                         */
-                        weather_adapter = WeatherListAdapter(data.list.filter {
-                            it.dtTxt.contains(recentDate.split(" ")[1])
-                        } as ArrayList<Record>,recentDate)
-                        linearLayoutManager = LinearLayoutManager(context)
-                        binding.apply {
-                            recyclerView.apply {
-                                layoutManager = linearLayoutManager
-                                adapter = weather_adapter
-                            }
-                            progressBar.visibility = View.GONE
-                        }
                     }
                     Result.Status.LOADING->{
                         binding.apply {
@@ -178,16 +182,6 @@ class HomeFragment : Fragment() , KodeinAware{
             return times?.first().toString().replace("T"," ")
         }
         return recentDateString?.toString().replace("T"," ")
-    }
-
-    private fun getTimeFromTimestamp(s: String): String? {
-        try {
-            val sdf = SimpleDateFormat("hh:mm")
-            val netDate = Date(s.toLong()*1000)
-            return sdf.format(netDate)
-        } catch (e: Exception) {
-            return e.toString()
-        }
     }
 
     private fun toStandardString(s:String):String{
