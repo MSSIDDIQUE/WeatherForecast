@@ -7,4 +7,8 @@
     <string name="max_temp">Maximum temprature</string>
     <string name="wind_speed">Wind speed</string>
     <string name="humidity">Humidity</string>
+    <string name="search_placeholder">Search city</string>
+    <string name="search_error_msg">Please enter a valid city name</string>
+    <string name="search">Search</string>
+
 </resources>

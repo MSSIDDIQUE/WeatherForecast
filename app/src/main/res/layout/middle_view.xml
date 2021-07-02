@@ -34,11 +34,11 @@
                     layout="@layout/middle_item_view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    app:icon="@{@drawable/icon_thermometer_up_50}"
                     app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
                     app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:icon="@{@drawable/icon_thermometer_up_50}"
                     app:name="@{@string/max_temp}"
                     app:value="@{Double.toString(Math.round(weatherextras.main.tempMax-273.15))+`°C`}" />
 
@@ -46,11 +46,11 @@
                     layout="@layout/middle_item_view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    app:icon="@{@drawable/icon_thermometer_down_50}"
                     app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline_vertical"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:icon="@{@drawable/icon_thermometer_down_50}"
                     app:name="@{@string/min_temp}"
                     app:value="@{Double.toString(Math.round(weatherextras.main.tempMin-273.15))+`°C`}" />
 
@@ -58,11 +58,11 @@
                     layout="@layout/middle_item_view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    app:icon="@{@drawable/icons_wind_50}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"
-                    app:icon="@{@drawable/icons_wind_50}"
                     app:name="@{@string/wind_speed}"
                     app:value="@{Double.toString(weatherextras.wind.speed)+` Kmph`}" />
 
@@ -70,11 +70,11 @@
                     layout="@layout/middle_item_view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    app:icon="@{@drawable/icons_dew_point_50}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline_vertical"
                     app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"
-                    app:icon="@{@drawable/icons_dew_point_50}"
                     app:name="@{@string/humidity}"
                     app:value="@{Integer.toString(weatherextras.main.humidity)+`%`}" />
 

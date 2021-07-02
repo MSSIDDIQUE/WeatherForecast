@@ -6,20 +6,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.view.View
-import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -28,25 +26,28 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
-import java.io.InputStream
-import java.util.*
-import kotlin.collections.ArrayList
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
+import com.baymax.weatherforcast.ui.fragments.splash_screen_fragment.SplashScreenFragmentDirections
+import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity(), KodeinAware {
 
-    companion object{
+    companion object {
         private const val MULTIPLE_LOCAITON_PERMISSION = 1
         private const val LOCATION_SETTINGS_REQUEST = 1
+        private const val SPLASH_TIME_OUT: Long = 4000
     }
+
     val permissions = arrayListOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    private lateinit var alertDialog:AlertDialog
+    private val navController by lazy {
+        Navigation.findNavController(this, R.id.nav_host_fragment)
+    }
     private val viewModelFactory: HomeFramentViewModelFactory by instance()
     private lateinit var viewModel: HomeFramentViewModel
     override val kodein by kodein()
@@ -54,15 +55,55 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProvider(this,viewModelFactory).get(HomeFramentViewModel::class.java)
-//        location.setOnClickListener {
-//            createDailog()
-//            alertDialog.show()
-//        }
+        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeFramentViewModel::class.java)
+        val permissions_granted = hasLocationPermission()
+        val gps_active = isGPSActive()
+        if (permissions_granted && gps_active) {
+            viewModel.setGpsStatus(true)
+        }
+        if (!permissions_granted) {
+            requestLocationPermission()
+        } else if (!gps_active) {
+            turnOnGPS()
+        }
+        viewModel.setNetworkAvailable(isOnline(this))
+        viewModel.setGpsStatus(isGPSActive())
+        viewModel.readyToFetch.observe(this, { (gpsStatus, networkStatus) ->
+            if (gpsStatus != null && networkStatus != null) {
+                if (networkStatus == false) {
+                    val direction =
+                        SplashScreenFragmentDirections.actionToErrorFragment(
+                            "No internet connection"
+                        )
+                    navController.navigate(direction)
+                    Snackbar.make(
+                        main_layout,
+                        "No Internet Connection",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                } else if (gpsStatus == false) {
+                    Snackbar.make(
+                        main_layout,
+                        "Turn on your GPS",
+                        Snackbar.LENGTH_LONG
+                    ).setAction(
+                        "Retry"
+                    ) {
+                        turnOnGPS()
+                    }.show()
+                } else if (gpsStatus == true && networkStatus == true) {
+                    val direction =
+                        SplashScreenFragmentDirections.actionToHomeFragment()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        navController.navigate(direction)
+                    }, SPLASH_TIME_OUT)
+                }
+            }
+        })
     }
 
 
-    fun turnOnGPS(){
+    fun turnOnGPS() {
         val mLocationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
@@ -76,8 +117,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
         result.addOnCompleteListener { task ->
             try {
-                val response =
-                    task.getResult(ApiException::class.java)
+                task.getResult(ApiException::class.java)
             } catch (ex: ApiException) {
                 when (ex.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
@@ -96,7 +136,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             }
         }
     }
-
 
     fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
@@ -129,143 +168,60 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == MULTIPLE_LOCAITON_PERMISSION) {
-            var all_permissions_granted = true;
-            if(grantResults.isNotEmpty()){
-                grantResults.forEach { permissionResult->
-                    if(permissionResult != PackageManager.PERMISSION_GRANTED){
-                        all_permissions_granted = false
+            var allPermissionsGranted = true
+            if (grantResults.isNotEmpty()) {
+                grantResults.forEach { permissionResult ->
+                    if (permissionResult != PackageManager.PERMISSION_GRANTED) {
+                        allPermissionsGranted = false
                     }
                 }
-                if (all_permissions_granted) {
-                    if(!isGPSActive()){
+                if (allPermissionsGranted) {
+                    if (!isGPSActive()) {
                         turnOnGPS()
-                    }
-                    else{
+                    } else {
                         viewModel.setGpsStatus(true)
                     }
-                }
-                else{
+                } else {
                     Snackbar.make(
                         main_layout,
                         "Provide all the permissions",
-                        Snackbar.LENGTH_LONG).show()
-                    /*createDailog()
-                    alertDialog.show()*/
+                        Snackbar.LENGTH_LONG
+                    ).show()
                 }
             }
         }
     }
 
-    private fun getJsonData(): String? {
-        var json: String? = null
-        try {
-            val  inputStream: InputStream = this.assets!!.open("cities.json")
-            json = inputStream.bufferedReader().use{it.readText()}
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return null
-        }
-        return json
-    }
-
-//    private fun getCountries(array:List<locations>) : ArrayList<String>{
-//        val countries = ArrayList<String>()
-//        for(country in array){
-//            countries.add(country.country)
-//        }
-//        return countries
-//    }
-
-    private fun getCities(map:HashMap<String,ArrayList<String>>) : ArrayList<String>{
-        val countries = ArrayList<String>()
-        map.forEach{
-                k,v->
-            v!!.forEach { it ->
-                countries.add(it)
-            }
-        }
-        return countries
-    }
-
-    private fun getDeviceCityName(lat:Double,lon:Double):String{
-        val geocoder = Geocoder(this, Locale.getDefault())
-        val addresses: List<Address> = geocoder.getFromLocation(lat, lon, 5)
-        val cityName: String = addresses[0].locality
-        return cityName
-    }
-
-/*    private fun createDailog(){
-        val dialogView = layoutInflater.inflate(R.layout.custom_dialogue,null,false)
-        val locations_array: HashMap<String, ArrayList<String>> = Gson().fromJson(
-            getJsonData(),
-            object :
-                TypeToken<HashMap<String?, ArrayList<String?>?>?>() {}.type
-        )
-        val countries = ArrayList<String>(locations_array.keys)
-        val cities = getCities(locations_array)
-        val country_adapter = ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,countries)
-        val citi_adapter = ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,cities)
-        dialogView.city.setAdapter(citi_adapter)
-        alertDialog = AlertDialog.Builder(this)
-            .setTitle("Enter City")
-            .setIcon(R.drawable.icon_launcher_100)
-            .setView(dialogView)
-            .setPositiveButton("Ok"){dailogInterface, which->
-                val city = cities.filter { it -> it.toLowerCase().equals(dialogView.city.text.trim().toString().toLowerCase()) }
-                if(city.size==0){
-                    Snackbar.make(main_layout,"Please enter a valid city name",Snackbar.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
-                else{
-                    progressBar.visibility = View.VISIBLE
-                    loading_text.visibility = View.VISIBLE
-                    lifecycleScope.launch {
-                        weatherNetworkAbstractions.fetchWeather(dialogView.city.text.toString().trim())
-                        progressBar.visibility = View.GONE
-                        loading_text.visibility = View.GONE
-                    }
-                    val preference = PreferenceManager.getDefaultSharedPreferences(this)
-                    preference.edit().putString("CUSTOM_LOCATION",dialogView.city.text.toString().trim()).apply()
-                }
-            }
-            .setNegativeButton("Cancel"){ dailogInterface, which->
-            }
-            .create()
-    }*/
-
-    fun isGPSActive():Boolean{
+    fun isGPSActive(): Boolean {
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        var gps_enabled = false
+        var gpsEnabled by Delegates.notNull<Boolean>()
         try {
-            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        }catch(e:Exception){
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        } catch (e: Exception) {
             return false
         }
-        return gps_enabled
+        return gpsEnabled
     }
 
     fun isOnline(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (connectivityManager != null) {
-            val capabilities =
-                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                    return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                    return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                    return true
-                }
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
             }
         }
         return false
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -277,17 +233,14 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 Snackbar.make(
                     main_layout,
                     "Please turn on you GPS!",
-                    Snackbar.LENGTH_LONG).setAction(
-                    "Retry",
-                    View.OnClickListener {
-                        turnOnGPS()
-                    }
-                ).show()
+                    Snackbar.LENGTH_LONG
+                ).setAction(
+                    "Retry"
+                ) {
+                    turnOnGPS()
+                }.show()
                 viewModel.setGpsStatus(false)
-                /*createDailog()
-                alertDialog.show()*/
             }
         }
     }
-    
 }

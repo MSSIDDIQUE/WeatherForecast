@@ -4,11 +4,11 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,7 +16,7 @@ import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class LocationProviderUseCase(
+class LocationProvider(
     private val appContext: Context,
     private val client:FusedLocationProviderClient
     ) {
@@ -25,7 +25,8 @@ class LocationProviderUseCase(
         private const val FASTEST_UPDATE_INTERVAL_SECS = 2L
     }
 
-    fun fetchUpdates():Flow<String> = callbackFlow {
+    @ExperimentalCoroutinesApi
+    fun fetchLocation():Flow<String> = callbackFlow {
         val locationRequest = LocationRequest.create().apply {
             interval = TimeUnit.SECONDS.toMillis(UPDATE_INTERVAL_SECS)
             fastestInterval = TimeUnit.SECONDS.toMillis(FASTEST_UPDATE_INTERVAL_SECS)
@@ -59,13 +60,13 @@ class LocationProviderUseCase(
         }
     }
 
-    private fun getDeviceCityName(location:MapLocation):String{
+    private fun getDeviceCityName(location: MapLocation): String {
         val geocoder = Geocoder(appContext, Locale.getDefault())
         val addresses: List<Address> = geocoder.getFromLocation(
             location.latitude,
             location.longitude,
-            5)
-        val cityName: String = addresses[0].locality
-        return cityName
+            5
+        )
+        return addresses[0].locality
     }
 }

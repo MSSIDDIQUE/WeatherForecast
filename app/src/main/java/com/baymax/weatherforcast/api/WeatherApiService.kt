@@ -1,6 +1,5 @@
-    package com.baymax.weatherforcast.api
+package com.baymax.weatherforcast.api
 
-import android.content.Context
 import com.baymax.weatherforcast.api.response.WeatherResponse
 import com.baymax.weatherforcast.utils.PrefHelper
 import com.baymax.weatherforcast.utils.get

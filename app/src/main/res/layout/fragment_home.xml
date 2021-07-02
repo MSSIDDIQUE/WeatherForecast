@@ -20,27 +20,10 @@
         android:tag="HomeFragment"
         tools:context=".ui.fragments.home_fragment.ui.HomeFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:elevation="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <include
-                layout="@layout/progress_bar_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <ScrollView
-            android:id="@+id/scrollView2"
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,6 +33,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <include
+                    layout="@layout/search_bar_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:location="@{location}"
+                    app:weather="@{currentweather}"/>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_temp"
