@@ -1,7 +1,14 @@
 # Weather Forecast app
 
-As the name suggest it is a weather forecast application that is using openweathermap.org/api for fetching weather, this api provides the weather in every 3 hours for every city in the world
+## Key features
 
+1. Current weather (of every 3 hr interval)
+2. Weather Forcast (of 5 days inclusive)
+3. Search weather reports of any city in the word
+
+## Vision
+
+The main vision or motive of this applicaton is to experiment all the new android native libraries out there to develop amazing and efficient android apps. 
 
 
 ## Technical details
@@ -12,18 +19,20 @@ As the name suggest it is a weather forecast application that is using openweath
 
 *Database* : Room
 
-*Network* : Retrofit with Okhttp3 
+*Network Client* : Retrofit with Okhttp3 
 
 *Depenedecy Injection Framework* : KODEIN
 
 *Location Provider* : FusedLocation Provider
 
+*Framwork for ANR's* : Coroutines with flows 
+
 
 ## Android architectural components used
 
-1.coroutines
-2.LiveData
-3.viewmodels
+1. LiveData
+2. Navigation architectural components
+3. Databinding
 
 
 ## Flow chart
