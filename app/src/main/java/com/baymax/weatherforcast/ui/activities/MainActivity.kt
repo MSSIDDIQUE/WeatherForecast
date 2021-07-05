@@ -10,14 +10,15 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -29,7 +30,6 @@ import org.kodein.di.generic.instance
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
-import com.baymax.weatherforcast.ui.fragments.splash_screen_fragment.SplashScreenFragmentDirections
 import kotlin.properties.Delegates
 
 
@@ -38,16 +38,12 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     companion object {
         private const val MULTIPLE_LOCAITON_PERMISSION = 1
         private const val LOCATION_SETTINGS_REQUEST = 1
-        private const val SPLASH_TIME_OUT: Long = 4000
     }
 
     val permissions = arrayListOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    private val navController by lazy {
-        Navigation.findNavController(this, R.id.nav_host_fragment)
-    }
     private val viewModelFactory: HomeFramentViewModelFactory by instance()
     private lateinit var viewModel: HomeFramentViewModel
     override val kodein by kodein()
@@ -55,55 +51,18 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeFramentViewModel::class.java)
-        val permissions_granted = hasLocationPermission()
-        val gps_active = isGPSActive()
-        if (permissions_granted && gps_active) {
-            viewModel.setGpsStatus(true)
+        viewModel = ViewModelProvider(
+            this,
+            viewModelFactory
+        ).get(HomeFramentViewModel::class.java).apply {
+            setNetworkAvailable(isOnline(this@MainActivity))
+            setGpsStatus(isGPSActive())
+            setPermissionGranted(hasLocationPermission())
         }
-        if (!permissions_granted) {
-            requestLocationPermission()
-        } else if (!gps_active) {
-            turnOnGPS()
-        }
-        viewModel.setNetworkAvailable(isOnline(this))
-        viewModel.setGpsStatus(isGPSActive())
-        viewModel.readyToFetch.observe(this, { (gpsStatus, networkStatus) ->
-            if (gpsStatus != null && networkStatus != null) {
-                if (networkStatus == false) {
-                    val direction =
-                        SplashScreenFragmentDirections.actionToErrorFragment(
-                            "No internet connection"
-                        )
-                    navController.navigate(direction)
-                    Snackbar.make(
-                        main_layout,
-                        "No Internet Connection",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                } else if (gpsStatus == false) {
-                    Snackbar.make(
-                        main_layout,
-                        "Turn on your GPS",
-                        Snackbar.LENGTH_LONG
-                    ).setAction(
-                        "Retry"
-                    ) {
-                        turnOnGPS()
-                    }.show()
-                } else if (gpsStatus == true && networkStatus == true) {
-                    val direction =
-                        SplashScreenFragmentDirections.actionToHomeFragment()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        navController.navigate(direction)
-                    }, SPLASH_TIME_OUT)
-                }
-            }
-        })
     }
 
-
     fun turnOnGPS() {
+        progressBar.visibility = View.VISIBLE
         val mLocationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
@@ -176,6 +135,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                     }
                 }
                 if (allPermissionsGranted) {
+                    viewModel.setPermissionGranted(true)
                     if (!isGPSActive()) {
                         turnOnGPS()
                     } else {
@@ -228,6 +188,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 viewModel.setGpsStatus(true)
+                progressBar.visibility = View.VISIBLE
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 Snackbar.make(

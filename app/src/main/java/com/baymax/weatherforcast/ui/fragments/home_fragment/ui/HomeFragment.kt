@@ -3,6 +3,7 @@ package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,7 +70,6 @@ class HomeFragment : Fragment(), KodeinAware {
             requireActivity(),
             viewModelFactory
         ).get(HomeFramentViewModel::class.java)
-        observeData()
         fetchAllCities()
         search_btn.setOnClickListener {
             actvty.progressBar.visibility = View.VISIBLE
@@ -83,9 +83,11 @@ class HomeFragment : Fragment(), KodeinAware {
                 }
             }
         }
+        Log.d("(Saquib)","onViewCreated of HomeFragment")
     }
 
-    fun observeData() {
+    override fun onStart() {
+        super.onStart()
         actvty.progressBar.visibility = View.VISIBLE
         viewModel.run {
             searchedCity.switchMap {
@@ -122,7 +124,7 @@ class HomeFragment : Fragment(), KodeinAware {
                         }
                     }
                     Result.Status.ERROR -> {
-                        val direction = HomeFragmentDirections.actionToErrorFragment(
+                        val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
                             "Something went wrong!"
                         )
                         findNavController().navigate(direction)

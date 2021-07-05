@@ -32,7 +32,7 @@ class ErrorFragment : Fragment() {
         }
         retry_btn.setOnClickListener {
             if(main_activity.isOnline(requireContext())){
-                findNavController().navigate(R.id.action_to_homeFragment)
+                findNavController().navigate(R.id.action_error_fragment_to_home_fragment)
             }
         }
     }

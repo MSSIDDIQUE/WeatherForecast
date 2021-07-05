@@ -11,7 +11,7 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_to_error_fragment"
+            android:id="@+id/action_home_fragment_to_error_fragment"
             app:destination="@id/errorFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
@@ -22,7 +22,7 @@
         android:label="fragment_error"
         tools:layout="@layout/fragment_error">
         <action
-            android:id="@+id/action_to_home_fragment"
+            android:id="@+id/action_error_fragment_to_home_fragment"
             app:destination="@id/homeFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
@@ -36,12 +36,12 @@
         android:label="fragment_splash_screen"
         tools:layout="@layout/fragment_splash_screen">
         <action
-            android:id="@+id/action_to_homeFragment"
+            android:id="@+id/action_splashScreenFragment_to_homeFragment"
             app:destination="@id/homeFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_to_errorFragment"
+            android:id="@+id/action_splashScreenFragment_to_errorFragment"
             app:destination="@id/errorFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
