@@ -2,6 +2,7 @@ package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 
 import androidx.lifecycle.*
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class HomeFramentViewModel(
     private val repo: WeatherRepository
@@ -63,5 +64,6 @@ class HomeFramentViewModel(
         }
     }
 
+    @ExperimentalCoroutinesApi
     fun getWeather(city: String? = null) = repo.getWeather(city).asLiveData()
 }

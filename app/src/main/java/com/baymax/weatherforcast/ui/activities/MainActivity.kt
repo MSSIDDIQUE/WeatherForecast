@@ -16,8 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -30,6 +30,7 @@ import org.kodein.di.generic.instance
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
+import kotlinx.coroutines.flow.collect
 import kotlin.properties.Delegates
 
 
@@ -44,9 +45,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
+    val navController: NavController by lazy { findNavController(R.id.nav_host_fragment) }
     private val viewModelFactory: HomeFramentViewModelFactory by instance()
     private lateinit var viewModel: HomeFramentViewModel
     override val kodein by kodein()
+    var isDialogVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,10 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
     fun turnOnGPS() {
         progressBar.visibility = View.VISIBLE
+        if (isDialogVisible) {
+            return
+        }
+        isDialogVisible = true
         val mLocationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
@@ -77,6 +84,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         result.addOnCompleteListener { task ->
             try {
                 task.getResult(ApiException::class.java)
+                isDialogVisible = false
             } catch (ex: ApiException) {
                 when (ex.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
@@ -88,6 +96,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                                 LOCATION_SETTINGS_REQUEST
                             )
                     } catch (e: IntentSender.SendIntentException) {
+                        Snackbar.make(
+                            main_layout,
+                            "Unable to turn-on the GPS",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
                     }
@@ -136,11 +149,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 }
                 if (allPermissionsGranted) {
                     viewModel.setPermissionGranted(true)
-                    if (!isGPSActive()) {
-                        turnOnGPS()
-                    } else {
-                        viewModel.setGpsStatus(true)
-                    }
                 } else {
                     Snackbar.make(
                         main_layout,
@@ -188,9 +196,9 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 viewModel.setGpsStatus(true)
-                progressBar.visibility = View.VISIBLE
             }
             if (resultCode == Activity.RESULT_CANCELED) {
+                viewModel.setGpsStatus(false)
                 Snackbar.make(
                     main_layout,
                     "Please turn on you GPS!",
@@ -200,7 +208,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 ) {
                     turnOnGPS()
                 }.show()
-                viewModel.setGpsStatus(false)
             }
         }
     }

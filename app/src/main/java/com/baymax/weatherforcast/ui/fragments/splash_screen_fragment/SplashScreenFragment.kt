@@ -3,11 +3,11 @@ package com.baymax.weatherforcast.ui.fragments.splash_screen_fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -34,7 +34,7 @@ class SplashScreenFragment : Fragment(), KodeinAware {
     private lateinit var navController: NavController
 
     companion object {
-        private const val SPLASH_TIME_OUT: Long = 5000
+        private const val SPLASH_TIME_OUT: Long = 4000
     }
 
     override fun onCreateView(
@@ -57,44 +57,41 @@ class SplashScreenFragment : Fragment(), KodeinAware {
 
     override fun onStart() {
         super.onStart()
-        viewModel.readyToFetch.observe(
-            requireActivity(),
-            { requirements ->
-                requirements?.let {
-                    if (it["gps"] == true && it["network"] == true && it["permission"] == true) {
-                        val direction =
-                            SplashScreenFragmentDirections.actionSplashScreenFragmentToHomeFragment()
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            Log.d("saquib","current destination is ${navController.currentDestination.toString()}")
-                            navController.navigate(direction)
-                        }, SPLASH_TIME_OUT)
-                    } else if (it["permission"] == false) {
-                        (requireActivity() as MainActivity).requestLocationPermission()
-                    } else if (it["network"] == false) {
-                        val direction =
-                            SplashScreenFragmentDirections.actionSplashScreenFragmentToErrorFragment(
-                                "No internet connection"
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewModel.readyToFetch.observe(
+                requireActivity(),
+                { requirements ->
+                    requirements?.let {
+                        if (it["gps"] == true && it["network"] == true && it["permission"] == true) {
+                            navController.navigate(R.id.homeFragment)
+                        } else if (it["permission"] == false) {
+                            (requireActivity() as MainActivity).requestLocationPermission()
+                        } else if (it["network"] == false) {
+                            navController.navigate(
+                                R.id.errorFragment,
+                                bundleOf("error_msg" to  "No Internet Connection!")
                             )
-                        navController.navigate(direction)
-                        Snackbar.make(
-                            (requireActivity() as MainActivity).main_layout,
-                            "No Internet Connection",
-                            Snackbar.LENGTH_LONG
-                        ).show()
-                    } else if (it["gps"] == false) {
-                        Snackbar.make(
-                            (requireActivity() as MainActivity).main_layout,
-                            "Turn on your GPS",
-                            Snackbar.LENGTH_LONG
-                        ).setAction(
-                            "Retry"
-                        ) {
+                            Snackbar.make(
+                                (requireActivity() as MainActivity).main_layout,
+                                "No Internet Connection!",
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                        } else if (it["gps"] == false) {
                             (requireActivity() as MainActivity).turnOnGPS()
-                        }.show()
+                            Snackbar.make(
+                                (requireActivity() as MainActivity).main_layout,
+                                "Turn on your GPS",
+                                Snackbar.LENGTH_LONG
+                            ).setAction(
+                                "Retry"
+                            ) {
+                                (requireActivity() as MainActivity).turnOnGPS()
+                            }.show()
+                        }
                     }
                 }
-            }
-        )
+            )
+        }, SPLASH_TIME_OUT)
     }
 
     override fun onDestroy() {

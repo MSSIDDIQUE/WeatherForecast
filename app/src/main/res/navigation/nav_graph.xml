@@ -29,6 +29,9 @@
         <argument
             android:name="error_msg"
             app:argType="string" />
+        <action
+            android:id="@+id/action_errorFragment_to_splashScreenFragment"
+            app:destination="@id/splashScreenFragment" />
     </fragment>
     <fragment
         android:id="@+id/splashScreenFragment"
