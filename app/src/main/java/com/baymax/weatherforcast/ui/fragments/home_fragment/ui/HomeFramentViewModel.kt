@@ -28,7 +28,8 @@ class HomeFramentViewModel(
         isPermissionGranted.postValue(value)
     }
 
-    val readyToFetch = MediatorLiveData<Map<String,Boolean>>().apply {
+    // TODO: this piece of code can be optimized further
+    val readyToFetch = MediatorLiveData<Map<String, Boolean>>().apply {
         addSource(isGpsEnabled) { gps ->
             value = isNetworkAvailable.value?.let { network ->
                 isPermissionGranted.value?.let { permission ->

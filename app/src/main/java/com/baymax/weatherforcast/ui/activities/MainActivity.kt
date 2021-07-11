@@ -10,15 +10,19 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.baymax.weatherforcast.R
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -27,10 +31,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
-import com.baymax.weatherforcast.R
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
-import kotlinx.coroutines.flow.collect
 import kotlin.properties.Delegates
 
 
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     companion object {
         private const val MULTIPLE_LOCAITON_PERMISSION = 1
         private const val LOCATION_SETTINGS_REQUEST = 1
+        private const val BACK_PRESS_INTERVAL: Long = 3 * 1000
     }
 
     val permissions = arrayListOf(
@@ -49,7 +50,9 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private val viewModelFactory: HomeFramentViewModelFactory by instance()
     private lateinit var viewModel: HomeFramentViewModel
     override val kodein by kodein()
-    var isDialogVisible = false
+    private var isDialogVisible = false
+    private var exit = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,6 +212,24 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                     turnOnGPS()
                 }.show()
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if (exit) {
+            finish() // finish activity
+        } else {
+            Snackbar.make(
+                main_layout,
+                "Press back again to exit",
+                Snackbar.LENGTH_LONG
+            ).show()
+            exit = true
+            Handler(Looper.getMainLooper()).postDelayed(
+                Runnable
+                { exit = false },
+                BACK_PRESS_INTERVAL
+            )
         }
     }
 }
