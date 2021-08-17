@@ -2,7 +2,6 @@ package com.baymax.weatherforcast
 
 import android.app.Application
 import android.content.Context
-import com.baymax.weatherforcast.data.db.MyDatabase
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRemoteDataSource
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRepository
 import com.baymax.weatherforcast.api.WeatherApiService
@@ -24,7 +23,6 @@ class App : Application(), KodeinAware {
         import(androidXModule(this@App))
         bind() from singleton { PrefHelper(applicationContext) }
         bind() from singleton { WeatherApiService(instance()) }
-        bind() from singleton { MyDatabase(instance()) }
         bind() from singleton { WeatherRemoteDataSource(instance()) }
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind() from singleton { WeatherRepository(instance(), instance()) }

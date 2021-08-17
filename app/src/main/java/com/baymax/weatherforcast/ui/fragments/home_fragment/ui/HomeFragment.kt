@@ -83,47 +83,43 @@ class HomeFragment : Fragment(), KodeinAware {
                 }
             }
         }
-        Log.d("(Saquib)","onViewCreated of HomeFragment")
+        observeData()
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun observeData() {
         actvty.progressBar.visibility = View.VISIBLE
         viewModel.run {
             searchedCity.switchMap {
                 getWeather(it)
             }.observe(viewLifecycleOwner, Observer { result ->
-                when (result.status) {
-                    Result.Status.SUCCESS -> result.data?.let { data ->
-                        if (data.list.isEmpty() || data.list.size < 40) {
-                            return@Observer
-                        }
-                        val recentDate = getRecentTime(data.list)
-                        val recentWeatherReport = data.list.filter {
-                            it.dtTxt.contains(recentDate)
-                        }[0]
-                        weather_adapter = WeatherListAdapter(data.list.filter {
-                            it.dtTxt.contains(
-                                recentDate.split(" ")[1]
-                            )
-                        } as ArrayList<Record>, recentDate)
-                        linearLayoutManager = LinearLayoutManager(context)
-                        binding.apply {
-                            location = data.city
-                            currentweather = recentWeatherReport
-                            recyclerView.apply {
-                                layoutManager = linearLayoutManager
-                                adapter = weather_adapter
+                when (result) {
+                    is Result.Success -> {
+                        result.data?.let { data ->
+                            if (data.list.isEmpty() || data.list.size < 40) {
+                                return@Observer
                             }
-                            actvty.progressBar.visibility = View.GONE
+                            val recentDate = getRecentTime(data.list)
+                            val recentWeatherReport = data.list.filter {
+                                it.dtTxt.contains(recentDate)
+                            }[0]
+                            weather_adapter = WeatherListAdapter(data.list.filter {
+                                it.dtTxt.contains(
+                                    recentDate.split(" ")[1]
+                                )
+                            } as ArrayList<Record>, recentDate)
+                            linearLayoutManager = LinearLayoutManager(context)
+                            binding.apply {
+                                location = data.city
+                                currentweather = recentWeatherReport
+                                recyclerView.apply {
+                                    layoutManager = linearLayoutManager
+                                    adapter = weather_adapter
+                                }
+                                actvty.progressBar.visibility = View.GONE
+                            }
                         }
                     }
-                    Result.Status.LOADING -> {
-                        binding.apply {
-                            actvty.progressBar.visibility = View.VISIBLE
-                        }
-                    }
-                    Result.Status.ERROR -> {
+                    is Result.Failure -> {
                         val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
                             "Something went wrong!"
                         )
@@ -134,6 +130,11 @@ class HomeFragment : Fragment(), KodeinAware {
                             Snackbar.LENGTH_LONG
                         ).show()
                         actvty.progressBar.visibility = View.GONE
+                    }
+                    is Result.Loading -> {
+                        binding.apply {
+                            actvty.progressBar.visibility = View.VISIBLE
+                        }
                     }
                 }
             })

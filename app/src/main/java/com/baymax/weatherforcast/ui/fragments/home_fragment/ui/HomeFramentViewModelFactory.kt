@@ -6,9 +6,9 @@ import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherReposito
 
 class HomeFramentViewModelFactory(
     private val repo: WeatherRepository
-): ViewModelProvider.NewInstanceFactory() {
+) : ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
-    override fun <T: ViewModel?> create(modelClass:Class<T>):T{
-        return HomeFramentViewModel(repo)   as T
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return HomeFramentViewModel(repo) as T
     }
 }

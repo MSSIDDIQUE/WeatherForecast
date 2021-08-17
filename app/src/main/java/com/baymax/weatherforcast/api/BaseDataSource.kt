@@ -13,16 +13,12 @@ abstract class BaseDataSource {
             val response = call()
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) return Result.success(body)
+                if (body != null) return Result.Success(body)
             }
-            return error(" ${response.code()} ${response.message()}")
+            return Result.Failure(msg = response.message().toString())
         } catch (e: Exception) {
-            return error(e.message ?: e.toString())
+            return Result.Failure(msg = e.message.toString())
         }
-    }
-
-    private fun <T> error(message: String): Result<T> {
-        return Result.error("Network call has failed for a following reason: $message")
     }
 }
 
