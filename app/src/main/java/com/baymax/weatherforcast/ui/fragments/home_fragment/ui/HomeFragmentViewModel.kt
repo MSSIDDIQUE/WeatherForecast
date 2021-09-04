@@ -3,8 +3,9 @@ package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 import androidx.lifecycle.*
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import javax.inject.Inject
 
-class HomeFramentViewModel(
+class HomeFragmentViewModel @Inject constructor(
     private val repo: WeatherRepository
 ) : ViewModel() {
     var isGpsEnabled = MutableLiveData<Boolean>()

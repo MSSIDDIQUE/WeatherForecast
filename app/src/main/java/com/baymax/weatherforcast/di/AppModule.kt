@@ -4,9 +4,12 @@ import android.app.Application
 import android.content.Context
 import com.baymax.weatherforcast.BuildConfig
 import com.baymax.weatherforcast.utils.Constants
+import com.baymax.weatherforcast.utils.PrefHelper
+import com.baymax.weatherforcast.utils.get
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,23 +17,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-abstract class AppModule {
+class AppModule {
 
     @Singleton
     @Provides
-    private fun provideContext(application: Application): Context {
+    fun provideContext(application: Application): Context {
         return application
     }
 
     @Singleton
     @Provides
-    private fun provideConvertorFactory(): GsonConverterFactory {
+    fun provideConvertorFactory(): GsonConverterFactory {
         return GsonConverterFactory.create(Gson())
     }
 
     @Singleton
     @Provides
-    private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -42,9 +45,41 @@ abstract class AppModule {
 
     @Singleton
     @Provides
-    fun provideOkhttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun providePrefHelper(context: Context): PrefHelper {
+        return PrefHelper(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRequestInterceptor(
+        prefHelper: PrefHelper
+    ): Interceptor {
+        return Interceptor { chain ->
+            val url = chain.request()
+                .url
+                .newBuilder()
+                .addQueryParameter(
+                    PrefHelper.API_KEY,
+                    prefHelper.sharedPref[PrefHelper.API_KEY, ""]
+                )
+                .build()
+            val request = chain.request()
+                .newBuilder()
+                .url(url)
+                .build()
+            return@Interceptor chain.proceed(request)
+        }
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkhttpClient(
+        requestInterceptor: Interceptor,
+        loggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .addInterceptor(requestInterceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
     }
 
@@ -60,14 +95,4 @@ abstract class AppModule {
             .addConverterFactory(converterFactory)
             .build()
     }
-
-    @Singleton
-    @Provides
-    private fun <T> provideWeatherApiServices(
-        retrofit: Retrofit,
-        clazz: Class<T>
-    ): T {
-        return retrofit.create(clazz)
-    }
-
 }

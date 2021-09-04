@@ -18,15 +18,15 @@ import java.util.concurrent.TimeUnit
 
 class LocationProvider(
     private val appContext: Context,
-    private val client:FusedLocationProviderClient
-    ) {
+    private val client: FusedLocationProviderClient
+) {
     companion object {
         private const val UPDATE_INTERVAL_SECS = 10L
         private const val FASTEST_UPDATE_INTERVAL_SECS = 2L
     }
 
     @ExperimentalCoroutinesApi
-    fun fetchLocation():Flow<String> = callbackFlow {
+    fun fetchLocation(): Flow<String> = callbackFlow {
         val locationRequest = LocationRequest.create().apply {
             interval = TimeUnit.SECONDS.toMillis(UPDATE_INTERVAL_SECS)
             fastestInterval = TimeUnit.SECONDS.toMillis(FASTEST_UPDATE_INTERVAL_SECS)
@@ -43,7 +43,7 @@ class LocationProvider(
                 )
                 try {
                     this@callbackFlow.trySend(getDeviceCityName(userLocation)).isSuccess
-                }catch (e:Exception){
+                } catch (e: Exception) {
                 }
             }
         }
@@ -52,7 +52,7 @@ class LocationProvider(
             locationRequest,
             callBack,
             Looper.getMainLooper()
-        ).addOnFailureListener {e->
+        ).addOnFailureListener { e ->
             close(e)
         }
         awaitClose {

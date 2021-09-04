@@ -9,9 +9,9 @@ import androidx.security.crypto.MasterKeys
 
 class PrefHelper(val context:Context) {
     companion object keys{
-        val API_KEY :String = "api_key"
-        val LOCATION : String = "current_location"
-        val LOCATION_PERMISSION: String = "location_permission"
+        const val API_KEY :String = "appid"
+        const val LOCATION : String = "current_location"
+        const val LOCATION_PERMISSION: String = "location_permission"
     }
     val masterKeyAlias:String by lazy {
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)

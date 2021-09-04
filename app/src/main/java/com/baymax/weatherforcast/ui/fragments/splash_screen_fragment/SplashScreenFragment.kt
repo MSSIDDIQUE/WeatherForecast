@@ -3,7 +3,6 @@ package com.baymax.weatherforcast.ui.fragments.splash_screen_fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,22 +13,18 @@ import androidx.navigation.Navigation
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.databinding.FragmentSplashScreenBinding
 import com.baymax.weatherforcast.ui.activities.MainActivity
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.kodein
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.kcontext
+import javax.inject.Inject
 
-class SplashScreenFragment : Fragment(), KodeinAware {
-
-    override val kodeinContext = kcontext<Fragment>(this)
-    override val kodein by kodein()
+class SplashScreenFragment : DaggerFragment() {
     private var _binding: FragmentSplashScreenBinding? = null
-    private val viewModelFactory: HomeFramentViewModelFactory by instance()
-    private lateinit var viewModel: HomeFramentViewModel
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var viewModel: HomeFragmentViewModel
     private val binding get() = _binding!!
     private lateinit var navController: NavController
 
@@ -51,7 +46,7 @@ class SplashScreenFragment : Fragment(), KodeinAware {
         viewModel = ViewModelProvider(
             requireActivity(),
             viewModelFactory
-        ).get(HomeFramentViewModel::class.java)
+        ).get(HomeFragmentViewModel::class.java)
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
     }
 
@@ -69,7 +64,7 @@ class SplashScreenFragment : Fragment(), KodeinAware {
                         } else if (it["network"] == false) {
                             navController.navigate(
                                 R.id.errorFragment,
-                                bundleOf("error_msg" to  "No Internet Connection!")
+                                bundleOf("error_msg" to "No Internet Connection!")
                             )
                             Snackbar.make(
                                 (requireActivity() as MainActivity).main_layout,

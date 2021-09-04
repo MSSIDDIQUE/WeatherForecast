@@ -3,11 +3,9 @@ package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.switchMap
@@ -21,38 +19,34 @@ import com.baymax.weatherforcast.ui.activities.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.search_bar_view.*
 import kotlinx.android.synthetic.main.upper_view.*
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.kodein
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.kcontext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.InputStream
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-class HomeFragment : Fragment(), KodeinAware {
-
-    override val kodeinContext = kcontext<Fragment>(this)
-    override val kodein by kodein()
-    private lateinit var viewModel: HomeFramentViewModel
+class HomeFragment : DaggerFragment() {
+    private lateinit var viewModel: HomeFragmentViewModel
     private lateinit var weather_adapter: WeatherListAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var actvty: Activity
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModelFactory: HomeFramentViewModelFactory by instance()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var countries: ArrayList<String>
     private lateinit var cities: ArrayList<String>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        actvty = requireActivity() as  MainActivity
+        actvty = requireActivity() as MainActivity
     }
 
     override fun onCreateView(
@@ -69,7 +63,7 @@ class HomeFragment : Fragment(), KodeinAware {
         viewModel = ViewModelProvider(
             requireActivity(),
             viewModelFactory
-        ).get(HomeFramentViewModel::class.java)
+        ).get(HomeFragmentViewModel::class.java)
         fetchAllCities()
         search_btn.setOnClickListener {
             actvty.progressBar.visibility = View.VISIBLE
@@ -121,12 +115,12 @@ class HomeFragment : Fragment(), KodeinAware {
                     }
                     is Result.Failure -> {
                         val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
-                            "Something went wrong!"
+                            "Something went wrong! \n  ${result.msg} "
                         )
                         findNavController().navigate(direction)
                         Snackbar.make(
                             requireActivity().main_layout,
-                            "Something went wrong!",
+                            "Something went wrong! (${result.msg})",
                             Snackbar.LENGTH_LONG
                         ).show()
                         actvty.progressBar.visibility = View.GONE

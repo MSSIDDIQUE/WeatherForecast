@@ -14,30 +14,27 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.baymax.weatherforcast.R
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
-import org.kodein.di.generic.instance
+import javax.inject.Inject
 import kotlin.properties.Delegates
 
 
-class MainActivity : AppCompatActivity(), KodeinAware {
+class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
-        private const val MULTIPLE_LOCAITON_PERMISSION = 1
+        private const val MULTIPLE_LOCATION_PERMISSION = 1
         private const val LOCATION_SETTINGS_REQUEST = 1
         private const val BACK_PRESS_INTERVAL: Long = 3 * 1000
     }
@@ -47,9 +44,10 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
     val navController: NavController by lazy { findNavController(R.id.nav_host_fragment) }
-    private val viewModelFactory: HomeFramentViewModelFactory by instance()
-    private lateinit var viewModel: HomeFramentViewModel
-    override val kodein by kodein()
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var viewModel: HomeFragmentViewModel
     private var isDialogVisible = false
     private var exit = false
 
@@ -60,7 +58,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         viewModel = ViewModelProvider(
             this,
             viewModelFactory
-        ).get(HomeFramentViewModel::class.java).apply {
+        ).get(HomeFragmentViewModel::class.java).apply {
             setNetworkAvailable(isOnline(this@MainActivity))
             setGpsStatus(isGPSActive())
             setPermissionGranted(hasLocationPermission())
@@ -119,7 +117,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ),
-            MULTIPLE_LOCAITON_PERMISSION
+            MULTIPLE_LOCATION_PERMISSION
         )
     }
 
@@ -142,7 +140,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == MULTIPLE_LOCAITON_PERMISSION) {
+        if (requestCode == MULTIPLE_LOCATION_PERMISSION) {
             var allPermissionsGranted = true
             if (grantResults.isNotEmpty()) {
                 grantResults.forEach { permissionResult ->

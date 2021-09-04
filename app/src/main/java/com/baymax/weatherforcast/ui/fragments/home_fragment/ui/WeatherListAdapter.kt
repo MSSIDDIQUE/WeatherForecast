@@ -12,7 +12,7 @@ import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
 
-class WeatherListAdapter(
+class  WeatherListAdapter(
     private val data: ArrayList<Record>,
     private val recentDate: String
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {

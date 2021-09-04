@@ -1,5 +1,6 @@
 package com.baymax.weatherforcast.api
 
+import android.util.Log
 import com.baymax.weatherforcast.data.Result
 import retrofit2.Response
 
@@ -15,7 +16,7 @@ abstract class BaseDataSource {
                 val body = response.body()
                 if (body != null) return Result.Success(body)
             }
-            return Result.Failure(msg = response.message().toString())
+            return Result.Failure(msg = response.code().toString()+" "+response.message().toString())
         } catch (e: Exception) {
             return Result.Failure(msg = e.message.toString())
         }

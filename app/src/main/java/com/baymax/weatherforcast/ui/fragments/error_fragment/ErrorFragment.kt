@@ -1,7 +1,6 @@
 package com.baymax.weatherforcast.ui.fragments.error_fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,23 +9,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.activities.MainActivity
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModel
-import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFramentViewModelFactory
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_error.*
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.kodein
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.kcontext
+import javax.inject.Inject
 
 
-class ErrorFragment : Fragment(), KodeinAware {
+class ErrorFragment : DaggerFragment() {
 
     private val args: ErrorFragmentArgs by navArgs()
     private lateinit var main_activity: MainActivity
-    override val kodeinContext = kcontext<Fragment>(this)
-    private val viewModelFactory: HomeFramentViewModelFactory by instance()
-    private lateinit var viewModel: HomeFramentViewModel
-    override val kodein by kodein()
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var viewModel: HomeFragmentViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,7 +42,7 @@ class ErrorFragment : Fragment(), KodeinAware {
                 viewModel = ViewModelProvider(
                     requireActivity(),
                     viewModelFactory
-                ).get(HomeFramentViewModel::class.java)
+                ).get(HomeFragmentViewModel::class.java)
                 viewModel.setNetworkAvailable(true)
                 findNavController().navigate(R.id.action_errorFragment_to_splashScreenFragment)
             }

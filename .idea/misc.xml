@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/activity_main.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/fragment_home.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/middle_item_view.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/middle_view.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/progress_bar_view.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/search_bar_view.xml" value="0.23645833333333333" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/weather_row_item.xml" value="0.23645833333333333" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
