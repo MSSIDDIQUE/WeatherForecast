@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         app:cardBackgroundColor="@android:color/holo_blue_dark"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="5dp"
         app:cardMaxElevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,29 +28,21 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/search_placeholder"
                 android:padding="10dp"
+                app:endIconMode="clear_text"
                 app:boxStrokeColor="@color/common_google_signin_btn_text_dark_default"
                 app:hintTextColor="@color/common_google_signin_btn_text_dark_default"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_btn"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
                     android:id="@+id/search_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_google_signin_btn_text_dark_default" />
             </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/search_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="@string/search"
-                app:layout_constraintBottom_toBottomOf="@id/search_text_layout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/search_text_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -65,7 +65,7 @@ class HomeFragment : DaggerFragment() {
             viewModelFactory
         ).get(HomeFragmentViewModel::class.java)
         fetchAllCities()
-        search_btn.setOnClickListener {
+        /*search_btn.setOnClickListener {
             actvty.progressBar.visibility = View.VISIBLE
             search_text.text.toString().trim().lowercase().let { text ->
                 if (text.isNotEmpty() && cities.contains(text)) {
@@ -76,7 +76,7 @@ class HomeFragment : DaggerFragment() {
                     actvty.progressBar.visibility = View.GONE
                 }
             }
-        }
+        }*/
         observeData()
     }
 

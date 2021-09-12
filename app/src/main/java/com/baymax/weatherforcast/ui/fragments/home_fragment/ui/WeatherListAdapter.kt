@@ -12,7 +12,7 @@ import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
 
-class  WeatherListAdapter(
+class WeatherListAdapter(
     private val data: ArrayList<Record>,
     private val recentDate: String
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {
@@ -39,9 +39,9 @@ class  WeatherListAdapter(
                 .load("https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png")
                 .centerCrop().fit().into(itemView.list_weather_icon)
             val today = LocalDateTime.parse(data.dtTxt.replace(" ", "T")).dayOfWeek.toString()
-            when(today){
+            when (today) {
                 dayOfWeek.toString() -> itemView.list_day.text = "Today"
-                (dayOfWeek+1).toString() -> itemView.list_day.text = "Tomorrow"
+                (dayOfWeek + 1).toString() -> itemView.list_day.text = "Tomorrow"
                 else -> itemView.list_day.text = toStandardString(today)
             }
             itemView.list_description.text = data.weather.get(0).description
@@ -49,7 +49,7 @@ class  WeatherListAdapter(
         }
 
         private fun toStandardString(s: String): String {
-            return s[0].uppercase()+s.substring(1).lowercase()
+            return s[0].uppercase() + s.substring(1).lowercase()
         }
     }
 }

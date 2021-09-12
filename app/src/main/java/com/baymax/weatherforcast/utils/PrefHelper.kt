@@ -2,9 +2,9 @@ package com.baymax.weatherforcast.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.baymax.weatherforcast.BuildConfig
 
 
 class PrefHelper(val context:Context) {
@@ -26,7 +26,7 @@ class PrefHelper(val context:Context) {
         )
     }
     init {
-        sharedPref.edit()[API_KEY] = "5f3f95dcfb462c164ddfce910fffe503"
+        sharedPref.edit()[API_KEY] = BuildConfig.WEATHER_API_KEY
         sharedPref.edit()[LOCATION] = "London"
         sharedPref.edit()[LOCATION_PERMISSION] = false
     }
