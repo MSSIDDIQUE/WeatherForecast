@@ -9,9 +9,10 @@ import com.baymax.weatherforcast.BuildConfig
 
 class PrefHelper(val context:Context) {
     companion object keys{
-        const val API_KEY :String = "appid"
+        const val WEATHER_API_KEY :String = "appid"
         const val LOCATION : String = "current_location"
         const val LOCATION_PERMISSION: String = "location_permission"
+        const val GOOGLE_PLACE_API_KEY : String = "key"
     }
     val masterKeyAlias:String by lazy {
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -26,7 +27,8 @@ class PrefHelper(val context:Context) {
         )
     }
     init {
-        sharedPref.edit()[API_KEY] = BuildConfig.WEATHER_API_KEY
+        sharedPref.edit()[WEATHER_API_KEY] = BuildConfig.WEATHER_API_KEY
+        sharedPref.edit()[GOOGLE_PLACE_API_KEY] = BuildConfig.GOOGLE_PLACE_API_KEY
         sharedPref.edit()[LOCATION] = "London"
         sharedPref.edit()[LOCATION_PERMISSION] = false
     }

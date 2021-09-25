@@ -1,8 +1,8 @@
 package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 
 import androidx.lifecycle.*
+import com.baymax.weatherforcast.api.response.googlePlaceApi.Location
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 class HomeFragmentViewModel @Inject constructor(
@@ -12,6 +12,9 @@ class HomeFragmentViewModel @Inject constructor(
     var isNetworkAvailable = MutableLiveData<Boolean>()
     var searchedCity = MutableLiveData("")
     var isPermissionGranted = MutableLiveData<Boolean>()
+    val searchText = MutableLiveData<String>()
+    val mutableLocation = MutableLiveData<Location>(null)
+    var placeIdMap = mutableMapOf<String, String>()
 
     fun setGpsStatus(value: Boolean) {
         isGpsEnabled.postValue(value)
@@ -66,6 +69,9 @@ class HomeFragmentViewModel @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
-    fun getWeather(city: String? = null) = repo.getWeather(city).asLiveData()
+    fun getWeather(searchedLocation: Location? = null) = repo.getWeather(searchedLocation).asLiveData()
+
+    fun getSuggestions(searchText:String) = repo.getSuggestions(searchText).asLiveData()
+
+    suspend fun getCoordinates(placeId:String) = repo.getCoordinates(placeId)
 }

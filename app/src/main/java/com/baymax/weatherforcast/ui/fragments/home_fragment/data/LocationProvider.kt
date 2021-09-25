@@ -25,8 +25,7 @@ class LocationProvider(
         private const val FASTEST_UPDATE_INTERVAL_SECS = 2L
     }
 
-    @ExperimentalCoroutinesApi
-    fun fetchLocation(): Flow<String> = callbackFlow {
+    fun fetchLocation(): Flow<MapLocation> = callbackFlow {
         val locationRequest = LocationRequest.create().apply {
             interval = TimeUnit.SECONDS.toMillis(UPDATE_INTERVAL_SECS)
             fastestInterval = TimeUnit.SECONDS.toMillis(FASTEST_UPDATE_INTERVAL_SECS)
@@ -42,7 +41,7 @@ class LocationProvider(
                     bearing = location.bearing
                 )
                 try {
-                    this@callbackFlow.trySend(getDeviceCityName(userLocation)).isSuccess
+                    this@callbackFlow.trySend(userLocation).isSuccess
                 } catch (e: Exception) {
                 }
             }

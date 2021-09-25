@@ -1,4 +1,4 @@
-package com.baymax.weatherforcast.api.response
+package com.baymax.weatherforcast.api.response.weatherApi
 
 
 data class City(

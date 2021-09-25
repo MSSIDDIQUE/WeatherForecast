@@ -6,11 +6,11 @@
 
         <variable
             name="location"
-            type="com.baymax.weatherforcast.api.response.City" />
+            type="com.baymax.weatherforcast.api.response.weatherApi.City" />
 
         <variable
             name="weather"
-            type="com.baymax.weatherforcast.api.response.Record" />
+            type="com.baymax.weatherforcast.api.response.weatherApi.Record" />
 
     </data>
 

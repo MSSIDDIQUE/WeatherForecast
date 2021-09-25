@@ -1,6 +1,7 @@
 package com.baymax.weatherforcast.api
 
-import com.baymax.weatherforcast.api.response.WeatherResponse
+import com.baymax.weatherforcast.api.response.weatherApi.WeatherResponse
+import com.baymax.weatherforcast.utils.PrefHelper
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -10,8 +11,12 @@ interface WeatherApiService {
 
     @GET("forecast")
     suspend fun getWeatherOfCity(
-        @Query("q")
-        location: String
+        @Query("lat")
+        latitude: String,
+        @Query("lon")
+        longitude: String,
+        @Query(PrefHelper.WEATHER_API_KEY)
+        key: String
     ): Response<WeatherResponse>
 
 }

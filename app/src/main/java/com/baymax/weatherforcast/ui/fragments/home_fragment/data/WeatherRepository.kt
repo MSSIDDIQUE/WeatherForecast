@@ -1,8 +1,9 @@
 package com.baymax.weatherforcast.ui.fragments.home_fragment.data
 
-import com.baymax.weatherforcast.api.response.WeatherResponse
+import com.baymax.weatherforcast.api.response.googlePlaceApi.Location
+import com.baymax.weatherforcast.api.response.weatherApi.WeatherResponse
 import com.baymax.weatherforcast.data.Result
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -11,14 +12,33 @@ class WeatherRepository(
     private val remoteDataSource: WeatherRemoteDataSource,
     private val useCase: LocationProvider
 ) {
-    @ExperimentalCoroutinesApi
-    fun getWeather(city: String? = null): Flow<Result<WeatherResponse>> = flow {
-        useCase.fetchLocation().collect { location ->
-            if (city.isNullOrEmpty()) {
-                emit(remoteDataSource.fetchWeatherOfCity(location))
-            } else {
-                emit(remoteDataSource.fetchWeatherOfCity(city))
-            }
+    fun getWeather(
+        searchedLocation: Location? = null
+    ): Flow<Result<WeatherResponse>> = flow {
+        useCase.fetchLocation().collect { deviceLocation ->
+            searchedLocation?.let { providedLocation ->
+                emit(
+                    remoteDataSource.fetchWeatherForLocation(
+                        providedLocation.lat.toString(),
+                        providedLocation.lng.toString()
+                    )
+                )
+            } ?: emit(
+                remoteDataSource.fetchWeatherForLocation(
+                    deviceLocation.latitude.toString(),
+                    deviceLocation.longitude.toString()
+                )
+            )
         }
     }
+
+    fun getSuggestions(searchText: String) = flow {
+        if (searchText.length > 2) {
+            delay(1000)
+            emit(remoteDataSource.fetchPredictions(searchText))
+        }
+    }
+
+    suspend fun getCoordinates(placeId: String) = remoteDataSource.fetchCoordinates(placeId)
+
 }

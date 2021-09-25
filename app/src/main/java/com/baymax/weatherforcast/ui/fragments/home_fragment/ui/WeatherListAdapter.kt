@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.baymax.weatherforcast.R
-import com.baymax.weatherforcast.api.response.Record
+import com.baymax.weatherforcast.api.response.weatherApi.Record
 import com.baymax.weatherforcast.utils.inflate
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.weather_row_item.view.*
