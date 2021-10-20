@@ -4,6 +4,7 @@ import android.util.Log
 import com.baymax.weatherforcast.api.BaseDataSource
 import com.baymax.weatherforcast.api.GooglePlaceApiService
 import com.baymax.weatherforcast.api.WeatherApiService
+import com.baymax.weatherforcast.api.response.googlePlaceApi.Location
 import com.baymax.weatherforcast.utils.PrefHelper
 import com.baymax.weatherforcast.utils.get
 
@@ -14,12 +15,11 @@ class WeatherRemoteDataSource(
 ) : BaseDataSource() {
 
     suspend fun fetchWeatherForLocation(
-        latitude:String,
-        longitude:String
+        location: Location
     ) = getResult {
         weatherApiService.getWeatherOfCity(
-            latitude,
-            longitude,
+            location.lat.toString(),
+            location.lng.toString(),
             prefHelper.sharedPref[PrefHelper.WEATHER_API_KEY, ""]
         )
     }

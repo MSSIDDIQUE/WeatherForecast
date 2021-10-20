@@ -3,9 +3,9 @@ package com.baymax.weatherforcast.di.main
 import android.content.Context
 import com.baymax.weatherforcast.api.GooglePlaceApiService
 import com.baymax.weatherforcast.api.WeatherApiService
-import com.baymax.weatherforcast.ui.fragments.home_fragment.data.LocationProvider
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRemoteDataSource
 import com.baymax.weatherforcast.ui.fragments.home_fragment.data.WeatherRepository
+import com.baymax.weatherforcast.utils.ConnectionLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.baymax.weatherforcast.utils.Constants
@@ -69,22 +69,12 @@ class MainModule {
 
     @MainScope
     @Provides
-    fun provideLocationProvider(
-        context: Context,
-        client: FusedLocationProviderClient
-    ): LocationProvider {
-        return LocationProvider(context, client)
-    }
-
-    @MainScope
-    @Provides
     fun provideRepository(
         remoteDataSource: WeatherRemoteDataSource,
-        locationProvider: LocationProvider
+        client: FusedLocationProviderClient
     ): WeatherRepository {
         return WeatherRepository(
-            remoteDataSource,
-            locationProvider
+            remoteDataSource
         )
     }
 
@@ -98,5 +88,13 @@ class MainModule {
             .baseUrl(baseUrl)
             .addConverterFactory(converterFactory)
             .build()
+    }
+
+    @MainScope
+    @Provides
+    fun provideConnectionLiveData(
+        context: Context
+    ): ConnectionLiveData {
+        return ConnectionLiveData(context)
     }
 }

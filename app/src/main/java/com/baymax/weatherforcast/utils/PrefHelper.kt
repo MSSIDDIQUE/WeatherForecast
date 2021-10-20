@@ -19,7 +19,7 @@ class PrefHelper(val context:Context) {
     }
     val sharedPref:SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
-            "openweather_forecase_api",
+            "openweather_forecast_api",
             masterKeyAlias,
             context,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,

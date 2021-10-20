@@ -1,29 +1,30 @@
 package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.lifecycle.Observer
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.switchMap
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.api.response.weatherApi.Record
 import com.baymax.weatherforcast.data.Result
 import com.baymax.weatherforcast.databinding.FragmentHomeBinding
 import com.baymax.weatherforcast.ui.activities.MainActivity
-import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.upper_view.*
+import kotlinx.android.synthetic.main.upper_view.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -36,18 +37,14 @@ class HomeFragment : DaggerFragment() {
     private lateinit var viewModel: HomeFragmentViewModel
     private lateinit var weatherListAdapter: WeatherListAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var actvty: Activity
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var countries: ArrayList<String>
-    private lateinit var cities: ArrayList<String>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        actvty = requireActivity() as MainActivity
     }
 
     override fun onCreateView(
@@ -65,23 +62,68 @@ class HomeFragment : DaggerFragment() {
             requireActivity(),
             viewModelFactory
         ).get(HomeFragmentViewModel::class.java)
-        binding.homeFragmentViewModel = viewModel
-        binding.searchText.setOnItemClickListener { adapterView, view, position, id ->
-            val selectedLocation = adapterView.getItemAtPosition(position).toString()
-            viewModel.run {
-                placeIdMap[selectedLocation]?.let {
-                    lifecycleScope.launch {
-                        val result = withContext(Dispatchers.Default) {
-                            getCoordinates(it)
-                        }
-                        when (result) {
-                            is Result.Failure -> result.msg?.let { it1 -> showErrorMsg(it1) }
-                            is Result.Loading -> {
+        binding.apply {
+            homeFragmentViewModel = viewModel
+        }
+        setupClickListeners()
+        setupObservers()
+    }
+
+    private fun setupClickListeners() {
+        binding.apply {
+            cardTemp.apply {
+                included_view.view_more.setOnClickListener {
+                    TransitionManager.beginDelayedTransition(
+                        cardTemp,
+                        AutoTransition()
+                    )
+                    if (!hiddenView.isVisible) {
+                        hiddenView.visibility = View.VISIBLE
+                        it.visibility = View.GONE
+                    }
+                }
+                hidden_view.view_less.setOnClickListener {
+                    if (hiddenView.isVisible) {
+                        hiddenView.visibility = View.GONE
+                        included_view.view_more.visibility = View.VISIBLE
+                    }
+                    TransitionManager.beginDelayedTransition(
+                        cardTemp,
+                        AutoTransition()
+                    )
+                }
+            }
+            cardCurrentLocation.setOnClickListener {
+                (activity as MainActivity).run {
+                    if (hasLocationPermission() && isGPSActive()) {
+                        startCollectingDeviceLocation()
+                    } else if (!hasLocationPermission()) {
+                        requestLocationPermission()
+                    } else
+                        turnOnGPS()
+                }
+            }
+            searchText.setOnItemClickListener { adapterView, _, position, _ ->
+                val selectedLocation = adapterView.getItemAtPosition(position).toString()
+                viewModel.run {
+                    placeIdMap[selectedLocation]?.let {
+                        lifecycleScope.launchWhenStarted {
+                            val result = withContext(Dispatchers.Default) {
+                                getCoordinates(it)
                             }
-                            is Result.Success -> {
-                                val location = result.data?.result?.geometry?.location
-                                location?.let {
-                                    mutableLocation.postValue(location)
+                            when (result) {
+                                is Result.Failure -> result.msg?.let { msg ->
+                                    (activity as MainActivity).showSnackbar(msg)
+                                }
+                                is Result.Success -> {
+                                    val location = result.data?.result?.geometry?.location
+                                    location?.let {
+                                        if (!(activity as MainActivity).no_internet_background.isVisible) {
+                                            getWeather(it)
+                                        } else {
+                                            (activity as MainActivity).showSnackbar(getString(R.string.no_internet_connection))
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -89,61 +131,22 @@ class HomeFragment : DaggerFragment() {
                 }
             }
         }
+    }
+
+    private fun setupObservers() {
+        observeSuggestions()
         observeWeather()
-        observeSearchText()
     }
 
-    private fun observeWeather() {
-        actvty.progressBar.visibility = View.VISIBLE
+    private fun observeSuggestions() {
         viewModel.run {
-            mutableLocation.switchMap {
-                getWeather(it)
-            }.observe(viewLifecycleOwner, Observer { result ->
-                when (result) {
-                    is Result.Success -> {
-                        result.data?.let { data ->
-                            if (data.list.isEmpty() || data.list.size < 40) {
-                                return@Observer
-                            }
-                            val recentDate = getRecentTime(data.list)
-                            val recentWeatherReport = data.list.filter {
-                                it.dtTxt.contains(recentDate)
-                            }[0]
-                            weatherListAdapter = WeatherListAdapter(data.list.filter {
-                                it.dtTxt.contains(
-                                    recentDate.split(" ")[1]
-                                )
-                            } as ArrayList<Record>, recentDate)
-                            linearLayoutManager = LinearLayoutManager(context)
-                            binding.apply {
-                                location = data.city
-                                currentweather = recentWeatherReport
-                                recyclerView.apply {
-                                    layoutManager = linearLayoutManager
-                                    adapter = weatherListAdapter
-                                }
-                                actvty.progressBar.visibility = View.GONE
-                            }
-                        }
-                    }
-                    is Result.Failure -> result.msg?.let { showErrorMsg(it) }
-                    is Result.Loading -> {
-                        binding.apply {
-                            actvty.progressBar.visibility = View.VISIBLE
-                        }
-                    }
-                }
-            })
-        }
-    }
-
-    private fun observeSearchText() {
-        viewModel.apply {
             searchText.switchMap {
                 getSuggestions(it)
-            }.observe(viewLifecycleOwner, Observer { result ->
+            }.observe(viewLifecycleOwner, { result ->
                 when (result) {
-                    is Result.Failure -> result.msg?.let { showErrorMsg(it) }
+                    is Result.Failure -> result.msg?.let {
+                        (activity as MainActivity).showSnackbar(it)
+                    }
                     is Result.Loading -> {
                     }
                     is Result.Success -> {
@@ -165,17 +168,57 @@ class HomeFragment : DaggerFragment() {
         }
     }
 
-    private fun showErrorMsg(errorMsg: String) {
-        val direction = HomeFragmentDirections.actionHomeFragmentToErrorFragment(
-            "Something went wrong! \n  $errorMsg "
-        )
-        findNavController().navigate(direction)
-        Snackbar.make(
-            requireActivity().main_layout,
-            "Something went wrong! ($errorMsg)",
-            Snackbar.LENGTH_LONG
-        ).show()
-        actvty.progressBar.visibility = View.GONE
+    private fun observeWeather() = lifecycleScope.launchWhenStarted {
+        viewModel.run {
+            weatherData.collect { result ->
+                when (result) {
+                    is HomeFragmentViewModel.UiState.Success -> result.wData.run {
+                        binding.apply {
+                            cardTemp.visibility = View.VISIBLE
+                            rvContainer.visibility = View.VISIBLE
+                            lineWeatherForecastContainer.visibility = View.VISIBLE
+                        }
+                        if (list.isEmpty() || list.size < 40) {
+                            return@collect
+                        }
+                        val recentDate = getRecentTime(list)
+                        val recentWeatherReport = list.filter {
+                            it.dtTxt.contains(recentDate)
+                        }[0]
+                        weatherListAdapter = WeatherListAdapter(list.filter {
+                            it.dtTxt.contains(
+                                recentDate.split(" ")[1]
+                            )
+                        } as ArrayList<Record>, recentDate)
+                        linearLayoutManager = LinearLayoutManager(context)
+                        binding.apply {
+                            location = city
+                            currentweather = recentWeatherReport
+                            recyclerView.apply {
+                                layoutManager = linearLayoutManager
+                                adapter = weatherListAdapter
+                            }
+                            (activity as MainActivity).progressBar.visibility = View.GONE
+                        }
+                    }
+                    is HomeFragmentViewModel.UiState.Error -> {
+                        (activity as MainActivity).showSnackbar(result.msg)
+                    }
+                    is HomeFragmentViewModel.UiState.Loading -> {
+                        binding.apply {
+                            (activity as MainActivity).progressBar.visibility = View.VISIBLE
+                        }
+                    }
+                    is HomeFragmentViewModel.UiState.Empty -> {
+                        binding.apply {
+                            cardTemp.visibility = View.GONE
+                            rvContainer.visibility = View.GONE
+                            lineWeatherForecastContainer.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun getRecentTime(list: List<Record>): String {

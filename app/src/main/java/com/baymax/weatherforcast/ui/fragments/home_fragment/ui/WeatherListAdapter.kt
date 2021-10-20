@@ -46,6 +46,8 @@ class WeatherListAdapter(
             }
             itemView.list_description.text = data.weather.get(0).description
             itemView.list_temp.text = (data.main.temp - 273.15).roundToInt().toString() + "°"
+            itemView.max_min_list_temp.text = (data.main.tempMax - 273.15).roundToInt()
+                .toString() + "°/ " + (data.main.tempMin - 273.15).roundToInt().toString() + "°"
         }
 
         private fun toStandardString(s: String): String {

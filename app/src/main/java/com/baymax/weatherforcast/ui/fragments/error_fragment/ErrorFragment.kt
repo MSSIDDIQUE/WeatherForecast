@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.activities.MainActivity
+import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentDirections
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_error.*
@@ -38,14 +39,7 @@ class ErrorFragment : DaggerFragment() {
             error_text.text = args.errorMsg
         }
         retry_btn.setOnClickListener {
-            if (main_activity.isOnline(requireContext())) {
-                viewModel = ViewModelProvider(
-                    requireActivity(),
-                    viewModelFactory
-                ).get(HomeFragmentViewModel::class.java)
-                viewModel.setNetworkAvailable(true)
-                findNavController().navigate(R.id.action_errorFragment_to_splashScreenFragment)
-            }
+
         }
     }
 }

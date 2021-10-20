@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,17 +14,22 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.baymax.weatherforcast.R
 import com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
+import com.baymax.weatherforcast.utils.ConnectionLiveData
+import com.baymax.weatherforcast.utils.locationFlow
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -47,6 +50,12 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var locationClient: FusedLocationProviderClient
+
+    @Inject
+    lateinit var connectionLiveData: ConnectionLiveData
     private lateinit var viewModel: HomeFragmentViewModel
     private var isDialogVisible = false
     private var exit = false
@@ -58,15 +67,23 @@ class MainActivity : DaggerAppCompatActivity() {
         viewModel = ViewModelProvider(
             this,
             viewModelFactory
-        ).get(HomeFragmentViewModel::class.java).apply {
-            setNetworkAvailable(isOnline(this@MainActivity))
-            setGpsStatus(isGPSActive())
-            setPermissionGranted(hasLocationPermission())
+        ).get(HomeFragmentViewModel::class.java)
+        connectionLiveData.observe(this@MainActivity, {
+            no_internet_background.visibility = if (it) View.GONE else View.VISIBLE
+        })
+    }
+
+    fun startCollectingDeviceLocation() = lifecycleScope.launchWhenStarted {
+        if (!no_internet_background.isVisible) {
+            locationClient.locationFlow().collect { location ->
+                viewModel.getWeather(location)
+            }
+        } else {
+            showSnackbar(getString(R.string.no_internet_connection))
         }
     }
 
     fun turnOnGPS() {
-        progressBar.visibility = View.VISIBLE
         if (isDialogVisible) {
             return
         }
@@ -97,17 +114,37 @@ class MainActivity : DaggerAppCompatActivity() {
                                 LOCATION_SETTINGS_REQUEST
                             )
                     } catch (e: IntentSender.SendIntentException) {
-                        Snackbar.make(
-                            main_layout,
-                            "Unable to turn-on the GPS",
-                            Snackbar.LENGTH_LONG
-                        ).show()
+                        showSnackbar(getString(R.string.unable_to_turn_on_gps))
                     }
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
                     }
                 }
             }
         }
+    }
+
+    fun showSnackbar(msg: String) {
+        Snackbar.make(
+            main_layout,
+            msg,
+            Snackbar.LENGTH_LONG
+        ).show()
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showSnackbarWithAction(
+        msg: String,
+        actionName: String,
+        action: () -> Unit
+    ) {
+        Snackbar.make(
+            main_layout,
+            msg,
+            Snackbar.LENGTH_LONG
+        ).setAction(
+            actionName
+        ) { action() }.show()
+        progressBar.visibility = View.GONE
     }
 
     fun requestLocationPermission() {
@@ -122,10 +159,10 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     fun hasLocationPermission(): Boolean {
-        permissions.forEach { permisson ->
+        permissions.forEach { permission ->
             if (ContextCompat.checkSelfPermission(
                     this,
-                    permisson
+                    permission
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return false
@@ -149,13 +186,15 @@ class MainActivity : DaggerAppCompatActivity() {
                     }
                 }
                 if (allPermissionsGranted) {
-                    viewModel.setPermissionGranted(true)
+                    if (isGPSActive()) {
+                        startCollectingDeviceLocation()
+                    } else {
+                        turnOnGPS()
+                    }
                 } else {
-                    Snackbar.make(
-                        main_layout,
-                        "Provide all the permissions",
-                        Snackbar.LENGTH_LONG
-                    ).show()
+                    showSnackbar(
+                        getString(R.string.permission_required_warning)
+                    )
                 }
             }
         }
@@ -172,44 +211,19 @@ class MainActivity : DaggerAppCompatActivity() {
         return gpsEnabled
     }
 
-    fun isOnline(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                return true
-            }
-        }
-        return false
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                viewModel.setGpsStatus(true)
+                startCollectingDeviceLocation()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                viewModel.setGpsStatus(false)
-                Snackbar.make(
-                    main_layout,
-                    "Please turn on you GPS!",
-                    Snackbar.LENGTH_LONG
-                ).setAction(
+                showSnackbarWithAction(
+                    getString(R.string.gps_warning),
                     "Retry"
-                ) {
-                    turnOnGPS()
-                }.show()
+                ) { turnOnGPS() }
             }
+            isDialogVisible = false
         }
     }
 
@@ -217,11 +231,7 @@ class MainActivity : DaggerAppCompatActivity() {
         if (exit) {
             finish() // finish activity
         } else {
-            Snackbar.make(
-                main_layout,
-                "Press back again to exit",
-                Snackbar.LENGTH_LONG
-            ).show()
+            showSnackbar(getString(R.string.backpress_message))
             exit = true
             Handler(Looper.getMainLooper()).postDelayed(
                 Runnable
