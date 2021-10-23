@@ -87,10 +87,10 @@ class HomeFragment : DaggerFragment() {
                 }
             }
             cardCurrentLocation.setOnClickListener {
+                searchText.setText("")
                 (activity as MainActivity).run {
                     if (hasLocationPermission() && isGPSActive()) {
                         startCollectingDeviceLocation()
-                        searchText.setText("")
                     } else if (!hasLocationPermission()) {
                         requestLocationPermission()
                     } else
