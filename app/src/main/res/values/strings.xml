@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">WeatherForcast</string>
+    <string name="app_name">WeatherForecast</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="min_temp">Minimum temprature</string>
-    <string name="max_temp">Maximum temprature</string>
+    <string name="min_temp">Minimum temperature</string>
+    <string name="max_temp">Maximum temperature</string>
     <string name="wind_speed">Wind speed</string>
     <string name="humidity">Humidity</string>
     <string name="search_placeholder">Search city</string>

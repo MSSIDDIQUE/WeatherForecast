@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.baymax.weatherforcast.ui.fragments.home_fragment.ui.HomeFragment"
+        android:name="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/errorFragment"
-        android:name="com.baymax.weatherforcast.ui.fragments.error_fragment.ErrorFragment"
+        android:name="com.baymax.weatherforecast.ui.fragments.error_fragment.ErrorFragment"
         android:label="fragment_error"
         tools:layout="@layout/fragment_error">
         <action
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/splashScreenFragment"
-        android:name="com.baymax.weatherforcast.ui.fragments.splash_screen_fragment.SplashScreenFragment"
+        android:name="com.baymax.weatherforecast.ui.fragments.splash_screen_fragment.SplashScreenFragment"
         android:label="fragment_splash_screen"
         tools:layout="@layout/fragment_splash_screen">
         <action
