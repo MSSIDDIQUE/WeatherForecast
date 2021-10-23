@@ -9,30 +9,7 @@
         android:id="@+id/homeFragment"
         android:name="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_home_fragment_to_error_fragment"
-            app:destination="@id/errorFragment"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/errorFragment"
-        android:name="com.baymax.weatherforecast.ui.fragments.error_fragment.ErrorFragment"
-        android:label="fragment_error"
-        tools:layout="@layout/fragment_error">
-        <action
-            android:id="@+id/action_error_fragment_to_home_fragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
-        <argument
-            android:name="error_msg"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_errorFragment_to_splashScreenFragment"
-            app:destination="@id/splashScreenFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_home"/>
     <fragment
         android:id="@+id/splashScreenFragment"
         android:name="com.baymax.weatherforecast.ui.fragments.splash_screen_fragment.SplashScreenFragment"
@@ -41,11 +18,6 @@
         <action
             android:id="@+id/action_splashScreenFragment_to_homeFragment"
             app:destination="@id/homeFragment"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_splashScreenFragment_to_errorFragment"
-            app:destination="@id/errorFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>

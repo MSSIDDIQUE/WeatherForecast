@@ -6,21 +6,14 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.databinding.FragmentSplashScreenBinding
-import com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
-import dagger.android.support.DaggerFragment
-import javax.inject.Inject
 
-class SplashScreenFragment : DaggerFragment() {
+class SplashScreenFragment : Fragment() {
     private var _binding: FragmentSplashScreenBinding? = null
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var viewModel: HomeFragmentViewModel
     private val binding get() = _binding!!
     private lateinit var navController: NavController
 
@@ -39,10 +32,6 @@ class SplashScreenFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            viewModelFactory
-        ).get(HomeFragmentViewModel::class.java)
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
     }
 
