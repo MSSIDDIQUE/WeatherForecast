@@ -29,26 +29,7 @@ The main vision or motive of this application is to experiment all the new andro
 
 ## How can you help or contribute to this application
 
-when(developer) {
-        is Developer.androidDeveloper -> {
-            if (lovesOpenSource) {
-                contributeToMyProject(urAndroidSkills)
-            }
-        }
-    else ->{
-            giveStarToThisRepo()
-        }
-    }
-
-contributeToMyProject(skills:AndroidSkills) {
-    if (skills.contains(AndroidSkills.JetPackCompose)) {
-        improveUiOfThisApp()
-    } else {
-        learnJetpackCompose()
-        experimentItHere()
-    }
-}
-
+if you know jetpack compose and want to experiment your skills you can contribute here
 
 ## Have a look on the android app
 https://drive.google.com/file/d/1S5ryrwn_i8EG44HJs0mneE_PLYS4Zhj6/view?usp=sharing
