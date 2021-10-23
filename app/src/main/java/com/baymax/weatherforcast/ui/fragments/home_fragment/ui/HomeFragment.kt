@@ -1,6 +1,5 @@
 package com.baymax.weatherforcast.ui.fragments.home_fragment.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,10 +42,6 @@ class HomeFragment : DaggerFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,31 +67,30 @@ class HomeFragment : DaggerFragment() {
     private fun setupClickListeners() {
         binding.apply {
             cardTemp.apply {
-                included_view.view_more.setOnClickListener {
-                    TransitionManager.beginDelayedTransition(
-                        cardTemp,
-                        AutoTransition()
-                    )
-                    if (!hiddenView.isVisible) {
-                        hiddenView.visibility = View.VISIBLE
-                        it.visibility = View.GONE
+                view_more_or_less_container.setOnClickListener {
+                    if (!hidden_view.isVisible) {
+                        TransitionManager.beginDelayedTransition(
+                            cardTemp,
+                            AutoTransition()
+                        )
+                        hidden_view.visibility = View.VISIBLE
+                        it.view_more_or_less.text = getString(R.string.view_less)
                     }
-                }
-                hidden_view.view_less.setOnClickListener {
-                    if (hiddenView.isVisible) {
-                        hiddenView.visibility = View.GONE
-                        included_view.view_more.visibility = View.VISIBLE
+                    else{
+                        hidden_view.visibility = View.GONE
+                        it.view_more_or_less.text = getString(R.string.view_more)
+                        TransitionManager.beginDelayedTransition(
+                            cardTemp,
+                            AutoTransition()
+                        )
                     }
-                    TransitionManager.beginDelayedTransition(
-                        cardTemp,
-                        AutoTransition()
-                    )
                 }
             }
             cardCurrentLocation.setOnClickListener {
                 (activity as MainActivity).run {
                     if (hasLocationPermission() && isGPSActive()) {
                         startCollectingDeviceLocation()
+                        searchText.setText("")
                     } else if (!hasLocationPermission()) {
                         requestLocationPermission()
                     } else

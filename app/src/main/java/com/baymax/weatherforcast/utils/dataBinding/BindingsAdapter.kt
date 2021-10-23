@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.text.SimpleDateFormat
@@ -23,13 +24,29 @@ fun bindImageFromUrl(view: ImageView, imageUrl: Drawable) {
 }
 
 @BindingAdapter("timeFromTimeStamp")
-fun getTimeFromTimestamp(view: TextView, s: String) {
+fun getTimeFromTimestamp(view: TextView, s: String?) {
     try {
-        val temp = s.split(" ")
-        val sdf = SimpleDateFormat("hh:mm")
-        val netDate = Date(temp.get(0).toLong() * 1000)
-        view.text = sdf.format(netDate) + " " + temp.get(1)
+        s?.let {
+            val sdf = SimpleDateFormat("hh:mm a")
+            val netDate = Date(s.toLong() * 1000)
+            view.text = sdf.format(netDate).uppercase(Locale.getDefault())
+        } ?: run { view.text = "" }
     } catch (e: Exception) {
+        view.text = ""
+    }
+}
+
+@BindingAdapter("dateFromTimeStamp")
+fun getDateFromTimestamp(view: TextView, s: String?) {
+    try {
+        s?.let {
+            val date = LocalDate.parse(s.split(" ")[0])
+            val formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+            val formattedDate = date.format(formatter)
+            view.text = formattedDate
+        } ?: run { view.text = "" }
+    } catch (e: Exception) {
+        Log.d("Saquib", e.toString())
         view.text = ""
     }
 }
