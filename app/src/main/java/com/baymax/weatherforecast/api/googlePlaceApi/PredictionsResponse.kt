@@ -1,4 +1,4 @@
-package com.baymax.weatherforecast.api.response.googlePlaceApi
+package com.baymax.weatherforecast.api.googlePlaceApi
 
 
 import com.google.gson.annotations.SerializedName

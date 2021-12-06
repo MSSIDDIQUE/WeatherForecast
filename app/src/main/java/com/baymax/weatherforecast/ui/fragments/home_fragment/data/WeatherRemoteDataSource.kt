@@ -4,7 +4,7 @@ import android.util.Log
 import com.baymax.weatherforecast.api.BaseDataSource
 import com.baymax.weatherforecast.api.GooglePlaceApiService
 import com.baymax.weatherforecast.api.WeatherApiService
-import com.baymax.weatherforecast.api.response.googlePlaceApi.Location
+import com.baymax.weatherforecast.api.googlePlaceApi.Location
 import com.baymax.weatherforecast.utils.PrefHelper
 import com.baymax.weatherforecast.utils.get
 

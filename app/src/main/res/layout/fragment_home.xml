@@ -7,11 +7,11 @@
 
         <variable
             name="location"
-            type="com.baymax.weatherforecast.api.response.weatherApi.City" />
+            type="com.baymax.weatherforecast.api.weatherApi.domainModel.ApiResponseDM.CityDM" />
 
         <variable
             name="currentweather"
-            type="com.baymax.weatherforecast.api.response.weatherApi.Record" />
+            type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
 
         <variable
             name="homeFragmentViewModel"

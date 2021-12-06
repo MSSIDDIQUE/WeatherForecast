@@ -14,10 +14,10 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.lifecycle.repeatOnLifecycle
 import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
 import com.baymax.weatherforecast.utils.ConnectionLiveData
@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -45,7 +46,6 @@ class MainActivity : DaggerAppCompatActivity() {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    val navController: NavController by lazy { findNavController(R.id.nav_host_fragment) }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -66,19 +66,21 @@ class MainActivity : DaggerAppCompatActivity() {
         viewModel = ViewModelProvider(
             this,
             viewModelFactory
-        ).get(HomeFragmentViewModel::class.java)
+        )[HomeFragmentViewModel::class.java]
         connectionLiveData.observe(this@MainActivity, {
             no_internet_background.visibility = if (it) View.GONE else View.VISIBLE
         })
     }
 
-    fun startCollectingDeviceLocation() = lifecycleScope.launchWhenStarted {
-        if (!no_internet_background.isVisible) {
-            locationClient.locationFlow().collect { location ->
-                viewModel.getWeather(location)
+    fun startCollectingDeviceLocation() = lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (!no_internet_background.isVisible) {
+                locationClient.locationFlow().collect { location ->
+                    viewModel.getWeather(location)
+                }
+            } else {
+                showSnackbar(getString(R.string.no_internet_connection))
             }
-        } else {
-            showSnackbar(getString(R.string.no_internet_connection))
         }
     }
 
@@ -233,7 +235,6 @@ class MainActivity : DaggerAppCompatActivity() {
             showSnackbar(getString(R.string.backpress_message))
             exit = true
             Handler(Looper.getMainLooper()).postDelayed(
-                Runnable
                 { exit = false },
                 BACK_PRESS_INTERVAL
             )

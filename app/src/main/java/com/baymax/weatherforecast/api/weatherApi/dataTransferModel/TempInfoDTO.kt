@@ -1,9 +1,9 @@
-package com.baymax.weatherforecast.api.response.weatherApi
+package com.baymax.weatherforecast.api.weatherApi.dataTransferModel
 
 
 import com.google.gson.annotations.SerializedName
 
-data class Main(
+data class TempInfoDTO(
     @SerializedName("feels_like")
     val feelsLike: Double,
     @SerializedName("grnd_level")

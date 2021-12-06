@@ -32,7 +32,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$app_compat_version"
+    implementation "androidx.appcompat:appcompat:1.4.0"
     implementation "androidx.core:core-ktx:$android_core_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
     //material design
@@ -40,7 +40,7 @@ dependencies {
     //Activity android
     implementation "androidx.activity:activity-ktx:$activity_version"
     //Fragment android
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+    implementation "androidx.fragment:fragment-ktx:1.4.0"
 
     //navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -62,7 +62,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     // Okhttp
-    implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -75,9 +75,6 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-
-    //Picasso
-    implementation "com.squareup.picasso:picasso:$picasso_version"
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"

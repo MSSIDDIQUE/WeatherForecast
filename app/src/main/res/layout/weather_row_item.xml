@@ -3,6 +3,9 @@
 
     <data>
 
+        <variable
+            name="data"
+            type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,85 +14,104 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_margin="5dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#FFFFFF">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/list_weather_icon"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
+                    app:imageResource="@{data.weatherSummary.icon}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/icon_launcher_100" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/list_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:gravity="center_vertical"
-                    android:text="Today"
                     android:textAlignment="center"
                     android:textColor="@color/design_default_color_on_secondary"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:dayFromDate="@{data.dtTxt}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/list_weather_icon"
+                    app:layout_constraintEnd_toStartOf="@id/list_description"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/list_description"
+                    android:text="@{data.weatherSummary.description}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
-                    android:gravity="center_vertical"
-                    android:text="Scattered clouds"
+                    android:gravity="center"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="italic"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/list_temp"
                     app:layout_constraintStart_toEndOf="@+id/list_day"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/list_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:text="34°"
+                    android:text="@{data.temp.temp+`°C`}"
                     android:textColor="@color/design_default_color_on_secondary"
-                    android:textSize="20sp"
+                    android:textSize="25sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/max_min_list_temp"
+                    app:layout_constraintStart_toEndOf="@id/list_description"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/max_min_list_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="5dp"
                     android:gravity="center_vertical"
-                    android:text="34°/33°"
+                    android:text="@{data.temp.tempMax+`°/`+data.temp.tempMin+`°`}"
                     android:textColor="@color/design_default_color_on_secondary"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textStyle="italic"
+                    app:layout_constraintStart_toEndOf="@id/list_temp"
                     app:layout_constraintBottom_toBottomOf="@id/list_temp"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toStartOf="@id/arrowUp" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/arrowUp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/arrow_up" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.cardview.widget.CardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

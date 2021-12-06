@@ -1,7 +1,6 @@
-package com.baymax.weatherforecast.api.response.weatherApi
+package com.baymax.weatherforecast.api.weatherApi.domainModel
 
-
-data class Weather(
+data class WeatherSummaryDM(
     val description: String,
     val icon: String,
     val id: Int,

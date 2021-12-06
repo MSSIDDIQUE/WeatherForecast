@@ -1,9 +1,9 @@
 package com.baymax.weatherforecast.utils.dataBinding
 
-import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @BindingAdapter("imageResource")
-fun bindImageFromUrl(view: ImageView, imageUrl: Drawable) {
+fun bindImageFromUrl(view: AppCompatImageView, imageUrl: String) {
     Glide.with(view.context)
         .load(imageUrl)
         .fitCenter()
@@ -46,13 +46,13 @@ fun getDateFromTimestamp(view: TextView, s: String?) {
             view.text = formattedDate
         } ?: run { view.text = "" }
     } catch (e: Exception) {
-        Log.d("Saquib", e.toString())
+        e.printStackTrace()
         view.text = ""
     }
 }
 
 @BindingAdapter("kelvinToCelcius")
-fun getKelvinToCelcius(view: TextView, d: String) {
+fun getKelvinToCelsius(view: TextView, d: String) {
     try {
         val temp = Math.round(d.split(" ").get(0).toDouble() - 273.15).toString()
         view.text = temp + d.split(" ").get(1)
@@ -62,7 +62,7 @@ fun getKelvinToCelcius(view: TextView, d: String) {
 }
 
 @BindingAdapter("dayFromDate")
-fun getDayFromDate(view: TextView, d: String?) {
+fun getDayFromDate(view: AppCompatTextView, d: String?) {
     if (d != null) {
         if (!d.isEmpty()) {
             try {
@@ -83,7 +83,7 @@ fun getDayFromDate(view: TextView, d: String?) {
 }
 
 fun getStandardString(s: String): String {
-    try {
+    return try {
         val cap = s.lowercase(Locale.getDefault())
             .substring(0, 1)
             .uppercase(
@@ -92,8 +92,8 @@ fun getStandardString(s: String): String {
             Locale.getDefault()
         )
             .substring(1)
-        return cap
+        cap
     } catch (e: Exception) {
-        return s
+        s
     }
 }

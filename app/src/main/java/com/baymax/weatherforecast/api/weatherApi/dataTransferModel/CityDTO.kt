@@ -1,7 +1,7 @@
-package com.baymax.weatherforecast.api.response.weatherApi
+package com.baymax.weatherforecast.api.weatherApi.dataTransferModel
 
 
-data class City(
+data class CityDTO(
     val coord: Coord,
     val country: String,
     val id: Int,

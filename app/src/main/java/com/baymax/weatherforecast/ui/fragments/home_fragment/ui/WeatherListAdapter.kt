@@ -1,25 +1,25 @@
 package com.baymax.weatherforecast.ui.fragments.home_fragment.ui
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.baymax.weatherforecast.R
-import com.baymax.weatherforecast.api.response.weatherApi.Record
-import com.baymax.weatherforecast.utils.inflate
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.weather_row_item.view.*
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDateTime
-import kotlin.math.roundToInt
+import com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM
+import com.baymax.weatherforecast.databinding.WeatherRowItemBinding
 
 class WeatherListAdapter(
-    private val data: ArrayList<Record>,
-    private val recentDate: String
+    private val data: List<WeatherDM>
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
-        val inflatedView = parent.inflate(R.layout.weather_row_item, false)
-        return WeatherViewHolder(inflatedView)
+        val weatherRowItemBinding: WeatherRowItemBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.weather_row_item,
+            parent,
+            false
+        )
+        return WeatherViewHolder(weatherRowItemBinding)
     }
 
     override fun getItemCount(): Int {
@@ -27,31 +27,15 @@ class WeatherListAdapter(
     }
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
-        val weather_data = data[position]
-        val day = LocalDateTime.parse(recentDate.replace(" ", "T")).dayOfWeek
-        holder.bindData(weather_data, day)
+        val weatherData = data[position]
+        holder.bindData(weatherData)
     }
 
-    class WeatherViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class WeatherViewHolder(val binding: WeatherRowItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bindData(data: Record, dayOfWeek: DayOfWeek) {
-            Picasso.get()
-                .load("https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png")
-                .centerCrop().fit().into(itemView.list_weather_icon)
-            val today = LocalDateTime.parse(data.dtTxt.replace(" ", "T")).dayOfWeek.toString()
-            when (today) {
-                dayOfWeek.toString() -> itemView.list_day.text = "Today"
-                (dayOfWeek + 1).toString() -> itemView.list_day.text = "Tomorrow"
-                else -> itemView.list_day.text = toStandardString(today)
-            }
-            itemView.list_description.text = data.weather.get(0).description
-            itemView.list_temp.text = (data.main.temp - 273.15).roundToInt().toString() + "°"
-            itemView.max_min_list_temp.text = (data.main.tempMax - 273.15).roundToInt()
-                .toString() + "°/ " + (data.main.tempMin - 273.15).roundToInt().toString() + "°"
-        }
-
-        private fun toStandardString(s: String): String {
-            return s[0].uppercase() + s.substring(1).lowercase()
+        fun bindData(data: WeatherDM) {
+            binding.data = data
         }
     }
 }

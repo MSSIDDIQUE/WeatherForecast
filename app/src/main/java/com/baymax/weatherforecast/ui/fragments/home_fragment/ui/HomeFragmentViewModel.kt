@@ -1,8 +1,8 @@
 package com.baymax.weatherforecast.ui.fragments.home_fragment.ui
 
 import androidx.lifecycle.*
-import com.baymax.weatherforecast.api.response.googlePlaceApi.Location
-import com.baymax.weatherforecast.api.response.weatherApi.WeatherResponse
+import com.baymax.weatherforecast.api.googlePlaceApi.Location
+import com.baymax.weatherforecast.api.weatherApi.domainModel.ApiResponseDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.ui.fragments.home_fragment.data.WeatherRepository
 import kotlinx.coroutines.Dispatchers
@@ -35,11 +35,8 @@ class HomeFragmentViewModel @Inject constructor(
                     UiState.Error(it)
                 } ?: UiState.Error("Something went wrong!")
             }
-            is Result.Loading -> {
-                _weatherData.value = UiState.Loading
-            }
             is Result.Success -> {
-                data.data?.let {
+                data.data.let {
                     _weatherData.value = UiState.Success(it)
                 } ?: run {
                     _weatherData.value = UiState.Empty
@@ -53,7 +50,7 @@ class HomeFragmentViewModel @Inject constructor(
     suspend fun getCoordinates(placeId: String) = repo.getCoordinates(placeId)
 
     sealed class UiState {
-        data class Success(val wData: WeatherResponse) : UiState()
+        data class Success(val wData: ApiResponseDM) : UiState()
         data class Error(val msg: String) : UiState()
         object Loading : UiState()
         object Empty : UiState()
