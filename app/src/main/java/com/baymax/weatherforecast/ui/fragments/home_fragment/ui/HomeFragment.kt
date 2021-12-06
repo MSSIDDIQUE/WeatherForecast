@@ -6,14 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.baymax.weatherforecast.R
-import com.baymax.weatherforecast.api.response.weatherApi.Record
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.databinding.FragmentHomeBinding
 import com.baymax.weatherforecast.ui.activities.MainActivity
@@ -24,17 +21,18 @@ import kotlinx.android.synthetic.main.upper_view.*
 import kotlinx.android.synthetic.main.upper_view.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class HomeFragment : DaggerFragment() {
     private lateinit var viewModel: HomeFragmentViewModel
-    private lateinit var weatherListAdapter: WeatherListAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -56,7 +54,7 @@ class HomeFragment : DaggerFragment() {
         viewModel = ViewModelProvider(
             requireActivity(),
             viewModelFactory
-        ).get(HomeFragmentViewModel::class.java)
+        )[HomeFragmentViewModel::class.java]
         binding.apply {
             homeFragmentViewModel = viewModel
         }
@@ -75,8 +73,7 @@ class HomeFragment : DaggerFragment() {
                         )
                         hidden_view.visibility = View.VISIBLE
                         it.view_more_or_less.text = getString(R.string.view_less)
-                    }
-                    else{
+                    } else {
                         hidden_view.visibility = View.GONE
                         it.view_more_or_less.text = getString(R.string.view_more)
                         TransitionManager.beginDelayedTransition(
@@ -101,7 +98,7 @@ class HomeFragment : DaggerFragment() {
                 val selectedLocation = adapterView.getItemAtPosition(position).toString()
                 viewModel.run {
                     placeIdMap[selectedLocation]?.let {
-                        lifecycleScope.launchWhenStarted {
+                        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
                             val result = withContext(Dispatchers.Default) {
                                 getCoordinates(it)
                             }
@@ -110,8 +107,8 @@ class HomeFragment : DaggerFragment() {
                                     (activity as MainActivity).showSnackbar(msg)
                                 }
                                 is Result.Success -> {
-                                    val location = result.data?.result?.geometry?.location
-                                    location?.let {
+                                    val location = result.data.result.geometry.location
+                                    location.let {
                                         if (!(activity as MainActivity).no_internet_background.isVisible) {
                                             getWeather(it)
                                         } else {
@@ -141,12 +138,10 @@ class HomeFragment : DaggerFragment() {
                     is Result.Failure -> result.msg?.let {
                         (activity as MainActivity).showSnackbar(it)
                     }
-                    is Result.Loading -> {
-                    }
                     is Result.Success -> {
                         val predictions = mutableListOf<String>()
                         placeIdMap.clear()
-                        result.data?.predictions?.forEach {
+                        result.data.predictions.forEach {
                             predictions.add(it.description)
                             placeIdMap[it.description] = it.placeId
                         }
@@ -162,52 +157,48 @@ class HomeFragment : DaggerFragment() {
         }
     }
 
-    private fun observeWeather() = lifecycleScope.launchWhenStarted {
+    private fun observeWeather() = viewLifecycleOwner.lifecycleScope.launch {
         viewModel.run {
-            weatherData.collect { result ->
-                when (result) {
-                    is HomeFragmentViewModel.UiState.Success -> result.wData.run {
-                        binding.apply {
-                            cardTemp.visibility = View.VISIBLE
-                            rvContainer.visibility = View.VISIBLE
-                            lineWeatherForecastContainer.visibility = View.VISIBLE
-                        }
-                        if (list.isEmpty() || list.size < 40) {
-                            return@collect
-                        }
-                        val recentDate = getRecentTime(list)
-                        val recentWeatherReport = list.filter {
-                            it.dtTxt.contains(recentDate)
-                        }[0]
-                        weatherListAdapter = WeatherListAdapter(list.filter {
-                            it.dtTxt.contains(
-                                recentDate.split(" ")[1]
-                            )
-                        } as ArrayList<Record>, recentDate)
-                        linearLayoutManager = LinearLayoutManager(context)
-                        binding.apply {
-                            location = city
-                            currentweather = recentWeatherReport
-                            recyclerView.apply {
-                                layoutManager = linearLayoutManager
-                                adapter = weatherListAdapter
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                weatherData.collect { result ->
+                    when (result) {
+                        is HomeFragmentViewModel.UiState.Success -> result.wData.run {
+                            binding.apply {
+                                cardTemp.visibility = View.VISIBLE
+                                rvContainer.visibility = View.VISIBLE
+                                lineWeatherForecastContainer.visibility = View.VISIBLE
                             }
-                            (activity as MainActivity).progressBar.visibility = View.GONE
+                            if (dataGroupedByDate.isEmpty()) {
+                                return@collect
+                            }
+                            val currentDateTime = getCurrentDataTime()
+                            linearLayoutManager = LinearLayoutManager(context)
+                            binding.apply {
+                                location = city
+                                dataGroupedByTime[currentDateTime["time"]]?.let { recentWeatherReport ->
+                                    currentweather = recentWeatherReport[0]
+                                    recyclerView.apply {
+                                        adapter = WeatherListAdapter(recentWeatherReport)
+                                        layoutManager = linearLayoutManager
+                                    }
+                                }
+                                (activity as MainActivity).progressBar.visibility = View.GONE
+                            }
                         }
-                    }
-                    is HomeFragmentViewModel.UiState.Error -> {
-                        (activity as MainActivity).showSnackbar(result.msg)
-                    }
-                    is HomeFragmentViewModel.UiState.Loading -> {
-                        binding.apply {
-                            (activity as MainActivity).progressBar.visibility = View.VISIBLE
+                        is HomeFragmentViewModel.UiState.Error -> {
+                            (activity as MainActivity).showSnackbar(result.msg)
                         }
-                    }
-                    is HomeFragmentViewModel.UiState.Empty -> {
-                        binding.apply {
-                            cardTemp.visibility = View.GONE
-                            rvContainer.visibility = View.GONE
-                            lineWeatherForecastContainer.visibility = View.GONE
+                        is HomeFragmentViewModel.UiState.Loading -> {
+                            binding.apply {
+                                (activity as MainActivity).progressBar.visibility = View.VISIBLE
+                            }
+                        }
+                        is HomeFragmentViewModel.UiState.Empty -> {
+                            binding.apply {
+                                cardTemp.visibility = View.GONE
+                                rvContainer.visibility = View.GONE
+                                lineWeatherForecastContainer.visibility = View.GONE
+                            }
                         }
                     }
                 }
@@ -215,18 +206,16 @@ class HomeFragment : DaggerFragment() {
         }
     }
 
-    private fun getRecentTime(list: List<Record>): String {
-        val times: TreeSet<LocalDateTime> = TreeSet<LocalDateTime>()
-        val current = LocalDateTime.now()
-        val inputDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val date = current.format(inputDate)
-        for (it in list) {
-            times.add(LocalDateTime.parse(it.dtTxt.replace(" ", "T")))
+    private fun getCurrentDataTime(): HashMap<String, String> {
+        val dateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val formattedDateTime = dateTime.format(formatter).split(" ")
+        var hourInTime = formattedDateTime[1].subSequence(0, 2).toString().toInt()
+        hourInTime -= hourInTime % 3
+        return hashMapOf<String, String>().apply {
+            this["date"] = formattedDateTime[0]
+            this["time"] = "${DecimalFormat("00").format(hourInTime)}:00:00"
         }
-        val recent = times.floor(LocalDateTime.parse(date.replace(" ", "T")))
-        val recentDateString = recent.format(inputDate)
-            ?: return times.first().toString().replace("T", " ")
-        return recentDateString.replace("T", " ")
     }
 
     override fun onDestroy() {
