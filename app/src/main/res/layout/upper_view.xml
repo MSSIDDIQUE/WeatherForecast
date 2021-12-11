@@ -139,7 +139,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_marginBottom="10dp"
-                android:text="@{weather.temp.tempMax+`/`+weather.temp.tempMin}"
+                android:text="@{weather.temp.tempMax+`°/`+weather.temp.tempMin+`°`}"
                 android:textAlignment="center"
                 android:textColor="@color/cardview_light_background"
                 android:textSize="15sp"

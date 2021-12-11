@@ -6,6 +6,11 @@
         <variable
             name="data"
             type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
+
+        <variable
+            name="listener"
+            type="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.WeatherListAdapter.WeatherDetailsItemListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,9 +23,9 @@
             android:layout_margin="5dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -32,7 +37,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
-                    app:imageResource="@{data.weatherSummary.icon}"
+                    app:imageResource="@{data.weatherSummary.iconSmall}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -49,17 +54,17 @@
                     android:textStyle="bold"
                     app:dayFromDate="@{data.dtTxt}"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/list_weather_icon"
                     app:layout_constraintEnd_toStartOf="@id/list_description"
+                    app:layout_constraintStart_toEndOf="@id/list_weather_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/list_description"
-                    android:text="@{data.weatherSummary.description}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:gravity="center"
+                    android:text="@{data.weatherSummary.description}"
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp"
                     android:textStyle="italic"
@@ -92,15 +97,16 @@
                     android:textColor="@color/design_default_color_on_secondary"
                     android:textSize="12sp"
                     android:textStyle="italic"
-                    app:layout_constraintStart_toEndOf="@id/list_temp"
                     app:layout_constraintBottom_toBottomOf="@id/list_temp"
-                    app:layout_constraintEnd_toStartOf="@id/arrowUp" />
+                    app:layout_constraintEnd_toStartOf="@id/weather_icon_animation"
+                    app:layout_constraintStart_toEndOf="@id/list_temp" />
 
                 <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/arrowUp"
+                    android:id="@+id/weather_icon_animation"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
+                    android:onClick="@{()->listener.onItemClick(data.dtTxt)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

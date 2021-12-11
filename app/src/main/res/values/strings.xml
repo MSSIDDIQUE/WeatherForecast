@@ -19,5 +19,6 @@
     <string name="gps_warning">Please turn on you GPS!</string>
     <string name="backpress_message">Press back again to exit</string>
     <string name="or">Or</string>
+    <string name="weather_reports_of_the_day"> Weather reports of the day </string>
 
 </resources>

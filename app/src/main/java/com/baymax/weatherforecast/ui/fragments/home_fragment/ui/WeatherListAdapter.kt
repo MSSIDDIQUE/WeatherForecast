@@ -9,7 +9,8 @@ import com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM
 import com.baymax.weatherforecast.databinding.WeatherRowItemBinding
 
 class WeatherListAdapter(
-    private val data: List<WeatherDM>
+    private val data: List<WeatherDM>,
+    private val listener: WeatherDetailsItemListener
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
@@ -28,14 +29,18 @@ class WeatherListAdapter(
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
         val weatherData = data[position]
-        holder.bindData(weatherData)
+        holder.bindData(weatherData, listener)
     }
 
     class WeatherViewHolder(val binding: WeatherRowItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        fun bindData(data: WeatherDM) {
+        fun bindData(data: WeatherDM, listener: WeatherDetailsItemListener) {
             binding.data = data
+            binding.listener = listener
         }
+    }
+
+    interface WeatherDetailsItemListener {
+        fun onItemClick(date: String)
     }
 }

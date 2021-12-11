@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_weatherDetailsBottomSheet"
+            app:destination="@id/weatherDetailsBottomSheet" />
+    </fragment>
     <fragment
         android:id="@+id/splashScreenFragment"
         android:name="com.baymax.weatherforecast.ui.fragments.splash_screen_fragment.SplashScreenFragment"
@@ -21,4 +25,13 @@
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/weatherDetailsBottomSheet"
+        android:name="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.WeatherDetailsBottomSheet"
+        android:label="WeatherDetailsBottomSheet" >
+        <argument
+            android:name="date"
+            app:argType="string"
+            android:defaultValue="" />
+    </dialog>
 </navigation>

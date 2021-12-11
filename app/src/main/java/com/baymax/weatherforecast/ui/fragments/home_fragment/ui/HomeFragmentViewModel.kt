@@ -3,6 +3,7 @@ package com.baymax.weatherforecast.ui.fragments.home_fragment.ui
 import androidx.lifecycle.*
 import com.baymax.weatherforecast.api.googlePlaceApi.Location
 import com.baymax.weatherforecast.api.weatherApi.domainModel.ApiResponseDM
+import com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.ui.fragments.home_fragment.data.WeatherRepository
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +24,15 @@ class HomeFragmentViewModel @Inject constructor(
     private val _weatherData = MutableStateFlow<UiState>(UiState.Empty)
     val weatherData: StateFlow<UiState> = _weatherData
 
+    private val _weatherDetailsList = MutableLiveData<List<WeatherDM>>()
+    val weatherDetailsList: LiveData<List<WeatherDM>> = _weatherDetailsList
+
     fun setSearchedCity(city: String) {
         searchedCity.postValue(city)
+    }
+
+    fun setWeatherDetailsList(list: List<WeatherDM>){
+        _weatherDetailsList.value = list
     }
 
     fun getWeather(searchedLocation: Location) = viewModelScope.launch {

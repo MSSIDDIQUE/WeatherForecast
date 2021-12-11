@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
@@ -31,7 +32,7 @@ import javax.inject.Inject
 import kotlin.collections.HashMap
 
 
-class HomeFragment : DaggerFragment() {
+class HomeFragment : DaggerFragment(), WeatherListAdapter.WeatherDetailsItemListener {
     private lateinit var viewModel: HomeFragmentViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var _binding: FragmentHomeBinding? = null
@@ -39,6 +40,10 @@ class HomeFragment : DaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    companion object {
+        const val SELECTED_ITEM_DATE = "date"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -178,7 +183,10 @@ class HomeFragment : DaggerFragment() {
                                 dataGroupedByTime[currentDateTime["time"]]?.let { recentWeatherReport ->
                                     currentweather = recentWeatherReport[0]
                                     recyclerView.apply {
-                                        adapter = WeatherListAdapter(recentWeatherReport)
+                                        adapter = WeatherListAdapter(
+                                            recentWeatherReport,
+                                            this@HomeFragment
+                                        )
                                         layoutManager = linearLayoutManager
                                     }
                                 }
@@ -221,5 +229,12 @@ class HomeFragment : DaggerFragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onItemClick(date: String) {
+        val direction = HomeFragmentDirections
+            .actionHomeFragmentToWeatherDetailsBottomSheet()
+            .setDate(date.split(" ")[0])
+        findNavController().navigate(direction)
     }
 }
