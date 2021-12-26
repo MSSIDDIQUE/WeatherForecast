@@ -1,3 +1,3 @@
-rootProject.name='WeatherForcast'
+rootProject.name='WeatherForecast'
 include ':app'
 

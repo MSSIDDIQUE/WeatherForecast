@@ -88,7 +88,7 @@ class HomeFragment : DaggerFragment(), WeatherListAdapter.WeatherDetailsItemList
                     }
                 }
             }
-            cardCurrentLocation.setOnClickListener {
+            btnUseMyLocation.setOnClickListener {
                 searchText.setText("")
                 (activity as MainActivity).run {
                     if (hasLocationPermission() && isGPSActive()) {

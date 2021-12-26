@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.baymax.weatherforcast"
+        applicationId "com.baymax.weatherforecast"
         minSdkVersion 23
         targetSdkVersion 31
         versionCode 4
