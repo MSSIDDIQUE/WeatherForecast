@@ -76,7 +76,10 @@ class MainActivity : DaggerAppCompatActivity() {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
             if (!no_internet_background.isVisible) {
                 locationClient.locationFlow().collect { location ->
-                    viewModel.getWeather(location)
+                    viewModel.apply {
+                        setUiState(HomeFragmentViewModel.UiState.Loading(getString(R.string.collecting_location)))
+                        getWeather(location)
+                    }
                 }
             } else {
                 showSnackbar(getString(R.string.no_internet_connection))
@@ -85,6 +88,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     fun turnOnGPS() {
+        viewModel.setUiState(HomeFragmentViewModel.UiState.Loading(getString(R.string.turning_on_gps)))
         if (isDialogVisible) {
             return
         }
@@ -116,8 +120,10 @@ class MainActivity : DaggerAppCompatActivity() {
                             )
                     } catch (e: IntentSender.SendIntentException) {
                         showSnackbar(getString(R.string.unable_to_turn_on_gps))
+                        viewModel.setUiState(HomeFragmentViewModel.UiState.Empty)
                     }
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                        viewModel.setUiState(HomeFragmentViewModel.UiState.Empty)
                     }
                 }
             }

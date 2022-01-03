@@ -27,6 +27,10 @@ class HomeFragmentViewModel @Inject constructor(
     private val _weatherDetailsList = MutableLiveData<List<WeatherDM>>()
     val weatherDetailsList: LiveData<List<WeatherDM>> = _weatherDetailsList
 
+    fun setUiState(state:UiState){
+        _weatherData.value = state
+    }
+
     fun setSearchedCity(city: String) {
         searchedCity.postValue(city)
     }
@@ -36,7 +40,7 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
     fun getWeather(searchedLocation: Location) = viewModelScope.launch {
-        _weatherData.value = UiState.Loading
+        _weatherData.value = UiState.Loading("Fetching Weather")
         when (val data = withContext(Dispatchers.IO) { repo.getWeather(searchedLocation) }) {
             is Result.Failure -> {
                 _weatherData.value = data.msg?.let {
@@ -60,7 +64,7 @@ class HomeFragmentViewModel @Inject constructor(
     sealed class UiState {
         data class Success(val wData: ApiResponseDM) : UiState()
         data class Error(val msg: String) : UiState()
-        object Loading : UiState()
+        data class Loading(val msg:String) : UiState()
         object Empty : UiState()
     }
 }

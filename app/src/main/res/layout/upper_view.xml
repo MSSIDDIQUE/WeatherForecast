@@ -28,24 +28,24 @@
                 android:id="@+id/sunrise_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:textAlignment="center"
                 android:textColor="@color/design_default_color_background"
                 android:textStyle="bold"
-                android:layout_margin="5dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:timeFromTimeStamp="@{Integer.toString(location.sunrise)}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/sunset_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:textAlignment="center"
                 android:textColor="@color/design_default_color_background"
                 android:textStyle="bold"
-                android:layout_margin="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:timeFromTimeStamp="@{Integer.toString(location.sunset)}" />
 
             <androidx.appcompat.widget.AppCompatTextView

@@ -18,10 +18,10 @@ import com.baymax.weatherforecast.ui.activities.MainActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.progress_bar_view.view.*
 import kotlinx.android.synthetic.main.upper_view.*
 import kotlinx.android.synthetic.main.upper_view.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
@@ -198,11 +198,17 @@ class HomeFragment : DaggerFragment(), WeatherListAdapter.WeatherDetailsItemList
                         }
                         is HomeFragmentViewModel.UiState.Loading -> {
                             binding.apply {
-                                (activity as MainActivity).progressBar.visibility = View.VISIBLE
+                                (activity as MainActivity).progressBar.apply {
+                                    visibility = View.VISIBLE
+                                    loading_text.text = result.msg
+                                }
                             }
                         }
                         is HomeFragmentViewModel.UiState.Empty -> {
                             binding.apply {
+                                (activity as MainActivity).progressBar.apply {
+                                    visibility = View.GONE
+                                }
                                 cardTemp.visibility = View.GONE
                                 rvContainer.visibility = View.GONE
                                 lineWeatherForecastContainer.visibility = View.GONE
