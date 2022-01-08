@@ -22,5 +22,6 @@
     <string name="weather_reports_of_the_day"> Weather reports of the day </string>
     <string name="turning_on_gps">Turning on GPS</string>
     <string name="collecting_location">Collecting Location</string>
+    <string name="loading">Loading...</string>
 
 </resources>
