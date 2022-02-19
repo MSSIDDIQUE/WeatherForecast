@@ -17,9 +17,7 @@ import com.baymax.weatherforecast.databinding.FragmentHomeBinding
 import com.baymax.weatherforecast.ui.activities.MainActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.progress_bar_view.view.*
-import kotlinx.android.synthetic.main.upper_view.*
 import kotlinx.android.synthetic.main.upper_view.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +25,6 @@ import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.text.DecimalFormat
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
 
@@ -138,7 +135,7 @@ class HomeFragment : DaggerFragment(), WeatherListAdapter.WeatherDetailsItemList
         viewModel.run {
             searchText.switchMap {
                 getSuggestions(it)
-            }.observe(viewLifecycleOwner, { result ->
+            }.observe(viewLifecycleOwner) { result ->
                 when (result) {
                     is Result.Failure -> result.msg?.let {
                         (activity as MainActivity).showSnackbar(it)
@@ -158,13 +155,13 @@ class HomeFragment : DaggerFragment(), WeatherListAdapter.WeatherDetailsItemList
                         binding.searchText.setAdapter(adapter)
                     }
                 }
-            })
+            }
         }
     }
 
     private fun observeWeather() = viewLifecycleOwner.lifecycleScope.launch {
-        viewModel.run {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.run {
                 weatherData.collect { result ->
                     when (result) {
                         is HomeFragmentViewModel.UiState.Success -> result.wData.run {

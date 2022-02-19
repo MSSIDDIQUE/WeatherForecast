@@ -28,7 +28,6 @@ import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -67,9 +66,9 @@ class MainActivity : DaggerAppCompatActivity() {
             this,
             viewModelFactory
         )[HomeFragmentViewModel::class.java]
-        connectionLiveData.observe(this@MainActivity, {
+        connectionLiveData.observe(this@MainActivity) {
             no_internet_background.visibility = if (it) View.GONE else View.VISIBLE
-        })
+        }
     }
 
     fun startCollectingDeviceLocation() = lifecycleScope.launch {

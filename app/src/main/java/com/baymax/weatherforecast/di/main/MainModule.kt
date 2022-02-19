@@ -70,8 +70,7 @@ class MainModule {
     @MainScope
     @Provides
     fun provideRepository(
-        remoteDataSource: WeatherRemoteDataSource,
-        client: FusedLocationProviderClient
+        remoteDataSource: WeatherRemoteDataSource
     ): WeatherRepository {
         return WeatherRepository(
             remoteDataSource
