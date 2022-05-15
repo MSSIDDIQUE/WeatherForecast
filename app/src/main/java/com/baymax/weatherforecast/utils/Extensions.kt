@@ -15,23 +15,21 @@ import com.google.android.gms.location.LocationResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
+import kotlin.Exception
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
 
 fun Context.isGPSActive(): Boolean {
-    val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    var gpsEnabled by Delegates.notNull<Boolean>()
-    try {
-        gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    } catch (e: Exception) {
-        return false
+    return try{
+        val mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }catch (e:Exception){
+        e.printStackTrace()
+        false
     }
-    return gpsEnabled
 }
 
 suspend fun FusedLocationProviderClient.locationFlow(): Flow<Location> = callbackFlow {

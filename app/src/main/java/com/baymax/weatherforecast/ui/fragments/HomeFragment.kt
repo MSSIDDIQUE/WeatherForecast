@@ -77,7 +77,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
             viewModel.run {
                 placeIdMap[selectedLocation]?.let {
                     viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        val result = withContext(Dispatchers.Default) {
+                        val result = withContext(Dispatchers.IO) {
                             getCoordinates(it)
                         }
                         when (result) {
@@ -99,8 +99,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     private fun setupObservers() {
         observeSuggestions()
         observeWeather()
-        viewModel.setUiState(UiState.Loading(getString(R.string.collecting_location)))
-        viewModel.startCollectingDeviceLocation()
+        getLocationAndStartObservingWeather()
     }
 
     private fun observeSuggestions() {
@@ -224,9 +223,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     fun getLocationAndStartObservingWeather() {
         binding.searchText.setText("")
         when {
-            hasLocationPermission() && requireContext().isGPSActive() -> viewModel.setUiState(
-                UiState.Loading(getString(R.string.collecting_location))
-            )
+            hasLocationPermission() && requireContext().isGPSActive() -> viewModel.startCollectingDeviceLocationAndFetchWeather()
             !hasLocationPermission() -> requestLocationPermission()
             else -> (activity as MainActivity).turnOnGPS()
         }

@@ -105,8 +105,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
                     }
                 }
                 if (allPermissionsGranted) {
-                    if (this.isGPSActive()) {
-                        viewModel.startCollectingDeviceLocation()
+                    if (isGPSActive()) {
+                        viewModel.startCollectingDeviceLocationAndFetchWeather()
                     } else {
                         turnOnGPS()
                     }
@@ -122,7 +122,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                viewModel.startCollectingDeviceLocation()
+                viewModel.startCollectingDeviceLocationAndFetchWeather()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 showSnackBar(

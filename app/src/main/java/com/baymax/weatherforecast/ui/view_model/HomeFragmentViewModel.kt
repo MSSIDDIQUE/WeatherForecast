@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.api.google_place_api.Location
 import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
 import com.baymax.weatherforecast.data.Result
@@ -27,7 +28,7 @@ class HomeFragmentViewModel @Inject constructor(
     var placeIdMap = mutableMapOf<String, String>()
 
     private val _weatherData = MutableLiveData<UiState>(UiState.Empty)
-    val weatherData: LiveData<UiState> get() = _weatherData
+    val weatherData: LiveData<UiState> = _weatherData
 
     private val _weatherDetailsList = MutableLiveData<List<WeatherDM>>()
     val weatherDetailsList: LiveData<List<WeatherDM>> = _weatherDetailsList
@@ -55,7 +56,8 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
 
-    fun startCollectingDeviceLocation() = viewModelScope.launch {
+    fun startCollectingDeviceLocationAndFetchWeather() = viewModelScope.launch {
+        setUiState(UiState.Loading("Collecting Location"))
         locationClient.locationFlow().collectLatest { location ->
             getWeather(location)
         }
