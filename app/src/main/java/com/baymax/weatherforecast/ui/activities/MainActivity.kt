@@ -1,39 +1,28 @@
 package com.baymax.weatherforecast.ui.activities
 
-import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.baymax.weatherforecast.R
-import com.baymax.weatherforecast.ui.fragments.home_fragment.ui.HomeFragmentViewModel
+import com.baymax.weatherforecast.data.UiState
+import com.baymax.weatherforecast.databinding.ActivityMainBinding
+import com.baymax.weatherforecast.ui.view_model.HomeFragmentViewModel
 import com.baymax.weatherforecast.utils.ConnectionLiveData
-import com.baymax.weatherforecast.utils.locationFlow
+import com.baymax.weatherforecast.utils.isGPSActive
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.material.snackbar.Snackbar
-import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 
-class MainActivity : DaggerAppCompatActivity() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewModel>(
+    ActivityMainBinding::inflate
+) {
 
     companion object {
         private const val MULTIPLE_LOCATION_PERMISSION = 1
@@ -41,53 +30,24 @@ class MainActivity : DaggerAppCompatActivity() {
         private const val BACK_PRESS_INTERVAL: Long = 3 * 1000
     }
 
-    val permissions = arrayListOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
-
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var networkState: ConnectionLiveData
 
-    @Inject
-    lateinit var locationClient: FusedLocationProviderClient
-
-    @Inject
-    lateinit var connectionLiveData: ConnectionLiveData
-    private lateinit var viewModel: HomeFragmentViewModel
     private var isDialogVisible = false
     private var exit = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProvider(
-            this,
-            viewModelFactory
-        )[HomeFragmentViewModel::class.java]
-        connectionLiveData.observe(this@MainActivity) {
-            no_internet_background.visibility = if (it) View.GONE else View.VISIBLE
-        }
-    }
-
-    fun startCollectingDeviceLocation() = lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (!no_internet_background.isVisible) {
-                locationClient.locationFlow().collect { location ->
-                    viewModel.apply {
-                        setUiState(HomeFragmentViewModel.UiState.Loading(getString(R.string.collecting_location)))
-                        getWeather(location)
-                    }
-                }
-            } else {
-                showSnackbar(getString(R.string.no_internet_connection))
+        networkState.observe(this) { isActive ->
+            binding.noInternetBackground.apply {
+                visibility = if (!isActive) View.VISIBLE else View.GONE
             }
         }
     }
 
     fun turnOnGPS() {
-        viewModel.setUiState(HomeFragmentViewModel.UiState.Loading(getString(R.string.turning_on_gps)))
+        viewModel.setUiState(UiState.Loading(getString(R.string.turning_on_gps)))
         if (isDialogVisible) {
             return
         }
@@ -117,64 +77,17 @@ class MainActivity : DaggerAppCompatActivity() {
                                 this,
                                 LOCATION_SETTINGS_REQUEST
                             )
+                        viewModel.setUiState(UiState.Loading(getString(R.string.turning_on_gps)))
                     } catch (e: IntentSender.SendIntentException) {
-                        showSnackbar(getString(R.string.unable_to_turn_on_gps))
-                        viewModel.setUiState(HomeFragmentViewModel.UiState.Empty)
+                        showSnackBar(getString(R.string.unable_to_turn_on_gps))
+                        viewModel.setUiState(UiState.Empty)
                     }
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-                        viewModel.setUiState(HomeFragmentViewModel.UiState.Empty)
+                        viewModel.setUiState(UiState.Empty)
                     }
                 }
             }
         }
-    }
-
-    fun showSnackbar(msg: String) {
-        Snackbar.make(
-            main_layout,
-            msg,
-            Snackbar.LENGTH_LONG
-        ).show()
-        progressBar.visibility = View.GONE
-    }
-
-    private fun showSnackbarWithAction(
-        msg: String,
-        actionName: String,
-        action: () -> Unit
-    ) {
-        Snackbar.make(
-            main_layout,
-            msg,
-            Snackbar.LENGTH_LONG
-        ).setAction(
-            actionName
-        ) { action() }.show()
-        progressBar.visibility = View.GONE
-    }
-
-    fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            MULTIPLE_LOCATION_PERMISSION
-        )
-    }
-
-    fun hasLocationPermission(): Boolean {
-        permissions.forEach { permission ->
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
     }
 
     override fun onRequestPermissionsResult(
@@ -192,39 +105,27 @@ class MainActivity : DaggerAppCompatActivity() {
                     }
                 }
                 if (allPermissionsGranted) {
-                    if (isGPSActive()) {
-                        startCollectingDeviceLocation()
+                    if (this.isGPSActive()) {
+                        viewModel.startCollectingDeviceLocation()
                     } else {
                         turnOnGPS()
                     }
                 } else {
-                    showSnackbar(
-                        getString(R.string.permission_required_warning)
-                    )
+                    showSnackBar(getString(R.string.permission_required_warning))
                 }
             }
         }
     }
 
-    fun isGPSActive(): Boolean {
-        val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        var gpsEnabled by Delegates.notNull<Boolean>()
-        try {
-            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        } catch (e: Exception) {
-            return false
-        }
-        return gpsEnabled
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                startCollectingDeviceLocation()
+                viewModel.startCollectingDeviceLocation()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                showSnackbarWithAction(
+                showSnackBar(
                     getString(R.string.gps_warning),
                     "Retry"
                 ) { turnOnGPS() }
@@ -237,7 +138,7 @@ class MainActivity : DaggerAppCompatActivity() {
         if (exit) {
             finish() // finish activity
         } else {
-            showSnackbar(getString(R.string.backpress_message))
+            showSnackBar(getString(R.string.backpress_message))
             exit = true
             Handler(Looper.getMainLooper()).postDelayed(
                 { exit = false },

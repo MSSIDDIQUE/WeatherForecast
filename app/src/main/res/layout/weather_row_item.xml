@@ -5,11 +5,11 @@
 
         <variable
             name="data"
-            type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
+            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
 
         <variable
             name="listener"
-            type="com.baymax.weatherforecast.ui.fragments.home_fragment.ui.WeatherListAdapter.WeatherDetailsItemListener" />
+            type="com.baymax.weatherforecast.ui.adapters.WeatherListAdapter.WeatherDetailsItemListener" />
 
     </data>
 

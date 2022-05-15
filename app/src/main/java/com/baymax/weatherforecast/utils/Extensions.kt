@@ -1,11 +1,13 @@
 package com.baymax.weatherforecast.utils
 
+import android.content.Context
+import android.location.LocationManager
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import com.baymax.weatherforecast.api.googlePlaceApi.Location
+import com.baymax.weatherforecast.api.google_place_api.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -15,10 +17,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.*
+import kotlin.properties.Delegates
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+}
+
+fun Context.isGPSActive(): Boolean {
+    val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    var gpsEnabled by Delegates.notNull<Boolean>()
+    try {
+        gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    } catch (e: Exception) {
+        return false
+    }
+    return gpsEnabled
 }
 
 suspend fun FusedLocationProviderClient.locationFlow(): Flow<Location> = callbackFlow {

@@ -1,7 +1,7 @@
 package com.baymax.weatherforecast.di
 
 import androidx.lifecycle.ViewModelProvider
-import com.baymax.weatherforecast.ui.ViewModelFactory
+import com.baymax.weatherforecast.ui.view_model.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 

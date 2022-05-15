@@ -1,12 +1,12 @@
 package com.baymax.weatherforecast.utils
 
 import android.content.SharedPreferences
-import com.baymax.weatherforecast.api.weatherApi.domainModel.ApiResponseDM
-import com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM
-import com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherSummaryDM
-import com.baymax.weatherforecast.api.weatherApi.dataTransferModel.ApiResponseDTO
-import com.baymax.weatherforecast.api.weatherApi.dataTransferModel.WeatherDTO
-import com.baymax.weatherforecast.api.weatherApi.dataTransferModel.WeatherSummaryDTO
+import com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM
+import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
+import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherSummaryDM
+import com.baymax.weatherforecast.api.weather_api.data_transfer_model.ApiResponseDTO
+import com.baymax.weatherforecast.api.weather_api.data_transfer_model.WeatherDTO
+import com.baymax.weatherforecast.api.weather_api.data_transfer_model.WeatherSummaryDTO
 import com.baymax.weatherforecast.data.Result
 import kotlin.math.roundToInt
 

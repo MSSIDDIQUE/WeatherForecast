@@ -6,7 +6,7 @@
 
         <variable
             name="data"
-            type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
+            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
 
     </data>
 

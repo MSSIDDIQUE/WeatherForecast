@@ -3,8 +3,8 @@ package com.baymax.weatherforecast.di.main
 import android.content.Context
 import com.baymax.weatherforecast.api.GooglePlaceApiService
 import com.baymax.weatherforecast.api.WeatherApiService
-import com.baymax.weatherforecast.ui.fragments.home_fragment.data.WeatherRemoteDataSource
-import com.baymax.weatherforecast.ui.fragments.home_fragment.data.WeatherRepository
+import com.baymax.weatherforecast.data.WeatherRemoteDataSource
+import com.baymax.weatherforecast.data.WeatherRepository
 import com.baymax.weatherforecast.utils.ConnectionLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices

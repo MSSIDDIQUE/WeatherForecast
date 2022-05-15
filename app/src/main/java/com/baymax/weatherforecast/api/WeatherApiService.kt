@@ -1,6 +1,6 @@
 package com.baymax.weatherforecast.api
 
-import com.baymax.weatherforecast.api.weatherApi.dataTransferModel.ApiResponseDTO
+import com.baymax.weatherforecast.api.weather_api.data_transfer_model.ApiResponseDTO
 import com.baymax.weatherforecast.utils.PrefHelper
 import retrofit2.Response
 import retrofit2.http.GET

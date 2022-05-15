@@ -7,7 +7,7 @@
 
         <variable
             name="data"
-            type="com.baymax.weatherforecast.api.weatherApi.domainModel.WeatherDM" />
+            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
     </data>
 
 
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        tools:context=".ui.fragments.home_fragment.ui.WeatherDetailsBottomSheet">
+        tools:context=".ui.bottom_sheets.WeatherDetailsBottomSheet">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/day"
