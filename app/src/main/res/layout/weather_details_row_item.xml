@@ -29,7 +29,7 @@
                 app:imageResource="@{data.weatherSummary.iconLarge}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/temp_value"
@@ -61,14 +61,15 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/description"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="5dp"
                 android:layout_marginBottom="10dp"
                 android:text="@{data.weatherSummary.description}"
-                android:textColor="@color/yellow"
-                android:textSize="18sp"
-                android:textStyle="bold|italic"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM
+import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
 import com.baymax.weatherforecast.data.UiState
 import com.baymax.weatherforecast.databinding.BottomSheetWeatherDetailsBinding
 import com.baymax.weatherforecast.ui.adapters.WeatherDetailsListAdapter
@@ -26,7 +26,6 @@ class WeatherDetailsBottomSheet : BottomSheetDialogFragment() {
     private var _binding: BottomSheetWeatherDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: HomeFragmentViewModel
-    private lateinit var linearLayoutManager: LinearLayoutManager
     val args by navArgs<WeatherDetailsBottomSheetArgs>()
     var listener: BaseEventListener? = null
 
@@ -55,26 +54,18 @@ class WeatherDetailsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val date = args.date
-        binding.apply {
-            when (val data = viewModel.weatherData.value) {
-                is UiState.Success<*> -> {
-                    linearLayoutManager = LinearLayoutManager(
-                        context,
-                        LinearLayoutManager.HORIZONTAL,
-                        true
-                    )
-                    recyclerView.apply {
-                        (data.wData as ApiResponseDM).dataGroupedByDate[date]?.let { list ->
-                            adapter = WeatherDetailsListAdapter(list)
-                            binding.data = list[0]
-                        }
-                        layoutManager = linearLayoutManager
-                    }
+        setupObservers()
+    }
+
+    private fun setupObservers() = binding.apply {
+        viewModel.weatherData.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Success -> uiState.data.dataGroupedByDate[args.date]?.let { list ->
+                    setupRecyclerViewAdapter(list)
                     include.groupProgressBar.visibility = View.GONE
                 }
                 is UiState.Error -> {
-                    listener?.showSnackBar(data.msg)
+                    listener?.showSnackBar(uiState.errorMessage)
                 }
                 else -> {
                     include.groupProgressBar.visibility = View.VISIBLE
@@ -82,5 +73,11 @@ class WeatherDetailsBottomSheet : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    private fun setupRecyclerViewAdapter(list: List<WeatherDM>) = binding.recyclerView.apply {
+        adapter = WeatherDetailsListAdapter(list)
+        binding.data = list[0]
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
     }
 }

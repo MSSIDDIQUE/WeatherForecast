@@ -22,11 +22,19 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
 
+fun String.toStandardString(): String {
+    return try {
+        "${this.first().uppercase()}${this.subSequence(1, this.length)}"
+    }catch (e: IndexOutOfBoundsException){
+        this
+    }
+}
+
 fun Context.isGPSActive(): Boolean {
-    return try{
+    return try {
         val mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }catch (e:Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         false
     }
@@ -43,8 +51,8 @@ suspend fun FusedLocationProviderClient.locationFlow(): Flow<Location> = callbac
             super.onLocationResult(locationResult)
             val location = locationResult.lastLocation
             val userLocation = Location(
-                lat = location?.latitude?:0.0,
-                lng = location?.longitude?:0.0
+                lat = location?.latitude ?: 0.0,
+                lng = location?.longitude ?: 0.0
             )
             try {
                 this@callbackFlow.trySend(userLocation).isSuccess

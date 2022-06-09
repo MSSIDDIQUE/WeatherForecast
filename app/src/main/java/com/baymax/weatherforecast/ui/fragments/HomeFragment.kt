@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.baymax.weatherforecast.R
-import com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.data.UiState
 import com.baymax.weatherforecast.databinding.FragmentHomeBinding
@@ -46,6 +45,10 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
             homeFragmentViewModel = viewModel
         }
         setupClickListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
         setupObservers()
     }
 
@@ -131,9 +134,9 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     }
 
     private fun observeWeather() = binding.apply {
-        viewModel.weatherData.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is UiState.Success<*> -> (result.wData as ApiResponseDM).run {
+        viewModel.weatherData.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Success -> uiState.data.apply {
                     cardTemp.visibility = View.VISIBLE
                     rvContainer.visibility = View.VISIBLE
                     lineWeatherForecastContainer.visibility = View.VISIBLE
@@ -156,10 +159,10 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                     showProgressBar(false)
                 }
                 is UiState.Error -> {
-                    showSnackBar(result.msg)
+                    showSnackBar(uiState.errorMessage)
                 }
                 is UiState.Loading -> {
-                    showProgressBar(true, result.msg)
+                    showProgressBar(true, uiState.msg)
                     cardTemp.visibility = View.GONE
                     rvContainer.visibility = View.GONE
                     lineWeatherForecastContainer.visibility = View.GONE

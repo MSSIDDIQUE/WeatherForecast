@@ -1,11 +1,8 @@
 package com.baymax.weatherforecast.ui.view_model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
-import com.baymax.weatherforecast.R
+import androidx.lifecycle.*
 import com.baymax.weatherforecast.api.google_place_api.Location
+import com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM
 import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.data.UiState
@@ -27,13 +24,13 @@ class HomeFragmentViewModel @Inject constructor(
     val mutableLocation = MutableLiveData<Location>(null)
     var placeIdMap = mutableMapOf<String, String>()
 
-    private val _weatherData = MutableLiveData<UiState>(UiState.Empty)
-    val weatherData: LiveData<UiState> = _weatherData
+    private val _weatherData = MutableLiveData<UiState<ApiResponseDM>>(UiState.Empty)
+    val weatherData: LiveData<UiState<ApiResponseDM>> = _weatherData
 
     private val _weatherDetailsList = MutableLiveData<List<WeatherDM>>()
     val weatherDetailsList: LiveData<List<WeatherDM>> = _weatherDetailsList
 
-    fun setUiState(state: UiState) {
+    fun setUiState(state: UiState<ApiResponseDM>) {
         _weatherData.value = state
     }
 
@@ -47,12 +44,14 @@ class HomeFragmentViewModel @Inject constructor(
 
     suspend fun getWeather(searchedLocation: Location) {
         _weatherData.value = UiState.Loading("Fetching Weather")
-        when (val data = withContext(Dispatchers.IO) { repo.getWeather(searchedLocation) }) {
-            is Result.Failure -> data.msg?.let {
+        when (val result = withContext(Dispatchers.IO) { repo.getWeather(searchedLocation) }) {
+            is Result.Failure -> result.msg?.let {
                 UiState.Error(it)
             } ?: UiState.Error("Something went wrong!")
-            is Result.Success -> UiState.Success(data.data)
-        }.also { _weatherData.value = it }
+            is Result.Success -> UiState.Success(result.data)
+        }.also {
+            _weatherData.value = it
+        }
     }
 
 

@@ -103,7 +103,7 @@ fun mapWeatherSummaryDTO(
     dto: WeatherSummaryDTO
 ): WeatherSummaryDM {
     return WeatherSummaryDM(
-        description = dto.description.orEmpty(),
+        description = dto.description?.toStandardString().orEmpty(),
         iconSmall = Constants.WEATHER_API_ICONS_BASE_URL + dto.icon.orEmpty() + "@2x.png",
         iconLarge = Constants.WEATHER_API_ICONS_BASE_URL + dto.icon.orEmpty() + "@4x.png",
         id = dto.id ?: -1,
