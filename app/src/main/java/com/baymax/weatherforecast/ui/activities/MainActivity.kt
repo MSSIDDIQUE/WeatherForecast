@@ -19,7 +19,6 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import javax.inject.Inject
 
-
 class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewModel>(
     ActivityMainBinding::inflate
 ) {

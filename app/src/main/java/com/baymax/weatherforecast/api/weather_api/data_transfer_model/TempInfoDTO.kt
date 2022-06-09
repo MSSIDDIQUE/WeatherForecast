@@ -5,18 +5,18 @@ import com.google.gson.annotations.SerializedName
 
 data class TempInfoDTO(
     @SerializedName("feels_like")
-    val feelsLike: Double,
+    val feelsLike: Double?,
     @SerializedName("grnd_level")
-    val grndLevel: Int,
-    val humidity: Int,
-    val pressure: Int,
+    val grndLevel: Int?,
+    val humidity: Int?,
+    val pressure: Int?,
     @SerializedName("sea_level")
-    val seaLevel: Int,
-    val temp: Double,
+    val seaLevel: Int?,
+    val temp: Double?,
     @SerializedName("temp_kf")
-    val tempKf: Double,
+    val tempKf: Double?,
     @SerializedName("temp_max")
-    val tempMax: Double,
+    val tempMax: Double?,
     @SerializedName("temp_min")
-    val tempMin: Double
+    val tempMin: Double?
 )

@@ -130,7 +130,7 @@
 
                         <include
                             android:id="@+id/included_view"
-                            layout="@layout/upper_view"
+                            layout="@layout/layout_upper_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:location="@{location}"

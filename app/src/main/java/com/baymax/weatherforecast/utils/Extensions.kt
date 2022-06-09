@@ -43,8 +43,8 @@ suspend fun FusedLocationProviderClient.locationFlow(): Flow<Location> = callbac
             super.onLocationResult(locationResult)
             val location = locationResult.lastLocation
             val userLocation = Location(
-                lat = location.latitude,
-                lng = location.longitude
+                lat = location?.latitude?:0.0,
+                lng = location?.longitude?:0.0
             )
             try {
                 this@callbackFlow.trySend(userLocation).isSuccess

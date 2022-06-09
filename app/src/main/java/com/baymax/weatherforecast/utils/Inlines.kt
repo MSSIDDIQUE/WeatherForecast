@@ -55,21 +55,21 @@ inline fun mapApiResponseDTO(
 ): ApiResponseDM {
     return ApiResponseDM(
         city = ApiResponseDM.CityDM(
-            id = input.city.id ?: -1,
-            name = input.city.name.orEmpty(),
-            cityLat = (input.city.coord.lat ?: (-1)) as Double,
-            cityLon = (input.city.coord.lon ?: (-1)) as Double,
-            country = input.city.country.orEmpty(),
-            sunrise = input.city.sunrise ?: -1,
-            sunset = input.city.sunset ?: -1,
-            timezone = input.city.timezone ?: -1,
-            population = input.city.population ?: -1
+            id = input.city?.id ?: -1,
+            name = input.city?.name.orEmpty(),
+            cityLat = (input.city?.coord?.lat ?: (-1)) as Double,
+            cityLon = (input.city?.coord?.lon ?: (-1)) as Double,
+            country = input.city?.country.orEmpty(),
+            sunrise = input.city?.sunrise ?: -1,
+            sunset = input.city?.sunset ?: -1,
+            timezone = input.city?.timezone ?: -1,
+            population = input.city?.population ?: -1
         ),
-        cnt = input.cnt,
+        cnt = input.cnt ?: 0,
         cod = input.cod.orEmpty(),
         dataGroupedByDate = mapWeatherList(input.list).groupBy { it.dtTxt.split(" ")[0] },
         dataGroupedByTime = mapWeatherList(input.list).groupBy { it.dtTxt.split(" ")[1] },
-        message = input.message
+        message = input.message ?: 0
     )
 }
 
@@ -81,21 +81,21 @@ fun mapWeatherDTO(
         dt = dto.dt ?: -1,
         dtTxt = dto.dtTxt.orEmpty(),
         temp = WeatherDM.TempInfoDM(
-            feelsLike = (dto.main.feelsLike ?: -1) as Double,
-            grndLevel = dto.main.grndLevel ?: -1,
-            humidity = (dto.main.humidity ?: -1).toString() + " %",
-            pressure = dto.main.pressure ?: -1,
-            seaLevel = dto.main.seaLevel ?: -1,
-            temp = ((dto.main.temp ?: -1) as Double).toDegreeCelsius(),
-            tempKf = (dto.main.tempKf ?: -1) as Double,
-            tempMax = ((dto.main.tempMax ?: -1) as Double).toDegreeCelsius(),
-            tempMin = ((dto.main.tempMin ?: -1) as Double).toDegreeCelsius()
+            feelsLike = (dto.main?.feelsLike ?: -1) as Double,
+            grndLevel = dto.main?.grndLevel ?: -1,
+            humidity = (dto.main?.humidity ?: -1).toString() + " %",
+            pressure = dto.main?.pressure ?: -1,
+            seaLevel = dto.main?.seaLevel ?: -1,
+            temp = ((dto.main?.temp ?: -1) as Double).toDegreeCelsius(),
+            tempKf = (dto.main?.tempKf ?: -1) as Double,
+            tempMax = ((dto.main?.tempMax ?: -1) as Double).toDegreeCelsius(),
+            tempMin = ((dto.main?.tempMin ?: -1) as Double).toDegreeCelsius()
         ),
         wind = WeatherDM.WindDM(
-            angle = dto.wind.deg ?: -1,
-            speed = (dto.wind.speed ?: -1) as Double
+            angle = dto.wind?.deg ?: -1,
+            speed = (dto.wind?.speed ?: -1) as Double
         ),
-        weatherSummary = mapWeatherSummaryList(dto.weather)[0]
+        weatherSummary = mapWeatherSummaryList(dto.weather ?: listOf())[0]
     )
 }
 
