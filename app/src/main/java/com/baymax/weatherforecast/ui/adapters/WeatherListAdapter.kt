@@ -6,7 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
-import com.baymax.weatherforecast.databinding.WeatherRowItemBinding
+import com.baymax.weatherforecast.databinding.ItemViewWeatherDetailsHorizontalBinding
 
 class WeatherListAdapter(
     private val data: List<WeatherDM>,
@@ -14,9 +14,9 @@ class WeatherListAdapter(
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
-        val weatherRowItemBinding: WeatherRowItemBinding = DataBindingUtil.inflate(
+        val weatherRowItemBinding: ItemViewWeatherDetailsHorizontalBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.weather_row_item,
+            R.layout.item_view_weather_details_horizontal,
             parent,
             false
         )
@@ -32,7 +32,7 @@ class WeatherListAdapter(
         holder.bindData(weatherData, listener)
     }
 
-    class WeatherViewHolder(val binding: WeatherRowItemBinding) :
+    class WeatherViewHolder(val binding: ItemViewWeatherDetailsHorizontalBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindData(data: WeatherDM, listener: WeatherDetailsItemListener) {
             binding.data = data

@@ -60,7 +60,6 @@
                         style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={homeFragmentViewModel.searchText}"
                         android:textColor="@color/common_google_signin_btn_text_dark_default" />
                 </com.google.android.material.textfield.TextInputLayout>
 

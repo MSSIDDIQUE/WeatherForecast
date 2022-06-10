@@ -68,7 +68,7 @@
 
         <include
             android:id="@+id/include"
-            layout="@layout/progress_bar_view"
+            layout="@layout/layout_progress_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -87,7 +87,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lineOr"
-            tools:listitem="@layout/weather_details_row_item" />
+            tools:listitem="@layout/item_view_weather_details_verticle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

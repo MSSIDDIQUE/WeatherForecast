@@ -7,10 +7,11 @@ import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.data.UiState
 import com.baymax.weatherforecast.data.WeatherRepository
-import com.baymax.weatherforecast.utils.locationFlow
+import com.baymax.weatherforecast.utils.LocationUtils.locationFlow
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class HomeFragmentViewModel @Inject constructor(
     private val locationClient: FusedLocationProviderClient
 ) : BaseViewModel() {
     var searchedCity = MutableLiveData("")
-    val searchText = MutableLiveData<String>()
+    private val searchChanel = ConflatedBroadcastChannel<String>()
     val mutableLocation = MutableLiveData<Location>(null)
     var placeIdMap = mutableMapOf<String, String>()
 
@@ -29,6 +30,24 @@ class HomeFragmentViewModel @Inject constructor(
 
     private val _weatherDetailsList = MutableLiveData<List<WeatherDM>>()
     val weatherDetailsList: LiveData<List<WeatherDM>> = _weatherDetailsList
+
+    val suggestionsLiveData = searchChanel.asFlow()
+        .flatMapLatest { text ->
+            repo.getSuggestions(text)
+        }.map { result ->
+            when (result) {
+                is Result.Failure -> result.msg?.let {
+                    UiState.Error(it)
+                } ?: UiState.Error("Something went wrong!")
+                is Result.Success -> UiState.Success(result.data)
+            }
+        }.catch { cause: Throwable ->
+            cause.printStackTrace()
+        }.asLiveData()
+
+    fun setSearchQuery(search: String) {
+        searchChanel.trySend(search).isSuccess
+    }
 
     fun setUiState(state: UiState<ApiResponseDM>) {
         _weatherData.value = state
@@ -54,15 +73,12 @@ class HomeFragmentViewModel @Inject constructor(
         }
     }
 
-
     fun startCollectingDeviceLocationAndFetchWeather() = viewModelScope.launch {
         setUiState(UiState.Loading("Collecting Location"))
         locationClient.locationFlow().collectLatest { location ->
             getWeather(location)
         }
     }
-
-    fun getSuggestions(searchText: String) = repo.getSuggestions(searchText).asLiveData()
 
     suspend fun getCoordinates(placeId: String) = repo.getCoordinates(placeId)
 }

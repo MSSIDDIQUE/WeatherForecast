@@ -60,7 +60,7 @@ class WeatherDetailsBottomSheet : BottomSheetDialogFragment() {
     private fun setupObservers() = binding.apply {
         viewModel.weatherData.observe(viewLifecycleOwner) { uiState ->
             when (uiState) {
-                is UiState.Success -> uiState.data.dataGroupedByDate[args.date]?.let { list ->
+                is UiState.Success -> uiState.data?.dataGroupedByDate?.get(args.date)?.let { list ->
                     setupRecyclerViewAdapter(list)
                     include.groupProgressBar.visibility = View.GONE
                 }

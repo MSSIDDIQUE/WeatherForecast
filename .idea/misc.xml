@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2484375" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/bg_rounded_bottom_sheet.xml" value="0.104" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/bottom_sheet_bg.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/humidity_icon.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2484375" />
@@ -18,6 +19,8 @@
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/bottom_sheet_weather_details.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/fragment_home.xml" value="0.1" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/fragment_splash_screen.xml" value="0.23229166666666667" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_progress_bar_view.xml" value="0.1" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_upper_view.xml" value="0.2" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/middle_item_view.xml" value="0.23645833333333333" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/middle_view.xml" value="0.23645833333333333" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/progress_bar_view.xml" value="0.23645833333333333" />
