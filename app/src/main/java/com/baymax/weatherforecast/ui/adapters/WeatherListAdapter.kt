@@ -6,17 +6,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
-import com.baymax.weatherforecast.databinding.ItemViewWeatherDetailsHorizontalBinding
+import com.baymax.weatherforecast.databinding.ItemViewWeatherDetailsBinding
 
 class WeatherListAdapter(
-    private val data: List<WeatherDM>,
-    private val listener: WeatherDetailsItemListener
+    private val groupedByTime: List<WeatherDM>?,
+    private val onItemClick: (ItemViewWeatherDetailsBinding, String) -> Unit
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
-        val weatherRowItemBinding: ItemViewWeatherDetailsHorizontalBinding = DataBindingUtil.inflate(
+        val weatherRowItemBinding: ItemViewWeatherDetailsBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_view_weather_details_horizontal,
+            R.layout.item_view_weather_details,
             parent,
             false
         )
@@ -24,23 +24,28 @@ class WeatherListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return groupedByTime?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
-        val weatherData = data[position]
-        holder.bindData(weatherData, listener)
+        val weatherData = groupedByTime?.get(position)
+        holder.bindData(weatherData, onItemClick)
     }
 
-    class WeatherViewHolder(val binding: ItemViewWeatherDetailsHorizontalBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bindData(data: WeatherDM, listener: WeatherDetailsItemListener) {
-            binding.data = data
-            binding.listener = listener
+    class WeatherViewHolder(
+        val binding: ItemViewWeatherDetailsBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bindData(
+            weatherData: WeatherDM?,
+            onItemClick: (ItemViewWeatherDetailsBinding, String) -> Unit
+        ) = binding.apply {
+            data = weatherData
+            exposedView.ivExpandAnim.setOnClickListener {
+                onItemClick(
+                    binding,
+                    weatherData?.dtTxt?.split(" ")?.get(0) ?: "",
+                )
+            }
         }
-    }
-
-    interface WeatherDetailsItemListener {
-        fun onItemClick(date: String)
     }
 }

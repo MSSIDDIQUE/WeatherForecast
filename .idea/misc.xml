@@ -12,6 +12,7 @@
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/icon_no_internet.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/list_icon.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/location_icon.xml" value="0.2484375" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/rounded_top_corners.xml" value="0.104" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/up_icon.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/drawable/wind_icon.xml" value="0.2484375" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/activity_base.xml" value="0.1875" />
@@ -19,6 +20,11 @@
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/bottom_sheet_weather_details.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/fragment_home.xml" value="0.1" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/fragment_splash_screen.xml" value="0.23229166666666667" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/item_view_weather_details.xml" value="0.23229166666666667" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/item_view_weather_details_horizontal.xml" value="0.23229166666666667" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/item_view_weather_details_verticle.xml" value="0.23229166666666667" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_item_view_weather_details_exposed.xml" value="0.23125" />
+        <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_item_view_weather_details_hidden.xml" value="0.17421875" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_progress_bar_view.xml" value="0.1" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/layout_upper_view.xml" value="0.2" />
         <entry key="..\:/Users/hello/StudioProjects/WeatherForecast/app/src/main/res/layout/middle_item_view.xml" value="0.23645833333333333" />

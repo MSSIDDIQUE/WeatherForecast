@@ -10,28 +10,29 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.baymax.weatherforecast.R
 import com.baymax.weatherforecast.api.google_place_api.Prediction
 import com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM
+import com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM
 import com.baymax.weatherforecast.data.Result
 import com.baymax.weatherforecast.data.UiState
 import com.baymax.weatherforecast.databinding.FragmentHomeBinding
+import com.baymax.weatherforecast.databinding.ItemViewWeatherDetailsBinding
 import com.baymax.weatherforecast.ui.activities.MainActivity
+import com.baymax.weatherforecast.ui.adapters.WeatherDetailsListAdapter
 import com.baymax.weatherforecast.ui.view_model.HomeFragmentViewModel
 import com.baymax.weatherforecast.ui.adapters.WeatherListAdapter
-import com.baymax.weatherforecast.utils.DateTimeUtils.getCurrentDataTime
+import com.baymax.weatherforecast.utils.DateTimeUtils.getCurrentDateTime
 import com.baymax.weatherforecast.utils.isGPSActive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewModel>(
     FragmentHomeBinding::inflate
-), WeatherListAdapter.WeatherDetailsItemListener {
-
+) {
     private lateinit var linearLayoutManager: LinearLayoutManager
 
     companion object {
@@ -122,7 +123,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
 
     private fun updateListOfPredictions(predictions: List<Prediction>) = binding.apply {
         viewModel.placeIdMap.clear()
-        predictions.forEach { prediction->
+        predictions.forEach { prediction ->
             viewModel.placeIdMap[prediction.description] = prediction.placeId
         }
         val adapter = ArrayAdapter(
@@ -155,15 +156,16 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         }
         linearLayoutManager = LinearLayoutManager(context)
         location = data.city
-        data.dataGroupedByTime[getCurrentDataTime()["time"]]?.let { recentWeatherReport ->
-            currentweather = recentWeatherReport[0]
-            recyclerView.apply {
-                adapter = WeatherListAdapter(
-                    recentWeatherReport,
-                    this@HomeFragment
-                )
-                layoutManager = linearLayoutManager
-            }
+        currentweather = data.dataGroupedByTime[getCurrentDateTime()["time"]]?.get(0)
+        recyclerView.apply {
+            layoutManager = linearLayoutManager
+            adapter =
+                WeatherListAdapter(data.dataGroupedByTime[getCurrentDateTime()["time"]]) { binding, date ->
+                    val listGroupedByDate = data.dataGroupedByDate[date]
+                    if (date.isNotBlank()) {
+                        onItemClick(binding, listGroupedByDate)
+                    }
+                }
         }
         showProgressBar(false)
     }
@@ -180,13 +182,6 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE
-    }
-
-    override fun onItemClick(date: String) {
-        val direction = HomeFragmentDirections
-            .actionHomeFragmentToWeatherDetailsBottomSheet()
-            .setDate(date.split(" ")[0])
-        findNavController().navigate(direction)
     }
 
     fun requestLocationPermission() {
@@ -222,6 +217,36 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
             hasLocationPermission() && requireContext().isGPSActive() -> viewModel.startCollectingDeviceLocationAndFetchWeather()
             !hasLocationPermission() -> requestLocationPermission()
             else -> (activity as MainActivity).turnOnGPS()
+        }
+    }
+
+
+    fun onItemClick(
+        binding: ItemViewWeatherDetailsBinding,
+        listGroupedByDate: List<WeatherDM>?
+    ) = binding.apply {
+        if (!hiddenView.root.isVisible) {
+            TransitionManager.beginDelayedTransition(
+                cvWeatherItem,
+                AutoTransition()
+            )
+            hiddenView.root.visibility = View.VISIBLE
+            hiddenView.recyclerView.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    true
+                )
+                adapter = listGroupedByDate?.let { WeatherDetailsListAdapter(it) }
+            }
+            exposedView.ivExpandAnim.setAnimation(R.raw.arrow_up)
+        } else {
+            hiddenView.root.visibility = View.GONE
+            exposedView.ivExpandAnim.setAnimation(R.raw.arrow_down)
+            TransitionManager.beginDelayedTransition(
+                cvWeatherItem,
+                AutoTransition()
+            )
         }
     }
 }

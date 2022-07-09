@@ -5,7 +5,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import java.text.DecimalFormat
 
 object DateTimeUtils {
-    fun getCurrentDataTime(): HashMap<String, String> {
+    fun getCurrentDateTime(): HashMap<String, String> {
         val dateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val formattedDateTime = dateTime.format(formatter).split(" ")

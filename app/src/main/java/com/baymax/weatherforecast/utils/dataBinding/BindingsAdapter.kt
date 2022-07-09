@@ -64,9 +64,8 @@ fun getKelvinToCelsius(view: TextView, d: String) {
 @BindingAdapter("dayFromDate")
 fun getDayFromDate(view: AppCompatTextView, d: String?) {
     if (d != null) {
-        if (!d.isEmpty()) {
+        if (d.isNotEmpty()) {
             try {
-                Log.d("(Saquib)", "the date string is $d")
                 view.text = getStandardString(
                     LocalDateTime.parse(
                         d.replace(
