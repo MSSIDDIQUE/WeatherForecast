@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name="com.baymax.weatherforecast.App"
+        android:name="com.baymax.weather.forecast.App"
         android:allowBackup="false"
         android:icon="@drawable/icon_launcher_100"
         android:label="@string/app_name"
@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.baymax.weatherforecast.ui.activities.MainActivity"
+            android:name="com.baymax.weather.forecast.ui.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

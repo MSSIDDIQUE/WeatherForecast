@@ -6,11 +6,11 @@
 
         <variable
             name="location"
-            type="com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM.CityDM" />
+            type="com.baymax.weather.forecast.api.weather_api.domain_model.ApiResponseDM" />
 
         <variable
             name="weather"
-            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
+            type="com.baymax.weather.forecast.api.weather_api.domain_model.WeatherDM" />
 
     </data>
 
@@ -34,7 +34,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:timeFromTimeStamp="@{Integer.toString(location.sunrise)}" />
+                app:timeFromTimeStamp="@{Integer.toString(location.city.sunrise)}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/sunset_text"
@@ -46,7 +46,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:timeFromTimeStamp="@{Integer.toString(location.sunset)}" />
+                app:timeFromTimeStamp="@{Integer.toString(location.city.sunset)}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/description_value"
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="@{location.name}"
+                android:text="@{location.city.name}"
                 android:textColor="@color/cardview_light_background"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_1"

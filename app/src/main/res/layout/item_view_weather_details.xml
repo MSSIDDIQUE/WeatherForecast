@@ -4,7 +4,7 @@
     <data>
         <variable
             name="data"
-            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
+            type="com.baymax.weather.forecast.api.weather_api.domain_model.WeatherDM" />
     </data>
 
     <androidx.cardview.widget.CardView

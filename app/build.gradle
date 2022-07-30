@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.baymax.weatherforecast"
+        applicationId "com.baymax.weather.forecast"
         minSdkVersion 23
         targetSdkVersion 32
         versionCode 4
@@ -27,7 +27,7 @@ android {
     buildFeatures {
         dataBinding = true
     }
-    namespace 'com.baymax.weatherforecast'
+    namespace 'com.baymax.weather.forecast'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {

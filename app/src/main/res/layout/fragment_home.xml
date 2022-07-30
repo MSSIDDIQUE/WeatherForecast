@@ -7,15 +7,15 @@
 
         <variable
             name="location"
-            type="com.baymax.weatherforecast.api.weather_api.domain_model.ApiResponseDM.CityDM" />
+            type="com.baymax.weather.forecast.api.weather_api.domain_model.ApiResponseDM" />
 
         <variable
             name="currentweather"
-            type="com.baymax.weatherforecast.api.weather_api.domain_model.WeatherDM" />
+            type="com.baymax.weather.forecast.api.weather_api.domain_model.WeatherDM" />
 
         <variable
             name="homeFragmentViewModel"
-            type="com.baymax.weatherforecast.ui.view_model.HomeFragmentViewModel" />
+            type="com.baymax.weather.forecast.ui.view_model.HomeFragmentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +24,7 @@
         android:layout_height="match_parent"
         android:elevation="-10dp"
         android:tag="HomeFragment"
-        tools:context=".ui.fragments.HomeFragment">
+        tools:context="com.baymax.weather.forecast.ui.fragments.HomeFragment">
 
         <ScrollView
             android:id="@+id/scroll_view"
