@@ -239,10 +239,16 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                 )
                 adapter = listGroupedByDate?.let { WeatherDetailsListAdapter(it) }
             }
-            exposedView.ivExpandAnim.setAnimation(R.raw.arrow_up)
+            exposedView.ivExpandAnim.apply {
+                setAnimation(R.raw.arrow_up)
+                playAnimation()
+            }
         } else {
             hiddenView.root.visibility = View.GONE
-            exposedView.ivExpandAnim.setAnimation(R.raw.arrow_down)
+            exposedView.ivExpandAnim.apply {
+                setAnimation(R.raw.arrow_down)
+                playAnimation()
+            }
             TransitionManager.beginDelayedTransition(
                 cvWeatherItem,
                 AutoTransition()

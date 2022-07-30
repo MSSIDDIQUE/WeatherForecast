@@ -22,12 +22,12 @@
             <include
                 android:id="@+id/exposed_view"
                 app:data="@{data}"
-                layout="@layout/layout_item_view_weather_details_exposed" />
+                layout="@layout/item_view_weather_details_expanted" />
 
             <include
                 android:id="@+id/hidden_view"
                 android:visibility="gone"
-                layout="@layout/layout_item_view_weather_details_hidden" />
+                layout="@layout/item_view_weather_details_collapsed" />
 
         </LinearLayout>
 

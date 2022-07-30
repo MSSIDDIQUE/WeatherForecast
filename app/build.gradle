@@ -48,7 +48,7 @@ dependencies {
     //Activity android
     implementation 'androidx.activity:activity-ktx:1.6.0-alpha05'
     //Fragment android
-    implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.1'
 
     //navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -70,7 +70,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     // Okhttp
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.8'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.9'
 
     // ViewModel and LiveData
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01'

@@ -14,7 +14,7 @@
 
         <include
             android:id="@+id/progress_bar"
-            layout="@layout/layout_progress_bar_view"
+            layout="@layout/progress_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

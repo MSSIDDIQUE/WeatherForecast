@@ -20,7 +20,7 @@ class HomeFragmentViewModel @Inject constructor(
     private val repo: WeatherRepository,
     private val locationClient: FusedLocationProviderClient
 ) : BaseViewModel() {
-    var searchedCity = MutableLiveData("")
+    private val searchedCity = MutableStateFlow("")
     private val searchChanel = ConflatedBroadcastChannel<String>()
     val mutableLocation = MutableLiveData<Location>(null)
     var placeIdMap = mutableMapOf<String, String>()
@@ -54,7 +54,7 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
     fun setSearchedCity(city: String) {
-        searchedCity.postValue(city)
+        searchedCity.value = city
     }
 
     fun setWeatherDetailsList(list: List<WeatherDM>) {
