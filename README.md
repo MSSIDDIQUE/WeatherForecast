@@ -32,5 +32,6 @@ The main vision or motive of this application is to experiment all the new andro
 if you know jetpack compose and want to experiment your skills you can contribute here
 
 ## Have a look on the android app
-https://drive.google.com/file/d/1S5ryrwn_i8EG44HJs0mneE_PLYS4Zhj6/view?usp=sharing
+playstore link : https://play.google.com/store/apps/details?id=com.baymax.weather.forecast
+apk dowload : https://drive.google.com/file/d/1S5ryrwn_i8EG44HJs0mneE_PLYS4Zhj6/view?usp=sharing
 
