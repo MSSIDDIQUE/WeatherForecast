@@ -22,7 +22,7 @@
             <include
                 android:id="@+id/exposed_view"
                 app:data="@{data}"
-                layout="@layout/item_view_weather_details_expanted" />
+                layout="@layout/item_view_weather_details_expanded" />
 
             <include
                 android:id="@+id/hidden_view"

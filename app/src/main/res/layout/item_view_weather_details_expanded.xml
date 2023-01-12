@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="data"
             type="com.baymax.weather.forecast.api.weather_api.domain_model.WeatherDM" />
@@ -27,8 +28,7 @@
             android:id="@+id/list_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:gravity="center_vertical"
+            android:layout_marginStart="5dp"
             android:textAlignment="center"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="16sp"
@@ -58,36 +58,38 @@
             android:id="@+id/list_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:gravity="center_vertical"
             android:text="@{data.temp.temp+`°C`}"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/max_min_list_temp"
+            app:layout_constraintBottom_toTopOf="@id/max_min_list_temp"
+            app:layout_constraintEnd_toStartOf="@id/iv_expand_anim"
             app:layout_constraintStart_toEndOf="@id/list_description"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/max_min_list_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
             android:gravity="center_vertical"
             android:text="@{data.temp.tempMax+`°/`+data.temp.tempMin+`°`}"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="12sp"
             android:textStyle="italic"
-            app:layout_constraintBottom_toBottomOf="@id/list_temp"
-            app:layout_constraintEnd_toStartOf="@id/iv_expand_anim"
-            app:layout_constraintStart_toEndOf="@id/list_temp" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/list_temp"
+            app:layout_constraintStart_toStartOf="@id/list_temp"
+            app:layout_constraintTop_toBottomOf="@id/list_temp" />
 
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/iv_expand_anim"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
