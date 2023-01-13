@@ -1,15 +1,19 @@
 package com.baymax.weather.forecast.di.main
 
 import android.content.Context
-import com.baymax.weather.forecast.api.GooglePlaceApiService
-import com.baymax.weather.forecast.api.WeatherApiService
-import com.baymax.weather.forecast.data.WeatherRemoteDataSource
-import com.baymax.weather.forecast.data.WeatherRepository
+import com.baymax.weather.forecast.usecases.search_location.api.GooglePlaceApiService
+import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRemoteDataSource
+import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRepository
+import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRepositoryImpl
+import com.baymax.weather.forecast.usecases.weather_forecast.api.WeatherApiService
+import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRemoteDataSource
+import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRepository
+import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRepositoryImpl
 import com.baymax.weather.forecast.utils.ConnectionLiveData
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.baymax.weather.forecast.utils.Constants
 import com.baymax.weather.forecast.utils.PrefHelper
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -23,7 +27,7 @@ class MainModule {
     @Provides
     fun provideWeatherApiServices(
         client: OkHttpClient,
-        converterFactory: GsonConverterFactory,
+        converterFactory: GsonConverterFactory
     ): WeatherApiService {
         return getDynamicRetrofitClient(
             client,
@@ -36,7 +40,7 @@ class MainModule {
     @Provides
     fun provideGooglePlaceApiServices(
         client: OkHttpClient,
-        converterFactory: GsonConverterFactory,
+        converterFactory: GsonConverterFactory
     ): GooglePlaceApiService {
         return getDynamicRetrofitClient(
             client,
@@ -47,17 +51,25 @@ class MainModule {
 
     @MainScope
     @Provides
-    fun provideRemoteDataSource(
+    fun provideWeatherRemoteDataSource(
         weatherApiService: WeatherApiService,
-        googlePlaceApiService: GooglePlaceApiService,
         prefHelper: PrefHelper
     ): WeatherRemoteDataSource {
         return WeatherRemoteDataSource(
             weatherApiService,
-            googlePlaceApiService,
             prefHelper
         )
     }
+
+    @MainScope
+    @Provides
+    fun provideSearchLocationRemoteDataSource(
+        googlePlaceApiService: GooglePlaceApiService,
+        prefHelper: PrefHelper
+    ): SearchLocationRemoteDataSource = SearchLocationRemoteDataSource(
+        googlePlaceApiService,
+        prefHelper
+    )
 
     @MainScope
     @Provides
@@ -69,13 +81,9 @@ class MainModule {
 
     @MainScope
     @Provides
-    fun provideRepository(
+    fun provideWeatherRepository(
         remoteDataSource: WeatherRemoteDataSource
-    ): WeatherRepository {
-        return WeatherRepository(
-            remoteDataSource
-        )
-    }
+    ): WeatherRepository = WeatherRepositoryImpl(remoteDataSource)
 
     private fun getDynamicRetrofitClient(
         client: OkHttpClient,
@@ -88,6 +96,12 @@ class MainModule {
             .addConverterFactory(converterFactory)
             .build()
     }
+
+    @MainScope
+    @Provides
+    fun provideSearchLocationRepository(
+        remoteDataSource: SearchLocationRemoteDataSource
+    ): SearchLocationRepository = SearchLocationRepositoryImpl(remoteDataSource)
 
     @MainScope
     @Provides

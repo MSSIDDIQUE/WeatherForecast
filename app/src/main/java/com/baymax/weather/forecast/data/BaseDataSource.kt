@@ -7,18 +7,18 @@ import retrofit2.Response
  */
 abstract class BaseDataSource {
 
-    protected suspend fun <T> getResult(call: suspend () -> Response<T>): Result<T> {
+    protected suspend fun <T> getResult(call: suspend () -> Response<T>): ResponseWrapper<T> {
         try {
             val response = call()
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) return Result.Success(body)
+                if (body != null) return ResponseWrapper.Success(body)
             }
-            return Result.Failure(
+            return ResponseWrapper.Failure(
                 msg = response.code().toString() + " " + response.message().toString()
             )
         } catch (e: Exception) {
-            return Result.Failure(msg = e.message.toString())
+            return ResponseWrapper.Failure(msg = e.message.toString())
         }
     }
 }

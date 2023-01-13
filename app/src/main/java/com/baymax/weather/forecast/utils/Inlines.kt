@@ -1,13 +1,13 @@
 package com.baymax.weather.forecast.utils
 
 import android.content.SharedPreferences
-import com.baymax.weather.forecast.api.weather_api.domain_model.ApiResponseDM
-import com.baymax.weather.forecast.api.weather_api.domain_model.WeatherDM
-import com.baymax.weather.forecast.api.weather_api.domain_model.WeatherSummaryDM
-import com.baymax.weather.forecast.api.weather_api.data_transfer_model.ApiResponseDTO
-import com.baymax.weather.forecast.api.weather_api.data_transfer_model.WeatherDTO
-import com.baymax.weather.forecast.api.weather_api.data_transfer_model.WeatherSummaryDTO
-import com.baymax.weather.forecast.data.Result
+import com.baymax.weather.forecast.data.ResponseWrapper
+import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.ApiResponseDTO
+import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.WeatherDTO
+import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.WeatherSummaryDTO
+import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.ApiResponseDM
+import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.WeatherDM
+import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.WeatherSummaryDM
 import kotlin.math.roundToInt
 
 inline operator fun <reified T> SharedPreferences.Editor.set(key: String, value: T) {
@@ -26,7 +26,6 @@ inline operator fun <reified T> SharedPreferences.get(key: String, defValue: T):
         else -> 0 as T
     }
 
-
 // Non-nullable to Non-nullable
 inline fun <I, O> mapList(input: List<I>, mapSingle: (I) -> O): List<O> {
     return input.map { mapSingle(it) }
@@ -42,10 +41,10 @@ inline fun <I, O> mapNullOutputList(input: List<I>, mapSingle: (I) -> O): List<O
     return if (input.isEmpty()) null else input.map { mapSingle(it) }
 }
 
-inline fun <reified T, reified R> Result<T>.map(transform: (T) -> R): Result<R> {
+inline fun <reified T, reified R> ResponseWrapper<T>.map(transform: (T) -> R): ResponseWrapper<R> {
     return when (this) {
-        is Result.Success -> Result.Success(transform(data))
-        is Result.Failure -> Result.Failure(msg)
+        is ResponseWrapper.Success -> ResponseWrapper.Success(transform(data))
+        is ResponseWrapper.Failure -> ResponseWrapper.Failure(msg)
     }
 }
 

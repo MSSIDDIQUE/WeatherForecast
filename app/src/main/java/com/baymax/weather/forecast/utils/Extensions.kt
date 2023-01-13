@@ -15,7 +15,7 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 fun String.toStandardString(): String {
     return try {
         "${this.first().uppercase()}${this.subSequence(1, this.length)}"
-    }catch (e: IndexOutOfBoundsException){
+    } catch (e: IndexOutOfBoundsException) {
         this
     }
 }

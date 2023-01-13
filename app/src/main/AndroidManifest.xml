@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.baymax.weather.forecast.ui.activities.MainActivity"
+            android:name="com.baymax.weather.forecast.usecases.weather_forecast.presentation.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

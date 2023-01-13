@@ -1,7 +1,7 @@
 package com.baymax.weather.forecast.di.main
 
-import com.baymax.weather.forecast.ui.fragments.HomeFragment
-import com.baymax.weather.forecast.ui.fragments.SplashScreenFragment
+import com.baymax.weather.forecast.presentation.fragments.SplashScreenFragment
+import com.baymax.weather.forecast.usecases.weather_forecast.presentation.fragments.HomeFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

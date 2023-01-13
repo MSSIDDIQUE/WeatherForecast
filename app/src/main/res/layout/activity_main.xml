@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
-        tools:context="com.baymax.weather.forecast.ui.activities.MainActivity">
+        tools:context="com.baymax.weather.forecast.weather_forecast.presentation.activities.MainActivity">
 
         <include
             android:id="@+id/include"
