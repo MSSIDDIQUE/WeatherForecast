@@ -4,7 +4,7 @@ import com.baymax.weather.forecast.di.main.MainFragmentBuilderModule
 import com.baymax.weather.forecast.di.main.MainModule
 import com.baymax.weather.forecast.di.main.MainScope
 import com.baymax.weather.forecast.di.main.MainViewModelModule
-import com.baymax.weather.forecast.usecases.weather_forecast.presentation.activities.MainActivity
+import com.baymax.weather.forecast.weather_forecast.presentation.activities.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

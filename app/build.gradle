@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     compileSdkVersion 33
@@ -52,6 +53,8 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
+    implementation 'androidx.core:core-ktx:+'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     // Gson

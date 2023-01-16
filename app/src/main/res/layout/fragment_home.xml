@@ -7,15 +7,15 @@
 
         <variable
             name="location"
-            type="com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.ApiResponseDM" />
+            type="com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM" />
 
         <variable
             name="currentweather"
-            type="com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.WeatherDM" />
+            type="com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM" />
 
         <variable
             name="homeFragmentViewModel"
-            type="com.baymax.weather.forecast.usecases.weather_forecast.presentation.view_model.HomeFragmentViewModel" />
+            type="com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

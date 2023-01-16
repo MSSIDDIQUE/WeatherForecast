@@ -2,15 +2,18 @@ package com.baymax.weather.forecast.utils
 
 import android.content.SharedPreferences
 import com.baymax.weather.forecast.data.ResponseWrapper
-import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.ApiResponseDTO
-import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.WeatherDTO
-import com.baymax.weather.forecast.usecases.weather_forecast.data.data_transfer_model.WeatherSummaryDTO
-import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.ApiResponseDM
-import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.WeatherDM
-import com.baymax.weather.forecast.usecases.weather_forecast.data.domain_model.WeatherSummaryDM
+import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.ApiResponseDTO
+import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.WeatherDTO
+import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.WeatherSummaryDTO
+import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
+import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM
+import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherSummaryDM
 import kotlin.math.roundToInt
 
-inline operator fun <reified T> SharedPreferences.Editor.set(key: String, value: T) {
+inline operator fun <reified T> SharedPreferences.Editor.set(
+    key: String,
+    value: T
+) {
     when (T::class.java) {
         Int::class.java -> putInt(key, value as Int).apply()
         Long::class.java -> putLong(key, value as Long).apply()
@@ -18,13 +21,15 @@ inline operator fun <reified T> SharedPreferences.Editor.set(key: String, value:
     }
 }
 
-inline operator fun <reified T> SharedPreferences.get(key: String, defValue: T): T =
-    when (T::class.java) {
-        Int::class.java -> getInt(key, defValue as Int) as T
-        Long::class.java -> getLong(key, defValue as Long) as T
-        String::class.java -> getString(key, defValue as String) as T
-        else -> 0 as T
-    }
+inline operator fun <reified T> SharedPreferences.get(
+    key: String,
+    defValue: T
+): T = when (T::class.java) {
+    Int::class.java -> getInt(key, defValue as Int) as T
+    Long::class.java -> getLong(key, defValue as Long) as T
+    String::class.java -> getString(key, defValue as String) as T
+    else -> 0 as T
+}
 
 // Non-nullable to Non-nullable
 inline fun <I, O> mapList(input: List<I>, mapSingle: (I) -> O): List<O> {
