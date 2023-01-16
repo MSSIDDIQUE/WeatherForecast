@@ -85,6 +85,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
                         showSnackBar(getString(R.string.unable_to_turn_on_gps))
                         viewModel.setUiState(BaseViewState.Empty)
                     }
+
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
                         viewModel.setUiState(BaseViewState.Empty)
                     }

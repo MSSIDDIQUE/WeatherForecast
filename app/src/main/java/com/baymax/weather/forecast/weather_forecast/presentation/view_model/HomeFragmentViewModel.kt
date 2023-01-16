@@ -23,8 +23,7 @@ class HomeFragmentViewModel @Inject constructor(
     private val fetchCurrentDeviceLocationUseCase: FetchCurrentDeviceLocationUseCase
 ) : BaseViewModel() {
 
-    private val _locationState = MutableStateFlow(Location(0.0, 0.0))
-    val locationState: StateFlow<Location> = _locationState
+    private val locationState = MutableStateFlow(Location(0.0, 0.0))
 
     private val _weatherState = MutableStateFlow<BaseViewState<ApiResponseDM>>(BaseViewState.Empty)
     val weatherState: StateFlow<BaseViewState<ApiResponseDM>> = _weatherState
@@ -52,13 +51,13 @@ class HomeFragmentViewModel @Inject constructor(
 
     fun fetchAndUpdateDeviceLocation() = viewModelScope.launch {
         fetchCurrentDeviceLocationUseCase().collectLatest { loc ->
-            _locationState.value = loc
+            locationState.value = loc
             fetchWeatherForLocation()
         }
     }
 
     fun updateLocationOnSearch(location: Location) = viewModelScope.launch {
-        _locationState.value = location
+        locationState.value = location
         fetchWeatherForLocation()
     }
 
