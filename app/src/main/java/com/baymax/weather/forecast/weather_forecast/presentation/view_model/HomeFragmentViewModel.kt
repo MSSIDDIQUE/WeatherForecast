@@ -50,6 +50,7 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
     fun fetchAndUpdateDeviceLocation() = viewModelScope.launch {
+        _weatherState.value = BaseViewState.Loading("Fetching current location")
         fetchCurrentDeviceLocationUseCase().collectLatest { loc ->
             locationState.value = loc
             fetchWeatherForLocation()
