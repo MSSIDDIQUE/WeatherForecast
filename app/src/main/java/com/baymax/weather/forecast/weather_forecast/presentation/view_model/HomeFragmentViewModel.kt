@@ -6,7 +6,7 @@ import com.baymax.weather.forecast.data.ResponseWrapper
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
 import com.baymax.weather.forecast.search_location.api.data_transfer_model.Location
 import com.baymax.weather.forecast.search_location.data.FetchCurrentDeviceLocationUseCase
-import com.baymax.weather.forecast.search_location.data.FetchSuggestionsUseCase
+import com.baymax.weather.forecast.search_location.data.FetchLocationPredictionsUseCase
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class HomeFragmentViewModel @Inject constructor(
     private val fetchWeatherUseCase: FetchWeatherUseCase,
-    private val fetchSuggestionsUseCase: FetchSuggestionsUseCase,
+    private val fetchLocationPredictionsUseCase: FetchLocationPredictionsUseCase,
     private val fetchCurrentDeviceLocationUseCase: FetchCurrentDeviceLocationUseCase
 ) : BaseViewModel() {
 
@@ -62,7 +62,7 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
     fun fetchAndUpdatePredictionsList(searchText: String) = viewModelScope.launch {
-        fetchSuggestionsUseCase(searchText).collectLatest { predictions ->
+        fetchLocationPredictionsUseCase(searchText).collectLatest { predictions ->
             if (predictions != null) {
                 _predictionsState.value = predictions
             }

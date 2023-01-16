@@ -3,7 +3,7 @@
 buildscript {
     ext.activity_version = '1.7.0-alpha03'
     ext.android_core_version = '1.9.0'
-    ext.app_compat_version = '1.6.0-alpha04'
+    ext.app_compat_version = '1.6.0'
     ext.constraint_layout_version = '2.1.4'
     ext.coroutines_version = '1.6.4'
     ext.dagger_version = '2.44.2'
