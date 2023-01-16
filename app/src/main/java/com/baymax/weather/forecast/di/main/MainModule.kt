@@ -1,14 +1,14 @@
 package com.baymax.weather.forecast.di.main
 
 import android.content.Context
-import com.baymax.weather.forecast.usecases.search_location.api.GooglePlaceApiService
-import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRemoteDataSource
-import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRepository
-import com.baymax.weather.forecast.usecases.search_location.data.SearchLocationRepositoryImpl
-import com.baymax.weather.forecast.usecases.weather_forecast.api.WeatherApiService
-import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRemoteDataSource
-import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRepository
-import com.baymax.weather.forecast.usecases.weather_forecast.data.WeatherRepositoryImpl
+import com.baymax.weather.forecast.search_location.api.GooglePlaceApiService
+import com.baymax.weather.forecast.search_location.data.SearchLocationRemoteDataSource
+import com.baymax.weather.forecast.search_location.data.SearchLocationRepository
+import com.baymax.weather.forecast.search_location.data.SearchLocationRepositoryImpl
+import com.baymax.weather.forecast.weather_forecast.api.WeatherApiService
+import com.baymax.weather.forecast.weather_forecast.data.WeatherRemoteDataSource
+import com.baymax.weather.forecast.weather_forecast.data.WeatherRepository
+import com.baymax.weather.forecast.weather_forecast.data.WeatherRepositoryImpl
 import com.baymax.weather.forecast.utils.ConnectionLiveData
 import com.baymax.weather.forecast.utils.Constants
 import com.baymax.weather.forecast.utils.PrefHelper

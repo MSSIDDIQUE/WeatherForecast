@@ -5,7 +5,7 @@ import android.os.Looper
 import androidx.navigation.fragment.findNavController
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.FragmentSplashScreenBinding
-import com.baymax.weather.forecast.usecases.weather_forecast.presentation.view_model.HomeFragmentViewModel
+import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
 
 class SplashScreenFragment : BaseBindingFragment<FragmentSplashScreenBinding, HomeFragmentViewModel>(
     FragmentSplashScreenBinding::inflate
