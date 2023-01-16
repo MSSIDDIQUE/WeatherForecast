@@ -36,12 +36,14 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
     @Inject
     lateinit var networkState: ConnectionLiveData
 
+    private var viewModel: HomeFragmentViewModel? = null
     private var isDialogVisible = false
     private var exit = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = getViewModelInstanceWithOwner(this)
         networkState.observe(this) { isActive ->
             binding.noInternetBackground.apply {
                 visibility = if (!isActive) View.VISIBLE else View.GONE
@@ -50,7 +52,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
     }
 
     fun turnOnGPS() {
-        viewModel.setUiState(BaseViewState.Loading(getString(R.string.turning_on_gps)))
+        viewModel?.setUiState(BaseViewState.Loading(getString(R.string.turning_on_gps)))
         if (isDialogVisible) {
             return
         }
@@ -59,12 +61,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(10 * 1000.toLong())
             .setFastestInterval(1 * 1000.toLong())
-        val settingsBuilder = LocationSettingsRequest.Builder()
-            .addLocationRequest(mLocationRequest)
+        val settingsBuilder = LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest)
         settingsBuilder.setAlwaysShow(true)
-        val result =
-            LocationServices.getSettingsClient(this)
-                .checkLocationSettings(settingsBuilder.build())
+        val result = LocationServices.getSettingsClient(this)
+            .checkLocationSettings(settingsBuilder.build())
 
         result.addOnCompleteListener { task ->
             try {
@@ -73,21 +73,19 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
             } catch (ex: ApiException) {
                 when (ex.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-                        val resolvableApiException =
-                            ex as ResolvableApiException
-                        resolvableApiException
-                            .startResolutionForResult(
-                                this,
-                                LOCATION_SETTINGS_REQUEST
-                            )
-                        viewModel.setUiState(BaseViewState.Loading(getString(R.string.turning_on_gps)))
+                        val resolvableApiException = ex as ResolvableApiException
+                        resolvableApiException.startResolutionForResult(
+                            this,
+                            LOCATION_SETTINGS_REQUEST
+                        )
+                        viewModel?.setUiState(BaseViewState.Loading(getString(R.string.turning_on_gps)))
                     } catch (e: IntentSender.SendIntentException) {
                         showSnackBar(getString(R.string.unable_to_turn_on_gps))
-                        viewModel.setUiState(BaseViewState.Empty)
+                        viewModel?.setUiState(BaseViewState.Empty)
                     }
 
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-                        viewModel.setUiState(BaseViewState.Empty)
+                        viewModel?.setUiState(BaseViewState.Empty)
                     }
                 }
             }
@@ -110,7 +108,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
                 }
                 if (allPermissionsGranted) {
                     if (isGPSActive()) {
-                        viewModel.fetchAndUpdateDeviceLocation()
+                        viewModel?.fetchAndUpdateDeviceLocation()
                     } else {
                         turnOnGPS()
                     }
@@ -125,7 +123,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                viewModel.fetchAndUpdateDeviceLocation()
+                viewModel?.fetchAndUpdateDeviceLocation()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 showSnackBar(

@@ -36,20 +36,19 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
 
     private var predictionsMap = emptyMap<String, Location>()
 
+    private var viewModel: HomeFragmentViewModel? = null
+
     companion object {
         private const val MULTIPLE_LOCATION_PERMISSION = 1
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            homeFragmentViewModel = viewModel
+        activity?.let {
+            viewModel = getViewModelInstanceWithOwner(it)
         }
+        binding.homeFragmentViewModel = viewModel
         setupClickListeners()
-    }
-
-    override fun onResume() {
-        super.onResume()
         setupObservers()
     }
 
@@ -83,7 +82,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     }
 
     private fun onPredictionClick(searchText: String) = lifecycleScope.launchWhenStarted {
-        predictionsMap[searchText]?.let { viewModel.updateLocationOnSearch(it) }
+        predictionsMap[searchText]?.let { viewModel?.updateLocationOnSearch(it) }
     }
 
     private fun setupObservers() {
@@ -95,10 +94,10 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     private fun observeSuggestions() = lifecycleScope.launchWhenStarted {
         binding.searchText.doAfterTextChanged { text ->
             if (!text.toString().isNullOrEmpty()) {
-                viewModel.fetchAndUpdatePredictionsList(text.toString())
+                viewModel?.fetchAndUpdatePredictionsList(text.toString())
             }
         }
-        viewModel.predictionsState.collectLatest { mapOfPredictions ->
+        viewModel?.predictionsState?.collectLatest { mapOfPredictions ->
             updateListOfPredictions(mapOfPredictions)
         }
     }
@@ -115,7 +114,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     }
 
     private fun observeWeather() = lifecycleScope.launchWhenStarted {
-        viewModel.weatherState.collectLatest { uiState ->
+        viewModel?.weatherState?.collectLatest { uiState ->
             when (uiState) {
                 is BaseViewState.Success -> uiState.data?.let { data ->
                     setupWeatherSuccessView(data)
@@ -195,7 +194,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     private fun getLocationAndStartObservingWeather() {
         binding.searchText.setText("")
         when {
-            hasLocationPermission() && requireContext().isGPSActive() -> viewModel.fetchAndUpdateDeviceLocation()
+            hasLocationPermission() && requireContext().isGPSActive() -> viewModel?.fetchAndUpdateDeviceLocation()
             !hasLocationPermission() -> requestLocationPermission()
             else -> (activity as MainActivity).turnOnGPS()
         }

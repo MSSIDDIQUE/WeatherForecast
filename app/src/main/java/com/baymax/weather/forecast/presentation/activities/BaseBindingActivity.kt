@@ -5,6 +5,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.ActivityBaseBinding
 import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
@@ -25,12 +26,12 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
 
     private lateinit var baseBinding: ActivityBaseBinding
 
-    val viewModel: VM by lazy {
-        ViewModelProvider(
-            this,
-            viewModelFactory
-        )[getViewModelClass()]
-    }
+    fun getViewModelInstanceWithOwner(
+        owner: ViewModelStoreOwner
+    ): VM = ViewModelProvider(
+        owner,
+        viewModelFactory
+    )[getViewModelClass()]
 
     override fun setContentView(layoutResID: Int) {
         baseBinding = DataBindingUtil.inflate<ActivityBaseBinding?>(

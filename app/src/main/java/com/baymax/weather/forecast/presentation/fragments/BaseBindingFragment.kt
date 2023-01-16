@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
 import dagger.android.support.DaggerFragment
@@ -25,12 +26,12 @@ open class BaseBindingFragment<VB : ViewDataBinding, VM : BaseViewModel>(
 
     val binding: VB by lazy { bindingFactory(layoutInflater) }
 
-    val viewModel: VM by lazy {
-        ViewModelProvider(
-            this,
-            viewModelFactory
-        )[getViewModelClass()]
-    }
+    fun getViewModelInstanceWithOwner(
+        owner: ViewModelStoreOwner
+    ): VM = ViewModelProvider(
+        owner,
+        viewModelFactory
+    )[getViewModelClass()]
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
