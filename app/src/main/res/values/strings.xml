@@ -12,7 +12,7 @@
     <string name="search">Search</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="current_location">Use device location</string>
-    <string name="unable_to_turn_on_gps">Use my current location</string>
+    <string name="unable_to_turn_on_gps">Unable to turn on GPS</string>
     <string name="view_more">View more</string>
     <string name="view_less">View less</string>
     <string name="permission_required_warning">Location permission is necessary for this action!</string>

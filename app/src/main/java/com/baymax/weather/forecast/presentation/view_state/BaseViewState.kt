@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.data
+package com.baymax.weather.forecast.presentation.view_state
 
 sealed class BaseViewState<out T> {
     data class Success<T>(val data: T?) : BaseViewState<T>()

@@ -1,33 +1,31 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.fragments
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.baymax.weather.forecast.R
-import com.baymax.weather.forecast.data.BaseViewState
 import com.baymax.weather.forecast.databinding.FragmentHomeBinding
 import com.baymax.weather.forecast.databinding.ItemViewWeatherDetailsBinding
+import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.Location
 import com.baymax.weather.forecast.presentation.fragments.BaseBindingFragment
-import com.baymax.weather.forecast.search_location.api.data_transfer_model.Location
+import com.baymax.weather.forecast.presentation.view_state.BaseViewState
+import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.utils.DateTimeUtils.getCurrentDateTime
-import com.baymax.weather.forecast.utils.isGPSActive
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM
-import com.baymax.weather.forecast.weather_forecast.presentation.activities.MainActivity
 import com.baymax.weather.forecast.weather_forecast.presentation.adapters.WeatherDetailsListAdapter
 import com.baymax.weather.forecast.weather_forecast.presentation.adapters.WeatherListAdapter
 import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewModel>(
     FragmentHomeBinding::inflate
@@ -52,7 +50,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         setupObservers()
     }
 
-    private fun setupClickListeners() = binding.apply {
+    private fun setupClickListeners() = with(binding) {
         includedView.apply {
             viewMoreOrLessContainer.setOnClickListener {
                 if (!hiddenView.isVisible) {
@@ -73,7 +71,8 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
             }
         }
         btnUseMyLocation.setOnClickListener {
-            getLocationAndStartObservingWeather()
+            binding.searchText.setText("")
+            viewModel?.fetchAndUpdateDeviceLocation()
         }
         searchText.setOnItemClickListener { adapterView, _, position, _ ->
             val searchText = adapterView.getItemAtPosition(position).toString()
@@ -81,24 +80,31 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         }
     }
 
-    private fun onPredictionClick(searchText: String) = lifecycleScope.launchWhenStarted {
-        predictionsMap[searchText]?.let { viewModel?.updateLocationOnSearch(it) }
+    private fun onPredictionClick(searchText: String) = lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            predictionsMap[searchText]?.let {
+                viewModel?.updateLocationOnSearch(it)
+            }
+        }
     }
 
     private fun setupObservers() {
         observeSuggestions()
         observeWeather()
-        getLocationAndStartObservingWeather()
     }
 
-    private fun observeSuggestions() = lifecycleScope.launchWhenStarted {
+    private fun observeSuggestions() {
         binding.searchText.doAfterTextChanged { text ->
             if (!text.toString().isNullOrEmpty()) {
                 viewModel?.fetchAndUpdatePredictionsList(text.toString())
             }
         }
-        viewModel?.predictionsState?.collectLatest { mapOfPredictions ->
-            updateListOfPredictions(mapOfPredictions)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel?.predictionsState?.collectLatest { mapOfPredictions ->
+                    updateListOfPredictions(mapOfPredictions)
+                }
+            }
         }
     }
 
@@ -113,16 +119,22 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         )
     }
 
-    private fun observeWeather() = lifecycleScope.launchWhenStarted {
-        viewModel?.weatherState?.collectLatest { uiState ->
-            when (uiState) {
-                is BaseViewState.Success -> uiState.data?.let { data ->
-                    setupWeatherSuccessView(data)
-                } ?: setupWeatherEmptyView()
+    private fun observeWeather() = lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel?.weatherState?.collectLatest { uiState ->
+                when (uiState) {
+                    is BaseViewState.Success -> uiState.data?.let { data ->
+                        setupWeatherSuccessView(data)
+                    } ?: setupWeatherEmptyView()
 
-                is BaseViewState.Error -> showSnackBar(uiState.errorMessage)
-                is BaseViewState.Loading -> setupWeatherLoadingView(uiState.msg)
-                is BaseViewState.Empty -> setupWeatherEmptyView()
+                    is BaseViewState.Error -> {
+                        showProgressBar(false)
+                        showSnackBar(SnackBarViewState.Error(uiState.errorMessage))
+                    }
+
+                    is BaseViewState.Loading -> setupWeatherLoadingView(uiState.msg)
+                    is BaseViewState.Empty -> setupWeatherEmptyView()
+                }
             }
         }
     }
@@ -157,47 +169,11 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         lineWeatherForecastContainer.visibility = View.GONE
     }
 
-    private fun setupWeatherLoadingView(msg: String) = binding.apply {
+    private fun setupWeatherLoadingView(msg: String) = with(binding) {
         showProgressBar(true, msg)
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE
-    }
-
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            MULTIPLE_LOCATION_PERMISSION
-        )
-    }
-
-    private fun hasLocationPermission(): Boolean {
-        arrayListOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ).forEach { permission ->
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun getLocationAndStartObservingWeather() {
-        binding.searchText.setText("")
-        when {
-            hasLocationPermission() && requireContext().isGPSActive() -> viewModel?.fetchAndUpdateDeviceLocation()
-            !hasLocationPermission() -> requestLocationPermission()
-            else -> (activity as MainActivity).turnOnGPS()
-        }
     }
 
     private fun onItemClick(

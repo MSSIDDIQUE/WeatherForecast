@@ -2,16 +2,21 @@ package com.baymax.weather.forecast.presentation.activities
 
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.ActivityBaseBinding
 import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
+import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 import javax.inject.Inject
 
@@ -31,7 +36,12 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
     ): VM = ViewModelProvider(
         owner,
         viewModelFactory
-    )[getViewModelClass()]
+    )[getViewModelClass()].apply {
+        lifecycleScope.launch {
+            snackBarViewState.collectLatest { state -> showSnackBar(state) }
+            showProgressBarState.collectLatest { state -> showProgressBar(state) }
+        }
+    }
 
     override fun setContentView(layoutResID: Int) {
         baseBinding = DataBindingUtil.inflate<ActivityBaseBinding?>(
@@ -54,14 +64,49 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
     override fun showProgressBar(isVisible: Boolean, message: String?) {
         baseBinding.progressBar.apply {
             groupProgressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
-            if (!message.isNullOrEmpty()) { loadingText.text = message }
+            if (!message.isNullOrEmpty()) {
+                loadingText.text = message
+            }
         }
     }
 
     override fun showSnackBar(
+        viewState: SnackBarViewState
+    ) = when (viewState) {
+        SnackBarViewState.Nothing -> {}
+        is SnackBarViewState.Error -> createSnackBar(
+            viewState.errorMessage,
+            viewState.actionName,
+            viewState.action,
+            R.color.error_red
+        ).show()
+
+        is SnackBarViewState.Normal -> createSnackBar(
+            viewState.message,
+            viewState.actionName,
+            viewState.action
+        ).show()
+
+        is SnackBarViewState.Success -> createSnackBar(
+            viewState.message,
+            viewState.actionName,
+            viewState.action,
+            R.color.success_green
+        ).show()
+
+        is SnackBarViewState.Warning -> createSnackBar(
+            viewState.warningMessage,
+            viewState.actionName,
+            viewState.action,
+            R.color.warning_yellow
+        ).show()
+    }
+
+    private fun createSnackBar(
         message: String,
         actionName: String?,
-        action: (() -> Unit)?
+        action: (() -> Unit)?,
+        backgroundColor: Int? = null
     ) = Snackbar.make(
         baseBinding.baseLayoutContainer,
         message,
@@ -72,5 +117,8 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
                 actionName
             ) { if (action != null) action() }
         }
-    }.show()
+        backgroundColor?.let { color ->
+            view.setBackgroundColor(ContextCompat.getColor(context, color))
+        }
+    }
 }

@@ -1,18 +1,21 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.view_model
 
 import androidx.lifecycle.viewModelScope
-import com.baymax.weather.forecast.data.BaseViewState
 import com.baymax.weather.forecast.data.ResponseWrapper
+import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.Location
+import com.baymax.weather.forecast.fetch_location.data.FetchCurrentDeviceLocationUseCase
+import com.baymax.weather.forecast.fetch_location.data.FetchLocationPredictionsUseCase
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
-import com.baymax.weather.forecast.search_location.api.data_transfer_model.Location
-import com.baymax.weather.forecast.search_location.data.FetchCurrentDeviceLocationUseCase
-import com.baymax.weather.forecast.search_location.data.FetchLocationPredictionsUseCase
+import com.baymax.weather.forecast.presentation.view_state.BaseViewState
+import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,10 +34,6 @@ class HomeFragmentViewModel @Inject constructor(
     private val _predictionsState = MutableStateFlow<Map<String, Location>>(emptyMap())
     val predictionsState: StateFlow<Map<String, Location>> = _predictionsState
 
-    fun setUiState(state: BaseViewState<ApiResponseDM>) {
-        _weatherState.value = state
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun fetchWeatherForLocation() = locationState.flatMapLatest { (lat, lng) ->
         _weatherState.value = BaseViewState.Loading("Fetching Weather")
@@ -50,10 +49,18 @@ class HomeFragmentViewModel @Inject constructor(
     }
 
     fun fetchAndUpdateDeviceLocation() = viewModelScope.launch {
-        _weatherState.value = BaseViewState.Loading("Fetching current location")
-        fetchCurrentDeviceLocationUseCase().collectLatest { loc ->
-            locationState.value = loc
-            fetchWeatherForLocation()
+        fetchCurrentDeviceLocationUseCase().collectLatest { response ->
+            _weatherState.value = BaseViewState.Loading("Fetching current location")
+            when (response) {
+                is ResponseWrapper.Failure -> {
+                    _weatherState.value = BaseViewState.Error(response.msg ?: "Unable to fetch device location")
+                }
+
+                is ResponseWrapper.Success -> {
+                    locationState.value = response.data
+                    fetchWeatherForLocation()
+                }
+            }
         }
     }
 
@@ -62,11 +69,19 @@ class HomeFragmentViewModel @Inject constructor(
         fetchWeatherForLocation()
     }
 
+    @OptIn(FlowPreview::class)
     fun fetchAndUpdatePredictionsList(searchText: String) = viewModelScope.launch {
-        fetchLocationPredictionsUseCase(searchText).collectLatest { predictions ->
-            if (predictions != null) {
-                _predictionsState.value = predictions
+        fetchLocationPredictionsUseCase(searchText).debounce(500)
+            .collectLatest { response ->
+                when (response) {
+                    is ResponseWrapper.Failure -> setSnackBarViewState(
+                        SnackBarViewState.Error(response.msg ?: "Unable to fetch predictions")
+                    )
+
+                    is ResponseWrapper.Success -> response?.data?.let { predictions ->
+                        _predictionsState.value = predictions
+                    } ?: setSnackBarViewState(SnackBarViewState.Error("No such location exists"))
+                }
             }
-        }
     }
 }

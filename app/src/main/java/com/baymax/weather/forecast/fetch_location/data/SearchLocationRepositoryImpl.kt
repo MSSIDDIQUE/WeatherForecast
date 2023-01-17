@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.search_location.data
+package com.baymax.weather.forecast.fetch_location.data
 
 import javax.inject.Inject
 

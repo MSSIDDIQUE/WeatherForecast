@@ -1,7 +1,7 @@
-package com.baymax.weather.forecast.search_location.data
+package com.baymax.weather.forecast.fetch_location.data
 
 import com.baymax.weather.forecast.data.BaseDataSource
-import com.baymax.weather.forecast.search_location.api.GooglePlaceApiService
+import com.baymax.weather.forecast.fetch_location.api.GooglePlaceApiService
 import com.baymax.weather.forecast.utils.PrefHelper
 import com.baymax.weather.forecast.utils.get
 import javax.inject.Inject

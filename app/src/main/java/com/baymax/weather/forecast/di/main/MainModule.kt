@@ -1,10 +1,10 @@
 package com.baymax.weather.forecast.di.main
 
 import android.content.Context
-import com.baymax.weather.forecast.search_location.api.GooglePlaceApiService
-import com.baymax.weather.forecast.search_location.data.SearchLocationRemoteDataSource
-import com.baymax.weather.forecast.search_location.data.SearchLocationRepository
-import com.baymax.weather.forecast.search_location.data.SearchLocationRepositoryImpl
+import com.baymax.weather.forecast.fetch_location.api.GooglePlaceApiService
+import com.baymax.weather.forecast.fetch_location.data.SearchLocationRemoteDataSource
+import com.baymax.weather.forecast.fetch_location.data.SearchLocationRepository
+import com.baymax.weather.forecast.fetch_location.data.SearchLocationRepositoryImpl
 import com.baymax.weather.forecast.weather_forecast.api.WeatherApiService
 import com.baymax.weather.forecast.weather_forecast.data.WeatherRemoteDataSource
 import com.baymax.weather.forecast.weather_forecast.data.WeatherRepository
