@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
+import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import dagger.android.support.DaggerFragment
 import java.lang.reflect.ParameterizedType
@@ -56,10 +57,9 @@ open class BaseBindingFragment<VB : ViewDataBinding, VM : BaseViewModel>(
         return type as Class<VM>
     }
 
-    fun showProgressBar(
-        isVisible: Boolean,
-        message: String? = null
-    ) = listener?.showProgressBar(isVisible, message)
+    fun updateProgressBarState(
+        viewState: ProgressBarViewState
+    ) = listener?.updateProgressBarState(viewState)
 
     fun showSnackBar(viewState: SnackBarViewState) = listener?.showSnackBar(viewState)
 }

@@ -11,14 +11,14 @@ class PrefHelper(val context: Context) {
         const val WEATHER_API_KEY: String = "appid"
         const val LAT: String = "lat"
         const val LNG: String = "lng"
-        const val LOCATION_PERMISSION: String = "location_permission"
         const val GOOGLE_PLACE_API_KEY: String = "key"
+        const val IS_LAST_LOCATION_CACHED: String = "is_last_location_cached"
     }
 
-    val masterKeyAlias: String by lazy {
+    private val masterKeyAlias: String by lazy {
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     }
-    val sharedPref: SharedPreferences by lazy {
+    val sharedPrefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
             "open_weather_forecast_api",
             masterKeyAlias,
@@ -28,13 +28,8 @@ class PrefHelper(val context: Context) {
         )
     }
 
-    val putSharedPrefs = sharedPref.edit()
-
     init {
-        putSharedPrefs[LAT] = 0
-        putSharedPrefs[LNG] = 0
-        putSharedPrefs[LOCATION_PERMISSION] = false
-        putSharedPrefs[WEATHER_API_KEY] = BuildConfig.WEATHER_API_KEY
-        putSharedPrefs[GOOGLE_PLACE_API_KEY] = BuildConfig.GOOGLE_PLACE_API_KEY
+        sharedPrefs[WEATHER_API_KEY] = BuildConfig.WEATHER_API_KEY
+        sharedPrefs[GOOGLE_PLACE_API_KEY] = BuildConfig.GOOGLE_PLACE_API_KEY
     }
 }

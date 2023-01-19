@@ -2,16 +2,16 @@ package com.baymax.weather.forecast.di.main
 
 import android.content.Context
 import com.baymax.weather.forecast.fetch_location.api.GooglePlaceApiService
-import com.baymax.weather.forecast.fetch_location.data.SearchLocationRemoteDataSource
-import com.baymax.weather.forecast.fetch_location.data.SearchLocationRepository
-import com.baymax.weather.forecast.fetch_location.data.SearchLocationRepositoryImpl
+import com.baymax.weather.forecast.fetch_location.data.FetchLocationRemoteDataSource
+import com.baymax.weather.forecast.fetch_location.data.FetchLocationRepository
+import com.baymax.weather.forecast.fetch_location.data.FetchLocationRepositoryImpl
+import com.baymax.weather.forecast.utils.ConnectionLiveData
+import com.baymax.weather.forecast.utils.Constants
+import com.baymax.weather.forecast.utils.PrefHelper
 import com.baymax.weather.forecast.weather_forecast.api.WeatherApiService
 import com.baymax.weather.forecast.weather_forecast.data.WeatherRemoteDataSource
 import com.baymax.weather.forecast.weather_forecast.data.WeatherRepository
 import com.baymax.weather.forecast.weather_forecast.data.WeatherRepositoryImpl
-import com.baymax.weather.forecast.utils.ConnectionLiveData
-import com.baymax.weather.forecast.utils.Constants
-import com.baymax.weather.forecast.utils.PrefHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -66,10 +66,7 @@ class MainModule {
     fun provideSearchLocationRemoteDataSource(
         googlePlaceApiService: GooglePlaceApiService,
         prefHelper: PrefHelper
-    ): SearchLocationRemoteDataSource = SearchLocationRemoteDataSource(
-        googlePlaceApiService,
-        prefHelper
-    )
+    ): FetchLocationRemoteDataSource = FetchLocationRemoteDataSource(googlePlaceApiService)
 
     @MainScope
     @Provides
@@ -82,8 +79,9 @@ class MainModule {
     @MainScope
     @Provides
     fun provideWeatherRepository(
+        prefHelper: PrefHelper,
         remoteDataSource: WeatherRemoteDataSource
-    ): WeatherRepository = WeatherRepositoryImpl(remoteDataSource)
+    ): WeatherRepository = WeatherRepositoryImpl(prefHelper, remoteDataSource)
 
     private fun getDynamicRetrofitClient(
         client: OkHttpClient,
@@ -100,8 +98,9 @@ class MainModule {
     @MainScope
     @Provides
     fun provideSearchLocationRepository(
-        remoteDataSource: SearchLocationRemoteDataSource
-    ): SearchLocationRepository = SearchLocationRepositoryImpl(remoteDataSource)
+        prefHelper: PrefHelper,
+        remoteDataSource: FetchLocationRemoteDataSource
+    ): FetchLocationRepository = FetchLocationRepositoryImpl(prefHelper, remoteDataSource)
 
     @MainScope
     @Provides

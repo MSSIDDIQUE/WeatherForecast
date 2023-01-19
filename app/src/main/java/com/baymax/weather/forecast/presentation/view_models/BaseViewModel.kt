@@ -1,23 +1,24 @@
 package com.baymax.weather.forecast.presentation.view_models
 
 import androidx.lifecycle.ViewModel
+import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class BaseViewModel : ViewModel() {
 
-    private val _snackBarViewState = MutableStateFlow<SnackBarViewState>(SnackBarViewState.Nothing)
-    val snackBarViewState: StateFlow<SnackBarViewState> = _snackBarViewState
+    private val _snackBar = MutableStateFlow<SnackBarViewState>(SnackBarViewState.Nothing)
+    val snackBar: StateFlow<SnackBarViewState> = _snackBar
 
-    private val _showProgressBarState = MutableStateFlow(false)
-    val showProgressBarState: StateFlow<Boolean> = _showProgressBarState
+    private val _progressBar = MutableStateFlow<ProgressBarViewState>(ProgressBarViewState.Hide)
+    val progressBar: StateFlow<ProgressBarViewState> = _progressBar
 
-    fun setSnackBarViewState(viewState: SnackBarViewState) {
-        _snackBarViewState.value = viewState
+    fun setSnackBarState(viewState: SnackBarViewState) {
+        _snackBar.value = viewState
     }
 
-    fun setProgressBarState(progressBarState: Boolean) {
-        _showProgressBarState.value = progressBarState
+    fun setProgressBarState(viewState: ProgressBarViewState) {
+        _progressBar.value = viewState
     }
 }

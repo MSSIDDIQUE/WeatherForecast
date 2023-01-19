@@ -2,11 +2,11 @@ package com.baymax.weather.forecast.weather_forecast.presentation.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.ActivityMainBinding
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.hasLocationPermissions
@@ -16,12 +16,16 @@ import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.turnOnGPS
 import com.baymax.weather.forecast.presentation.activities.BaseBindingActivity
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.utils.ConnectionLiveData
+import com.baymax.weather.forecast.weather_forecast.presentation.listeners.HomeFragmentEventListener
 import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewModel>(
-    ActivityMainBinding::inflate
-) {
+class MainActivity :
+    BaseBindingActivity<ActivityMainBinding, HomeFragmentViewModel>(ActivityMainBinding::inflate),
+    HomeFragmentEventListener {
 
     companion object {
         private const val MULTIPLE_LOCATION_PERMISSION = 1
@@ -38,14 +42,17 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = getViewModelInstanceWithOwner(this).apply {
-            when {
-                hasLocationPermissions() && isGpsActive() -> fetchAndUpdateDeviceLocation()
-                !hasLocationPermissions() -> requestLocationPermission()
-                else -> turnOnGPS()
-            }
-        }
+        viewModel = getViewModelInstanceWithOwner(this)
+        updateLocation()
         setupObservers()
+    }
+
+    private fun updateLocation() = lifecycleScope.launch {
+        withContext(Dispatchers.Default) {
+            viewModel?.isLastLocationCached() ?: false
+        }.also { available ->
+            if (available) viewModel?.updateLastLocation() else updateCurrentDeviceLocation()
+        }
     }
 
     private fun setupObservers() = with(binding) {
@@ -56,41 +63,31 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, HomeFragmentViewMo
         }
     }
 
+    override fun updateCurrentDeviceLocation() {
+        when {
+            hasLocationPermissions() && isGpsActive() -> viewModel?.updateCurrentLocation()
+            !hasLocationPermissions() -> requestLocationPermission()
+            !isGpsActive() -> turnOnGPS()
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        arrayOfPermissiions: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, arrayOfPermissiions)
         if (requestCode == MULTIPLE_LOCATION_PERMISSION) {
-            var allPermissionsGranted = true
-            if (grantResults.isNotEmpty()) {
-                grantResults.forEach { permissionResult ->
-                    if (permissionResult != PackageManager.PERMISSION_GRANTED) {
-                        allPermissionsGranted = false
-                    }
-                }
-                if (allPermissionsGranted) {
-                    if (isGpsActive()) {
-                        viewModel?.fetchAndUpdateDeviceLocation()
-                    } else {
-                        turnOnGPS()
-                    }
-                } else {
-                    showSnackBar(SnackBarViewState.Warning(getString(R.string.permission_required_warning)))
-                }
-            }
+            updateCurrentDeviceLocation()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                viewModel?.fetchAndUpdateDeviceLocation()
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                showSnackBar(
+            when (resultCode) {
+                Activity.RESULT_OK -> updateCurrentDeviceLocation()
+                Activity.RESULT_CANCELED -> showSnackBar(
                     SnackBarViewState.Warning(
                         getString(R.string.gps_warning),
                         "Retry"

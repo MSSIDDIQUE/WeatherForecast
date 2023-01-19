@@ -5,6 +5,8 @@ import javax.inject.Inject
 
 class FetchWeatherUseCase @Inject constructor(private val repo: WeatherRepository) {
     operator fun invoke(lat: Double, lng: Double) = flow {
-        emit(repo.fetchWeather(lat, lng))
+        if (lat != 0.0 && lng != 0.0) {
+            emit(repo.fetchWeather(lat, lng))
+        }
     }
 }

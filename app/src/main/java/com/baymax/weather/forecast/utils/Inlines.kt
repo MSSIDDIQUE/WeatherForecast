@@ -1,6 +1,7 @@
 package com.baymax.weather.forecast.utils
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.baymax.weather.forecast.data.ResponseWrapper
 import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.ApiResponseDTO
 import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.WeatherDTO
@@ -10,25 +11,25 @@ import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherSummaryDM
 import kotlin.math.roundToInt
 
-inline operator fun <reified T> SharedPreferences.Editor.set(
-    key: String,
-    value: T
-) {
-    when (T::class.java) {
-        Int::class.java -> putInt(key, value as Int).apply()
-        Long::class.java -> putLong(key, value as Long).apply()
-        String::class.java -> putString(key, value as String).apply()
-    }
+operator fun SharedPreferences.set(key: String, value: Any?) = when (value) {
+    is String? -> edit { putString(key, value) }
+    is Int -> edit { putInt(key, value) }
+    is Boolean -> edit { putBoolean(key, value) }
+    is Float -> edit { putFloat(key, value) }
+    is Long -> edit { putLong(key, value) }
+    else -> throw UnsupportedOperationException("Not yet implemented")
 }
 
-inline operator fun <reified T> SharedPreferences.get(
+inline operator fun <reified T : Any> SharedPreferences.get(
     key: String,
-    defValue: T
-): T = when (T::class.java) {
-    Int::class.java -> getInt(key, defValue as Int) as T
-    Long::class.java -> getLong(key, defValue as Long) as T
-    String::class.java -> getString(key, defValue as String) as T
-    else -> 0 as T
+    defaultValue: T? = null
+): T = when (T::class) {
+    String::class -> getString(key, defaultValue as? String ?: "") as T
+    Int::class -> getInt(key, defaultValue as? Int ?: -1) as T
+    Boolean::class -> getBoolean(key, defaultValue as? Boolean ?: false) as T
+    Float::class -> getFloat(key, defaultValue as? Float ?: -1f) as T
+    Long::class -> getLong(key, defaultValue as? Long ?: -1) as T
+    else -> throw UnsupportedOperationException("Not yet implemented")
 }
 
 // Non-nullable to Non-nullable

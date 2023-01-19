@@ -5,7 +5,7 @@ import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.Locati
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class FetchLocationPredictionsUseCase @Inject constructor(private val repo: SearchLocationRepository) {
+class FetchPredictionsUseCase @Inject constructor(private val repo: FetchLocationRepository) {
     operator fun invoke(text: String) = flow {
         emit(
             when (val predictionResponse = repo.getSuggestions(text)) {

@@ -12,6 +12,7 @@ import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.ActivityBaseBinding
 import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
+import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -38,8 +39,9 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
         viewModelFactory
     )[getViewModelClass()].apply {
         lifecycleScope.launch {
-            snackBarViewState.collectLatest { state -> showSnackBar(state) }
-            showProgressBarState.collectLatest { state -> showProgressBar(state) }
+            snackBar.collectLatest { state -> showSnackBar(state) }
+            progressBar.collectLatest { state ->
+            }
         }
     }
 
@@ -61,11 +63,16 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
         return type as Class<VM>
     }
 
-    override fun showProgressBar(isVisible: Boolean, message: String?) {
-        baseBinding.progressBar.apply {
-            groupProgressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
-            if (!message.isNullOrEmpty()) {
-                loadingText.text = message
+    override fun updateProgressBarState(
+        viewState: ProgressBarViewState
+    ) = with(baseBinding.progressBar) {
+        groupProgressBar.visibility = when (viewState) {
+            ProgressBarViewState.Hide -> View.GONE
+            is ProgressBarViewState.Show -> {
+                if (!viewState.msg.isNullOrEmpty()) {
+                    loadingText.text = viewState.msg
+                }
+                View.VISIBLE
             }
         }
     }

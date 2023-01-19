@@ -13,12 +13,13 @@ class WeatherRemoteDataSource @Inject constructor(
 
     suspend fun fetchWeatherForLocation(
         lat: Double,
-        lng: Double
+        lng: Double,
+        apiKey: String
     ) = getResult {
         weatherApiService.getWeatherOfCity(
             lat.toString(),
             lng.toString(),
-            prefHelper.sharedPref[PrefHelper.WEATHER_API_KEY, ""]
+            apiKey
         )
     }
 }

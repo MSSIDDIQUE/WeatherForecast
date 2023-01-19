@@ -1,5 +1,6 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -17,12 +18,14 @@ import com.baymax.weather.forecast.databinding.ItemViewWeatherDetailsBinding
 import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.Location
 import com.baymax.weather.forecast.presentation.fragments.BaseBindingFragment
 import com.baymax.weather.forecast.presentation.view_state.BaseViewState
+import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.utils.DateTimeUtils.getCurrentDateTime
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
 import com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM
 import com.baymax.weather.forecast.weather_forecast.presentation.adapters.WeatherDetailsListAdapter
 import com.baymax.weather.forecast.weather_forecast.presentation.adapters.WeatherListAdapter
+import com.baymax.weather.forecast.weather_forecast.presentation.listeners.HomeFragmentEventListener
 import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,8 +39,11 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
 
     private var viewModel: HomeFragmentViewModel? = null
 
-    companion object {
-        private const val MULTIPLE_LOCATION_PERMISSION = 1
+    private var eventListener: HomeFragmentEventListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        eventListener = context as HomeFragmentEventListener
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,7 +78,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
         }
         btnUseMyLocation.setOnClickListener {
             binding.searchText.setText("")
-            viewModel?.fetchAndUpdateDeviceLocation()
+            eventListener?.updateCurrentDeviceLocation()
         }
         searchText.setOnItemClickListener { adapterView, _, position, _ ->
             val searchText = adapterView.getItemAtPosition(position).toString()
@@ -128,7 +134,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                     } ?: setupWeatherEmptyView()
 
                     is BaseViewState.Error -> {
-                        showProgressBar(false)
+                        updateProgressBarState(ProgressBarViewState.Hide)
                         showSnackBar(SnackBarViewState.Error(uiState.errorMessage))
                     }
 
@@ -159,18 +165,18 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                     }
                 }
         }
-        showProgressBar(false)
+        updateProgressBarState(ProgressBarViewState.Hide)
     }
 
     private fun setupWeatherEmptyView() = binding.apply {
-        showProgressBar(false)
+        updateProgressBarState(ProgressBarViewState.Hide)
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE
     }
 
     private fun setupWeatherLoadingView(msg: String) = with(binding) {
-        showProgressBar(true, msg)
+        updateProgressBarState(ProgressBarViewState.Show(msg))
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE

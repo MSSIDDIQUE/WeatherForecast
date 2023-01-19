@@ -94,8 +94,7 @@ object LocationUtils {
     }.not()
 
     fun Context.isGpsActive() = try {
-        val locationManager =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     } catch (e: Exception) {
         e.printStackTrace()
