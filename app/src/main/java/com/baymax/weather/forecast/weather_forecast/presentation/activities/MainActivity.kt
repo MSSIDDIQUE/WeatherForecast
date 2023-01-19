@@ -3,8 +3,6 @@ package com.baymax.weather.forecast.weather_forecast.presentation.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
@@ -19,6 +17,7 @@ import com.baymax.weather.forecast.utils.ConnectionLiveData
 import com.baymax.weather.forecast.weather_forecast.presentation.listeners.HomeFragmentEventListener
 import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -98,15 +97,15 @@ class MainActivity :
     }
 
     override fun onBackPressed() {
-        if (exit) {
-            finish() // finish activity
-        } else {
-            showSnackBar(SnackBarViewState.Normal(getString(R.string.backpress_message)))
-            exit = true
-            Handler(Looper.getMainLooper()).postDelayed(
-                { exit = false },
-                BACK_PRESS_INTERVAL
-            )
+        lifecycleScope.launch {
+            if (exit) {
+                finishAffinity()
+            } else {
+                showSnackBar(SnackBarViewState.Normal(getString(R.string.backpress_message)))
+                exit = true
+                delay(BACK_PRESS_INTERVAL)
+                exit = false
+            }
         }
     }
 }
