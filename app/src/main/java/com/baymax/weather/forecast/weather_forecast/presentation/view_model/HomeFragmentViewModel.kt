@@ -10,16 +10,15 @@ import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
 import com.baymax.weather.forecast.presentation.view_state.BaseViewState
 import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
-import com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -33,29 +32,43 @@ class HomeFragmentViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val location = MutableStateFlow(Location(0.0, 0.0))
 
-    private val _predictionsState = MutableStateFlow<Map<String, Location>>(emptyMap())
-    val predictionsState = _predictionsState.asStateFlow()
+    val searchQuery = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val predictions = searchQuery.debounce(1000).filter {
+        if (it.length < 3) return@filter false else true
+    }.transformLatest { searchQuery ->
+        fetchPredictionsUseCase(searchQuery).collectLatest { response ->
+            when (response) {
+                is ResponseWrapper.Failure -> emptyMap()
+                is ResponseWrapper.Success -> response.data
+            }.also { emit(it) }
+        }
+    }.distinctUntilChanged().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = emptyMap()
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val weatherState: StateFlow<BaseViewState<ApiResponseDM>> =
-        location.transformLatest { (lat, lng) ->
-            emit(BaseViewState.Loading("Fetching Weather"))
-            fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
-                when (weatherState) {
-                    is ResponseWrapper.Failure -> weatherState.msg?.let {
-                        BaseViewState.Error(it)
-                    } ?: BaseViewState.Error("Something went wrong!")
+    val weatherState = location.transformLatest { (lat, lng) ->
+        emit(BaseViewState.Loading("Fetching Weather"))
+        fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
+            when (weatherState) {
+                is ResponseWrapper.Failure -> weatherState.msg?.let {
+                    BaseViewState.Error(it)
+                } ?: BaseViewState.Error("Something went wrong!")
 
-                    is ResponseWrapper.Success -> BaseViewState.Success(weatherState.data)
-                }.also {
-                    emit(it)
-                }
+                is ResponseWrapper.Success -> BaseViewState.Success(weatherState.data)
+            }.also {
+                emit(it)
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = BaseViewState.Empty
-        )
+        }
+    }.distinctUntilChanged().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = BaseViewState.Empty
+    )
 
     fun updateLastLocation() = viewModelScope.launch {
         when {
@@ -89,25 +102,15 @@ class HomeFragmentViewModel @Inject constructor(
         }
     }
 
-    fun updateLocationOnSearch(location: Location) {
-        this.location.value = location
+    fun updateLocationFromPlaceId(placeId: String) = viewModelScope.launch {
+        when (val response = fetchLocationUseCase.fetchLocationFromPlaceId(placeId)) {
+            is ResponseWrapper.Failure -> SnackBarViewState.Error(
+                response.msg ?: "Unable to fetch location"
+            )
+
+            is ResponseWrapper.Success -> location.value = response.data.result.geometry.location
+        }
     }
 
     suspend fun isLastLocationCached() = cacheLocationUseCase.isLastLocationCached()
-
-    @OptIn(FlowPreview::class)
-    fun fetchAndUpdatePredictionsList(searchText: String) = viewModelScope.launch {
-        fetchPredictionsUseCase(searchText).debounce(500)
-            .collectLatest { response ->
-                when (response) {
-                    is ResponseWrapper.Failure -> setSnackBarState(
-                        SnackBarViewState.Error(response.msg ?: "Unable to fetch predictions")
-                    )
-
-                    is ResponseWrapper.Success -> response?.data?.let { predictions ->
-                        _predictionsState.value = predictions
-                    } ?: setSnackBarState(SnackBarViewState.Error("No such location exists"))
-                }
-            }
-    }
 }

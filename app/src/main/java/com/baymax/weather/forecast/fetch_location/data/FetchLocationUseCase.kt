@@ -18,4 +18,6 @@ class FetchLocationUseCase @Inject constructor(
     }
 
     fun fetchLocationFromGps() = locationProvider.locationFlow(appContext)
+
+    suspend fun fetchLocationFromPlaceId(placeId: String) = repo.getCoordinates(placeId)
 }

@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
     // Okhttp
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.9'
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -101,6 +101,9 @@ dependencies {
 
     //Security-Crypto
     implementation "androidx.security:security-crypto:$security_crypto_version"
+
+    //Stetho
+    implementation "com.facebook.stetho:stetho-okhttp3:$stetho_version"
 
     // testing
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"

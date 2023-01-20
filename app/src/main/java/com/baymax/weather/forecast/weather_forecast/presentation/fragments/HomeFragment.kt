@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,7 +35,9 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
 ) {
     private lateinit var linearLayoutManager: LinearLayoutManager
 
-    private var predictionsMap = emptyMap<String, Location>()
+    private var predictionsMap = mutableMapOf<String, String>()
+
+    private var predictionsAdapter: ArrayAdapter<String>? = null
 
     private var viewModel: HomeFragmentViewModel? = null
 
@@ -48,11 +50,10 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.let {
-            viewModel = getViewModelInstanceWithOwner(it)
-        }
+        activity?.let { viewModel = getViewModelInstanceWithOwner(it) }
         binding.homeFragmentViewModel = viewModel
         setupClickListeners()
+        setupPredictionsAdapter()
         setupObservers()
     }
 
@@ -89,7 +90,8 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     private fun onPredictionClick(searchText: String) = lifecycleScope.launch {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
             predictionsMap[searchText]?.let {
-                viewModel?.updateLocationOnSearch(it)
+                viewModel?.updateLocationFromPlaceId(it)
+                predictionsMap.clear()
             }
         }
     }
@@ -100,29 +102,30 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     }
 
     private fun observeSuggestions() {
-        binding.searchText.doAfterTextChanged { text ->
-            if (!text.toString().isNullOrEmpty()) {
-                viewModel?.fetchAndUpdatePredictionsList(text.toString())
+        binding.searchText.doOnTextChanged { searchQuery, start, before, count ->
+            if (searchQuery.toString().isNotEmpty()) {
+                viewModel?.searchQuery?.value = searchQuery.toString()
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel?.predictionsState?.collectLatest { mapOfPredictions ->
-                    updateListOfPredictions(mapOfPredictions)
+            viewModel?.predictions?.collectLatest { latestPredictions ->
+                predictionsAdapter?.run {
+                    latestPredictions?.let { predictions ->
+                        addAll(predictions.keys)
+                        predictionsMap.putAll(predictions)
+                    } ?: clear()
+                    notifyDataSetChanged()
                 }
             }
         }
     }
 
-    private fun updateListOfPredictions(predictions: Map<String, Location>) = with(binding) {
-        predictionsMap = predictions
-        searchText.setAdapter(
-            ArrayAdapter(
-                requireContext(),
-                R.layout.support_simple_spinner_dropdown_item,
-                predictions.map { it.key }
-            )
-        )
+    private fun setupPredictionsAdapter() = with(binding) {
+        predictionsAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.support_simple_spinner_dropdown_item,
+            emptyMap<String, Location>().map { it.key }
+        ).also { searchText.setAdapter(it) }
     }
 
     private fun observeWeather() = lifecycleScope.launch {

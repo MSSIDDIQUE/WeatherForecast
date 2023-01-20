@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.baymax.weather.forecast.BuildConfig
 import com.baymax.weather.forecast.utils.PrefHelper
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -52,6 +53,7 @@ class AppModule {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addNetworkInterceptor(StethoInterceptor())
             .build()
     }
 }
