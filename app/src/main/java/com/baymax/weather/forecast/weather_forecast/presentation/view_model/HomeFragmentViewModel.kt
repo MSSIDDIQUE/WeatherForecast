@@ -51,7 +51,9 @@ class HomeFragmentViewModel @Inject constructor(
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val weatherState = location.transformLatest { (lat, lng) ->
+    val weatherState = location.filter { (lat, lng) ->
+        if (lat == 0.0 && lng == 0.0) return@filter false else true
+    }.transformLatest { (lat, lng) ->
         emit(BaseViewState.Loading("Fetching Weather"))
         fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
             when (weatherState) {

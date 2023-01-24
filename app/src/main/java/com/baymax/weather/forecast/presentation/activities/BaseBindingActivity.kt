@@ -2,15 +2,16 @@ package com.baymax.weather.forecast.presentation.activities
 
 import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.databinding.ActivityBaseBinding
-import com.baymax.weather.forecast.presentation.listeners.BaseEventListener
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
 import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
@@ -23,7 +24,7 @@ import javax.inject.Inject
 
 abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
     val bindingFactory: (LayoutInflater) -> VB
-) : DaggerAppCompatActivity(), BaseEventListener {
+) : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -33,14 +34,17 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
     private lateinit var baseBinding: ActivityBaseBinding
 
     fun getViewModelInstanceWithOwner(
-        owner: ViewModelStoreOwner
+        owner: AppCompatActivity
     ): VM = ViewModelProvider(
         owner,
         viewModelFactory
-    )[getViewModelClass()].apply {
-        lifecycleScope.launch {
-            snackBar.collectLatest { state -> showSnackBar(state) }
-            progressBar.collectLatest { state ->
+    )[getViewModelClass()].also { viewModel ->
+        with(viewModel) {
+            owner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    progressBar.collectLatest { state -> updateProgressBarState(state) }
+                    snackBar.collectLatest { state -> showSnackBar(state) }
+                }
             }
         }
     }
@@ -63,50 +67,41 @@ abstract class BaseBindingActivity<VB : ViewDataBinding, VM : BaseViewModel>(
         return type as Class<VM>
     }
 
-    override fun updateProgressBarState(
+    private fun updateProgressBarState(
         viewState: ProgressBarViewState
     ) = with(baseBinding.progressBar) {
-        groupProgressBar.visibility = when (viewState) {
+        root.visibility = when (viewState) {
             ProgressBarViewState.Hide -> View.GONE
             is ProgressBarViewState.Show -> {
-                if (!viewState.msg.isNullOrEmpty()) {
-                    loadingText.text = viewState.msg
+                loadingText.text = if (!viewState.msg.isNullOrEmpty()) {
+                    viewState.msg
+                } else {
+                    getString(R.string.loading)
                 }
                 View.VISIBLE
             }
         }
     }
 
-    override fun showSnackBar(
+    private fun showSnackBar(
         viewState: SnackBarViewState
     ) = when (viewState) {
         SnackBarViewState.Nothing -> {}
-        is SnackBarViewState.Error -> createSnackBar(
-            viewState.errorMessage,
-            viewState.actionName,
-            viewState.action,
-            R.color.error_red
-        ).show()
+        is SnackBarViewState.Error -> with(viewState) {
+            createSnackBar(errorMessage, actionName, action, R.color.error_red).show()
+        }
 
-        is SnackBarViewState.Normal -> createSnackBar(
-            viewState.message,
-            viewState.actionName,
-            viewState.action
-        ).show()
+        is SnackBarViewState.Normal -> with(viewState) {
+            createSnackBar(message, actionName, action).show()
+        }
 
-        is SnackBarViewState.Success -> createSnackBar(
-            viewState.message,
-            viewState.actionName,
-            viewState.action,
-            R.color.success_green
-        ).show()
+        is SnackBarViewState.Success -> with(viewState) {
+            createSnackBar(message, actionName, action, R.color.success_green).show()
+        }
 
-        is SnackBarViewState.Warning -> createSnackBar(
-            viewState.warningMessage,
-            viewState.actionName,
-            viewState.action,
-            R.color.warning_yellow
-        ).show()
+        is SnackBarViewState.Warning -> with(viewState) {
+            createSnackBar(warningMessage, actionName, action, R.color.warning_yellow).show()
+        }
     }
 
     private fun createSnackBar(

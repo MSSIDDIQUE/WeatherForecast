@@ -86,7 +86,7 @@ class MainActivity :
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             when (resultCode) {
                 Activity.RESULT_OK -> updateCurrentDeviceLocation()
-                Activity.RESULT_CANCELED -> showSnackBar(
+                Activity.RESULT_CANCELED -> viewModel?.setSnackBarState(
                     SnackBarViewState.Warning(
                         getString(R.string.gps_warning),
                         "Retry"
@@ -101,7 +101,7 @@ class MainActivity :
             if (exit) {
                 finishAffinity()
             } else {
-                showSnackBar(SnackBarViewState.Normal(getString(R.string.backpress_message)))
+                viewModel?.setSnackBarState(SnackBarViewState.Normal(getString(R.string.backpress_message)))
                 exit = true
                 delay(BACK_PRESS_INTERVAL)
                 exit = false

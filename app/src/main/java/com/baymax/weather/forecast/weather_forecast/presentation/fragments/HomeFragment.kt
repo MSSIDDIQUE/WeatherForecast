@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -102,7 +102,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     }
 
     private fun observeSuggestions() {
-        binding.searchText.doOnTextChanged { searchQuery, start, before, count ->
+        binding.searchText.doAfterTextChanged { searchQuery ->
             if (searchQuery.toString().isNotEmpty()) {
                 viewModel?.searchQuery?.value = searchQuery.toString()
             }
@@ -136,9 +136,9 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                         setupWeatherSuccessView(data)
                     } ?: setupWeatherEmptyView()
 
-                    is BaseViewState.Error -> {
-                        updateProgressBarState(ProgressBarViewState.Hide)
-                        showSnackBar(SnackBarViewState.Error(uiState.errorMessage))
+                    is BaseViewState.Error -> viewModel?.run {
+                        setProgressBarState(ProgressBarViewState.Hide)
+                        setSnackBarState(SnackBarViewState.Error(uiState.errorMessage))
                     }
 
                     is BaseViewState.Loading -> setupWeatherLoadingView(uiState.msg)
@@ -168,18 +168,18 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
                     }
                 }
         }
-        updateProgressBarState(ProgressBarViewState.Hide)
+        viewModel?.setProgressBarState(ProgressBarViewState.Hide)
     }
 
-    private fun setupWeatherEmptyView() = binding.apply {
-        updateProgressBarState(ProgressBarViewState.Hide)
+    private fun setupWeatherEmptyView() = with(binding) {
+        viewModel?.setProgressBarState(ProgressBarViewState.Hide)
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE
     }
 
     private fun setupWeatherLoadingView(msg: String) = with(binding) {
-        updateProgressBarState(ProgressBarViewState.Show(msg))
+        viewModel?.setProgressBarState(ProgressBarViewState.Show(msg))
         cardTemp.visibility = View.GONE
         rvContainer.visibility = View.GONE
         lineWeatherForecastContainer.visibility = View.GONE
@@ -188,7 +188,7 @@ class HomeFragment : BaseBindingFragment<FragmentHomeBinding, HomeFragmentViewMo
     private fun onItemClick(
         binding: ItemViewWeatherDetailsBinding,
         listGroupedByDate: List<WeatherDM>?
-    ) = binding.apply {
+    ) = with(binding) {
         if (!hiddenView.root.isVisible) {
             TransitionManager.beginDelayedTransition(
                 cvWeatherItem,

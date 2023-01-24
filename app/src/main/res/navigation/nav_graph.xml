@@ -13,8 +13,7 @@
     <fragment
         android:id="@+id/splashScreenFragment"
         android:name="com.baymax.weather.forecast.presentation.fragments.SplashScreenFragment"
-        android:label="fragment_splash_screen"
-        tools:layout="@layout/fragment_splash_screen">
+        android:label="fragment_splash_screen">
         <action
             android:id="@+id/action_splashScreenFragment_to_homeFragment"
             app:destination="@id/homeFragment"
