@@ -1,10 +1,10 @@
-package com.baymax.weather.forecast.weather_forecast.api.data_transfer_model
+package com.baymax.weather.forecast.weather_forecast.api.model
 
 import com.google.gson.annotations.SerializedName
 
 data class WeatherDTO(
     val clouds: Clouds?,
-    val dt: Int?,
+    val dt: Long?,
     @SerializedName("dt_txt")
     val dtTxt: String?,
     val main: TempInfoDTO?,

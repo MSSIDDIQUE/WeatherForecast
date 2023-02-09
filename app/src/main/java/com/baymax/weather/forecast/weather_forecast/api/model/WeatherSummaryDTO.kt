@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.weather_forecast.api.data_transfer_model
+package com.baymax.weather.forecast.weather_forecast.api.model
 
 data class WeatherSummaryDTO(
     val description: String?,

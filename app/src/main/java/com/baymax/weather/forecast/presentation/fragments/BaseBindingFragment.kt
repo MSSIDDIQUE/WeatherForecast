@@ -13,7 +13,7 @@ import java.lang.reflect.ParameterizedType
 import javax.inject.Inject
 
 open class BaseBindingFragment<VB : ViewDataBinding, VM : BaseViewModel>(
-    val bindingFactory: (LayoutInflater) -> VB
+    val bindingFactory: (LayoutInflater) -> VB,
 ) : DaggerFragment() {
 
     @Inject
@@ -22,16 +22,16 @@ open class BaseBindingFragment<VB : ViewDataBinding, VM : BaseViewModel>(
     val binding: VB by lazy { bindingFactory(layoutInflater) }
 
     fun getViewModelInstanceWithOwner(
-        owner: ViewModelStoreOwner
+        owner: ViewModelStoreOwner,
     ): VM = ViewModelProvider(
         owner,
-        viewModelFactory
+        viewModelFactory,
     )[getViewModelClass()]
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return binding.root
     }

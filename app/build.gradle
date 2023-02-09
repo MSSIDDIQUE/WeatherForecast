@@ -28,8 +28,14 @@ android {
         compose = true
         dataBinding = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     namespace 'com.baymax.weather.forecast'
@@ -56,6 +62,9 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "com.airbnb.android:lottie-compose:$lottie_version"
     implementation "androidx.activity:activity-compose:$activity_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "io.coil-kt:coil-compose:$coil_version"
 
     //navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -64,7 +73,7 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
-    implementation "androidx.core:core-ktx:$kotlin_version"
+    implementation "androidx.core:core-ktx:$android_core_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     kapt "androidx.room:room-compiler:$room_version"
 
@@ -94,9 +103,6 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-
-    //Glide
-    implementation "com.github.bumptech.glide:glide:$glide_version"
 
     //ThreeTenApiForDateTime
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.4'

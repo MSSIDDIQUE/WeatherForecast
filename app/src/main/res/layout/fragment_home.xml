@@ -3,21 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="location"
-            type="com.baymax.weather.forecast.weather_forecast.api.domain_model.ApiResponseDM" />
-
-        <variable
-            name="currentweather"
-            type="com.baymax.weather.forecast.weather_forecast.api.domain_model.WeatherDM" />
-
-        <variable
-            name="homeFragmentViewModel"
-            type="com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constrainLayout"
         android:layout_width="match_parent"
@@ -26,165 +11,14 @@
         android:tag="HomeFragment"
         tools:context="com.baymax.weather.forecast.weather_forecast.presentation.fragments.HomeFragment">
 
-        <ScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/layout_weather_reports"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/search_text_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/search_placeholder"
-                    android:padding="15dp"
-                    app:boxStrokeColor="#2196F3"
-                    app:endIconMode="clear_text"
-                    app:hintTextColor="@color/common_google_signin_btn_text_dark_default"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                        android:id="@+id/search_text"
-                        style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/common_google_signin_btn_text_dark_default" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lineOrContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginEnd="35dp">
-
-                    <View
-                        android:id="@+id/lineOr"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_margin="10dp"
-                        android:background="@android:color/holo_blue_dark"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:text=" Or "
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:textSize="18sp"
-                        android:textStyle="bold|italic"
-                        app:layout_constraintBottom_toBottomOf="@id/lineOr"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/lineOr" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_use_my_location"
-                    style="@style/Widget.MaterialComponents.Button.Icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:text="@string/current_location"
-                    android:textSize="18sp"
-                    app:cornerRadius="5dp"
-                    app:icon="@drawable/icon_my_location"
-                    app:iconGravity="textStart"
-                    app:iconSize="25dp"
-                    app:strokeColor="@android:color/holo_blue_dark"
-                    app:strokeWidth="2dp">
-
-                </com.google.android.material.button.MaterialButton>
-
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_temp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
-                    app:cardBackgroundColor="@android:color/holo_blue_dark"
-                    app:cardCornerRadius="10dp"
-                    app:cardMaxElevation="10dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <include
-                            android:id="@+id/included_view"
-                            layout="@layout/weather_summary_main_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:location="@{location}"
-                            app:weather="@{currentweather}" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lineWeatherForecastContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:visibility="gone">
-
-                    <View
-                        android:id="@+id/lineWeatherForecast"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_margin="10dp"
-                        android:background="@android:color/holo_blue_dark"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:text=" Weather forecast "
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:textSize="18sp"
-                        android:textStyle="bold|italic"
-                        app:layout_constraintBottom_toBottomOf="@id/lineWeatherForecast"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/lineWeatherForecast" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rv_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="15dp" />
-                </RelativeLayout>
-            </LinearLayout>
-        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

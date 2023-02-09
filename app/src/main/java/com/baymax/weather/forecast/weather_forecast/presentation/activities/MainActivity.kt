@@ -73,7 +73,7 @@ class MainActivity :
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        arrayOfPermissiions: IntArray
+        arrayOfPermissiions: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, arrayOfPermissiions)
         if (requestCode == MULTIPLE_LOCATION_PERMISSION) {
@@ -89,8 +89,8 @@ class MainActivity :
                 Activity.RESULT_CANCELED -> viewModel?.setSnackBarState(
                     SnackBarViewState.Warning(
                         getString(R.string.gps_warning),
-                        "Retry"
-                    ) { turnOnGPS() }
+                        "Retry",
+                    ) { turnOnGPS() },
                 )
             }
         }

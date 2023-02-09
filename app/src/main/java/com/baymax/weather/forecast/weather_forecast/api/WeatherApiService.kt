@@ -1,7 +1,7 @@
 package com.baymax.weather.forecast.weather_forecast.api
 
-import com.baymax.weather.forecast.weather_forecast.api.data_transfer_model.ApiResponseDTO
 import com.baymax.weather.forecast.utils.PrefHelper
+import com.baymax.weather.forecast.weather_forecast.api.model.ApiResponseDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -16,6 +16,6 @@ interface WeatherApiService {
         @Query("lon")
         longitude: String,
         @Query(PrefHelper.WEATHER_API_KEY)
-        key: String
+        key: String,
     ): Response<ApiResponseDTO>
 }

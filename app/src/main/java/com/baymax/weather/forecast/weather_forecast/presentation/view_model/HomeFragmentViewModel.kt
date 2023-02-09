@@ -28,7 +28,7 @@ class HomeFragmentViewModel @Inject constructor(
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val cacheLocationUseCase: CacheLocationUseCase,
     private val fetchLocationUseCase: FetchLocationUseCase,
-    private val fetchPredictionsUseCase: FetchPredictionsUseCase
+    private val fetchPredictionsUseCase: FetchPredictionsUseCase,
 ) : BaseViewModel() {
     private val location = MutableStateFlow(Location(0.0, 0.0))
 
@@ -47,7 +47,7 @@ class HomeFragmentViewModel @Inject constructor(
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = emptyMap()
+        initialValue = emptyMap(),
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,7 +69,7 @@ class HomeFragmentViewModel @Inject constructor(
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = BaseViewState.Empty
+        initialValue = BaseViewState.Empty,
     )
 
     fun updateLastLocation() = viewModelScope.launch {
@@ -93,7 +93,7 @@ class HomeFragmentViewModel @Inject constructor(
         fetchLocationUseCase.fetchLocationFromGps().collectLatest { response ->
             when (response) {
                 is ResponseWrapper.Failure -> setSnackBarState(
-                    SnackBarViewState.Error(response.msg ?: "Unable to fetch device location")
+                    SnackBarViewState.Error(response.msg ?: "Unable to fetch device location"),
                 )
 
                 is ResponseWrapper.Success -> {
@@ -107,7 +107,7 @@ class HomeFragmentViewModel @Inject constructor(
     fun updateLocationFromPlaceId(placeId: String) = viewModelScope.launch {
         when (val response = fetchLocationUseCase.fetchLocationFromPlaceId(placeId)) {
             is ResponseWrapper.Failure -> SnackBarViewState.Error(
-                response.msg ?: "Unable to fetch location"
+                response.msg ?: "Unable to fetch location",
             )
 
             is ResponseWrapper.Success -> location.value = response.data.result.geometry.location

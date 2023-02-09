@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.weather_forecast.api.data_transfer_model
+package com.baymax.weather.forecast.weather_forecast.api.model
 
 import com.google.gson.annotations.SerializedName
 

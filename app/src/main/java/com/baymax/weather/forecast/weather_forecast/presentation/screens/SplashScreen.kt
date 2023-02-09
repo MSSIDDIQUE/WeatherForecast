@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,10 +39,10 @@ fun SplashScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.horizontalGradient(
+                brush = Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colors.primary,
-                        Color.Black
+                        Color(0xFF2E335A),
+                        Color(0xFF1C1B33)
                     )
                 )
             ),
@@ -120,7 +119,7 @@ fun ShowSplashScreenAnimation() {
     val speed by remember { mutableStateOf(1f) }
     val isPlaying by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.weather_animation)
+        LottieCompositionSpec.RawRes(R.raw.splash_animation)
     )
     val progress by animateLottieCompositionAsState(
         composition,

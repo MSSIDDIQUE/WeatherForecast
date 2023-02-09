@@ -8,16 +8,16 @@ import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
     private val prefHelper: PrefHelper,
-    private val remoteDataSource: WeatherRemoteDataSource
+    private val remoteDataSource: WeatherRemoteDataSource,
 ) : WeatherRepository {
     override suspend fun fetchWeather(
         lat: Double,
-        lng: Double
+        lng: Double,
     ) = remoteDataSource.fetchWeatherForLocation(
         lat,
         lng,
-        prefHelper.sharedPrefs[PrefHelper.WEATHER_API_KEY, ""]
-    ).map { dto ->
-        WeatherDataMapper.apiResponseMapper().invoke(dto)
+        prefHelper.sharedPrefs[PrefHelper.WEATHER_API_KEY, ""],
+    ).map { apiResponseDTO ->
+        WeatherDataMapper.apiResponseMapper(apiResponseDTO)
     }
 }
