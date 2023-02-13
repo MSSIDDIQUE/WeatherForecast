@@ -45,7 +45,9 @@ class MainActivity : BaseComposeActivity() {
     override fun Content() {
         DestinationsNavHost(navGraph = NavGraphs.root) {
             composable(HomeScreenDestination) {
-                HomeScreen(viewModel = viewModel)
+                HomeScreen(viewModel = viewModel) {
+                    updateCurrentDeviceLocation()
+                }
             }
         }
     }

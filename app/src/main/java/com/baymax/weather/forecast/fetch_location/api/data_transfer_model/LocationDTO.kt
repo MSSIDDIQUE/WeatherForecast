@@ -2,9 +2,9 @@ package com.baymax.weather.forecast.fetch_location.api.data_transfer_model
 
 import com.google.gson.annotations.SerializedName
 
-data class Location(
+data class LocationDTO(
     @SerializedName("lat")
-    val lat: Double,
+    val lat: Double?,
     @SerializedName("lng")
-    val lng: Double,
+    val lng: Double?,
 )

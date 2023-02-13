@@ -2,10 +2,10 @@ package com.baymax.weather.forecast.weather_forecast.presentation.view_model
 
 import androidx.lifecycle.viewModelScope
 import com.baymax.weather.forecast.data.ResponseWrapper
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.Location
 import com.baymax.weather.forecast.fetch_location.data.CacheLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchPredictionsUseCase
+import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
 import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
@@ -30,7 +30,7 @@ class HomeFragmentViewModel @Inject constructor(
     private val fetchLocationUseCase: FetchLocationUseCase,
     private val fetchPredictionsUseCase: FetchPredictionsUseCase,
 ) : BaseViewModel() {
-    private val location = MutableStateFlow(Location(0.0, 0.0))
+    private val location = MutableStateFlow(LocationDAO(0.0, 0.0))
 
     val searchQuery = MutableStateFlow("")
 
@@ -72,7 +72,7 @@ class HomeFragmentViewModel @Inject constructor(
         }
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
+        started = SharingStarted.WhileSubscribed(25000L),
         initialValue = WeatherReportsUiState.Idle,
     )
 
@@ -114,7 +114,7 @@ class HomeFragmentViewModel @Inject constructor(
                 response.msg ?: "Unable to fetch location",
             )
 
-            is ResponseWrapper.Success -> location.value = response.data.result.geometry.location
+            is ResponseWrapper.Success -> location.value = response.data
         }
     }
 

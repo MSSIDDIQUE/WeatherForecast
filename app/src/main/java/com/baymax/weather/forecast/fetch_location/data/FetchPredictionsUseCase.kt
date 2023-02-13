@@ -8,11 +8,7 @@ class FetchPredictionsUseCase @Inject constructor(private val repo: FetchLocatio
     operator fun invoke(text: String) = flow {
         when (val predictionResponse = repo.getSuggestions(text)) {
             is ResponseWrapper.Failure -> ResponseWrapper.Failure(predictionResponse.msg)
-            is ResponseWrapper.Success -> ResponseWrapper.Success(
-                predictionResponse.data.predictions.map {
-                    it.description to it.placeId
-                },
-            )
+            is ResponseWrapper.Success -> ResponseWrapper.Success(predictionResponse.data)
         }.also { emit(it) }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -27,14 +29,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,22 +47,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baymax.weather.forecast.R
+import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionDAO
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
 import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
 import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsUiState
 import com.ramcosta.composedestinations.annotation.Destination
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun HomeScreen(viewModel: HomeFragmentViewModel) {
+fun HomeScreen(
+    viewModel: HomeFragmentViewModel,
+    onCurrentLocationClick: () -> Unit,
+) {
     when (val weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value) {
-        WeatherReportsUiState.Idle -> Column(Modifier.fillMaxSize()) {}
+        WeatherReportsUiState.Idle -> IdleScreen()
         is WeatherReportsUiState.Error -> TODO()
         is WeatherReportsUiState.Loading -> ProgressBarScreen(weatherState.message)
         is WeatherReportsUiState.Success -> SearchLocationBottomSheet(
-            weatherState.weatherReports,
-            viewModel,
+            weatherReports = weatherState.weatherReports,
+            initSearchQuery = viewModel.searchQuery,
+            listOfPredictions = viewModel.predictions.collectAsStateWithLifecycle(),
+            onPredictionClick = viewModel::updateLocationFromPlaceId,
+            onSearchQueryUpdate = viewModel::setSearchQuery,
+            onCurrentLocationClick = onCurrentLocationClick,
         )
     }
 }
@@ -66,7 +80,11 @@ fun HomeScreen(viewModel: HomeFragmentViewModel) {
 @Composable
 fun SearchLocationBottomSheet(
     weatherReports: WeatherReportsDAO,
-    viewModel: HomeFragmentViewModel,
+    initSearchQuery: MutableStateFlow<String>,
+    listOfPredictions: State<List<PredictionDAO>>,
+    onPredictionClick: (String) -> Unit,
+    onSearchQueryUpdate: (String) -> Unit,
+    onCurrentLocationClick: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
@@ -74,12 +92,13 @@ fun SearchLocationBottomSheet(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(25.dp),
         sheetContent = {
-            SearchLocationBottomSheetView(viewModel) { placeId ->
-                coroutineScope.launch {
-                    viewModel.updateLocationFromPlaceId(placeId)
-                    sheetState.hide()
-                }
-            }
+            SearchLocationBottomSheetView(
+                initSearchQuery = initSearchQuery,
+                listOfPredictions = listOfPredictions,
+                onSearchQueryUpdate = onSearchQueryUpdate,
+                onPredictionClick = onPredictionClick,
+                onCurrentLocationClick = onCurrentLocationClick,
+            )
         },
     ) {
         WeatherReportsScreen(weatherReports) {
@@ -92,11 +111,12 @@ fun SearchLocationBottomSheet(
 
 @Composable
 fun SearchLocationBottomSheetView(
-    viewModel: HomeFragmentViewModel,
+    initSearchQuery: MutableStateFlow<String>,
+    listOfPredictions: State<List<PredictionDAO>>,
     onPredictionClick: (String) -> Unit,
+    onSearchQueryUpdate: (String) -> Unit,
+    onCurrentLocationClick: () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val predictions = viewModel.predictions.collectAsStateWithLifecycle().value
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -116,7 +136,7 @@ fun SearchLocationBottomSheetView(
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(25.dp),
+                    .height(30.dp),
             )
             Row(
                 modifier = Modifier
@@ -128,10 +148,8 @@ fun SearchLocationBottomSheetView(
             ) {
                 OutlinedTextField(
                     singleLine = true,
-                    value = viewModel.searchQuery.collectAsStateWithLifecycle().value,
-                    onValueChange = {
-                        viewModel.setSearchQuery(it)
-                    },
+                    value = initSearchQuery.collectAsStateWithLifecycle().value,
+                    onValueChange = { onSearchQueryUpdate(it) },
                     leadingIcon = {
                         Icon(
                             Icons.Rounded.Search,
@@ -153,7 +171,8 @@ fun SearchLocationBottomSheetView(
                         bottomStart = 25.dp,
                         bottomEnd = 25.dp,
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .width(IntrinsicSize.Max)
                         .background(
                             color = Color(0xFF1C1B33),
                             shape = RoundedCornerShape(
@@ -171,22 +190,43 @@ fun SearchLocationBottomSheetView(
                     ),
                     textStyle = TextStyle.Default.copy(
                         fontFamily = FontFamily(Font(R.font.handlee_regular)),
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                     ),
                     trailingIcon = {
                         Icon(
                             Icons.Rounded.Clear,
                             tint = Color(0xFFD80073),
                             contentDescription = "Back button",
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier
+                                .size(20.dp)
                                 .clickable {
-                                    coroutineScope.launch {
-                                        viewModel.setSearchQuery("")
-                                    }
+                                    onSearchQueryUpdate("")
                                 },
                         )
                     },
                 )
+                Spacer(modifier = Modifier.width(20.dp))
+                Row(
+                    modifier = Modifier
+                        .width(IntrinsicSize.Max)
+                        .height(IntrinsicSize.Max)
+                        .background(
+                            color = Color(0xFF1C1B33),
+                            shape = RoundedCornerShape(25.dp),
+                        )
+                        .padding(10.dp)
+                        .clickable { onCurrentLocationClick() },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        Icons.Rounded.MyLocation,
+                        contentDescription = stringResource(R.string.current_location),
+                        tint = Color(0xFFD80073),
+                        modifier = Modifier.width(30.dp)
+                            .height(30.dp),
+                    )
+                }
             }
             Spacer(
                 modifier = Modifier
@@ -197,20 +237,18 @@ fun SearchLocationBottomSheetView(
                 contentPadding = PaddingValues(5.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                itemsIndexed(predictions) { idx, item ->
+                itemsIndexed(listOfPredictions.value) { idx, item ->
                     Text(
-                        text = item.first,
+                        text = item.description,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.handlee_regular)),
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 5.dp)
-                            .clickable {
-                                onPredictionClick(item.second)
-                            },
+                            .clickable { onPredictionClick(item.placeId) },
                     )
-                    if (idx != predictions.lastIndex) {
+                    if (idx != listOfPredictions.value.lastIndex) {
                         TabRowDefaults.Divider(
                             color = Color(0xFF1C1B33),
                             modifier = Modifier

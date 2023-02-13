@@ -192,8 +192,7 @@ fun UpperCardView(
                 }
             }
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
                     .padding(5.dp)
                     .wrapContentHeight(),
                 contentAlignment = Alignment.TopEnd,
@@ -492,8 +491,7 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
 fun ForecastListItemView(item: WeatherDAO) {
     Row(
         Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -503,7 +501,8 @@ fun ForecastListItemView(item: WeatherDAO) {
             contentDescription = item.weatherDescription,
         )
         Text(
-            modifier = Modifier.padding(horizontal = 5.dp),
+            modifier = Modifier.wrapContentSize()
+                .padding(horizontal = 5.dp),
             text = item.dateTime,
             color = Color.White,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
@@ -511,18 +510,22 @@ fun ForecastListItemView(item: WeatherDAO) {
             textAlign = TextAlign.Center,
         )
         Text(
-            modifier = Modifier.padding(horizontal = 5.dp),
+            modifier = Modifier.wrapContentSize()
+                .padding(horizontal = 5.dp),
             text = item.weatherDescription,
             color = Color(0xFFD80073),
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 20.sp,
+            maxLines = 2,
         )
         Text(
-            modifier = Modifier.padding(horizontal = 5.dp),
+            modifier = Modifier.wrapContentSize()
+                .padding(horizontal = 5.dp),
             text = if (scaleSwitchIndexState.value == 0) item.temperatureF else item.temperatureC,
             color = Color.White,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 22.sp,
+            maxLines = 1,
         )
     }
 }

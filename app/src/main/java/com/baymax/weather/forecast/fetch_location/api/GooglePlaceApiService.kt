@@ -1,7 +1,7 @@
 package com.baymax.weather.forecast.fetch_location.api
 
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PlaceIdResponse
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PredictionsResponse
+import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PlaceIdResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PredictionsResponseDTO
 import com.baymax.weather.forecast.utils.PrefHelper
 import retrofit2.Response
 import retrofit2.http.GET
@@ -15,7 +15,7 @@ interface GooglePlaceApiService {
         searchText: String,
         @Query(PrefHelper.GOOGLE_PLACE_API_KEY)
         key: String,
-    ): Response<PredictionsResponse>
+    ): Response<PredictionsResponseDTO>
 
     @GET("details/json")
     suspend fun getCoordinates(
@@ -23,5 +23,5 @@ interface GooglePlaceApiService {
         placeId: String,
         @Query(PrefHelper.GOOGLE_PLACE_API_KEY)
         key: String,
-    ): Response<PlaceIdResponse>
+    ): Response<PlaceIdResponseDTO>
 }

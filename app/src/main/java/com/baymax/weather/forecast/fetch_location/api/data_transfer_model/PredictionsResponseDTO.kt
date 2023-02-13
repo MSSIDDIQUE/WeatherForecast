@@ -2,9 +2,9 @@ package com.baymax.weather.forecast.fetch_location.api.data_transfer_model
 
 import com.google.gson.annotations.SerializedName
 
-data class PlaceIdResponse(
-    @SerializedName("result")
-    val result: Result,
+data class PredictionsResponseDTO(
+    @SerializedName("predictions")
+    val predictions: List<PredictionDTO>?,
     @SerializedName("status")
-    val status: String,
+    val status: String?,
 )
