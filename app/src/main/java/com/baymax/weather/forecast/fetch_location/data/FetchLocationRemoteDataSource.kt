@@ -5,16 +5,16 @@ import com.baymax.weather.forecast.fetch_location.api.GooglePlaceApiService
 import javax.inject.Inject
 
 class FetchLocationRemoteDataSource @Inject constructor(
-    private val placesApiService: GooglePlaceApiService
+    private val placesApiService: GooglePlaceApiService,
 ) : BaseDataSource() {
 
     suspend fun fetchPredictions(
         searchText: String,
-        apiKey: String
+        apiKey: String,
     ) = getResult { placesApiService.getPredictions(searchText, apiKey) }
 
     suspend fun fetchCoordinates(
         placeId: String,
-        apiKey: String
+        apiKey: String,
     ) = getResult { placesApiService.getCoordinates(placeId, apiKey) }
 }

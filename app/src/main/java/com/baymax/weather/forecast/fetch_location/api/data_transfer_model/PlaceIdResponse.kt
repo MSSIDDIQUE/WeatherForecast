@@ -6,5 +6,5 @@ data class PlaceIdResponse(
     @SerializedName("result")
     val result: Result,
     @SerializedName("status")
-    val status: String
+    val status: String,
 )

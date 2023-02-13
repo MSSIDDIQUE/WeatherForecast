@@ -49,7 +49,7 @@ class AppModule {
     @Provides
     @Singleton
     fun provideApiOkhttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)

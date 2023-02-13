@@ -10,5 +10,5 @@ data class Prediction(
     @SerializedName("reference")
     val reference: String,
     @SerializedName("types")
-    val types: List<String>
+    val types: List<String>,
 )

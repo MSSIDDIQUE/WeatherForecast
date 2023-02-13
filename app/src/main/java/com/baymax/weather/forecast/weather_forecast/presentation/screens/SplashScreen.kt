@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,13 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.baymax.weather.forecast.R
+import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
+@Destination(start = true)
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navigator: DestinationsNavigator) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,17 +48,17 @@ fun SplashScreen() {
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         Color(0xFF2E335A),
-                        Color(0xFF1C1B33)
-                    )
-                )
+                        Color(0xFF1C1B33),
+                    ),
+                ),
             ),
-        Alignment.BottomCenter
+        Alignment.BottomCenter,
     ) {
         Column(
             modifier = Modifier
                 .wrapContentWidth()
                 .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -63,10 +69,10 @@ fun SplashScreen() {
                             shadow = Shadow(
                                 color = Color(0xFF4C0034),
                                 offset = Offset(2.0f, 5.0f),
-                                blurRadius = 2f
+                                blurRadius = 2f,
                             ),
-                            textDecoration = TextDecoration.None
-                        )
+                            textDecoration = TextDecoration.None,
+                        ),
                     ) {
                         append("W")
                     }
@@ -78,10 +84,10 @@ fun SplashScreen() {
                             shadow = Shadow(
                                 color = Color(0xFF4C0034),
                                 offset = Offset(2.0f, 5.0f),
-                                blurRadius = 2f
+                                blurRadius = 2f,
                             ),
-                            textDecoration = TextDecoration.None
-                        )
+                            textDecoration = TextDecoration.None,
+                        ),
                     ) {
                         append("F")
                     }
@@ -91,15 +97,15 @@ fun SplashScreen() {
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.handlee_regular)),
                 fontStyle = FontStyle.Italic,
-                textDecoration = TextDecoration.Underline
+                textDecoration = TextDecoration.Underline,
             )
             Text(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            fontSize = 8.sp
-                        )
+                            fontSize = 8.sp,
+                        ),
                     ) {
                         append("powered by  ")
                     }
@@ -107,30 +113,34 @@ fun SplashScreen() {
                 },
                 fontSize = 10.sp,
                 color = Color.White,
-                fontFamily = FontFamily(Font(R.font.handlee_regular))
+                fontFamily = FontFamily(Font(R.font.handlee_regular)),
             )
         }
-        ShowSplashScreenAnimation()
+        ShowSplashScreenAnimation(navigator)
     }
 }
 
 @Composable
-fun ShowSplashScreenAnimation() {
+fun ShowSplashScreenAnimation(navigator: DestinationsNavigator) {
     val speed by remember { mutableStateOf(1f) }
     val isPlaying by remember { mutableStateOf(true) }
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.splash_animation)
+    val composition = rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.splash_animation),
     )
     val progress by animateLottieCompositionAsState(
-        composition,
-        iterations = LottieConstants.IterateForever,
+        composition.value,
+        iterations = 1,
         isPlaying = isPlaying,
         speed = speed,
-        restartOnPlay = false
+        restartOnPlay = false,
     )
     LottieAnimation(
-        composition = composition,
+        composition = composition.value,
         progress = progress,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
+    LaunchedEffect(Unit) {
+        delay(5.seconds)
+        navigator.navigate(HomeScreenDestination)
+    }
 }

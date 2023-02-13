@@ -1,9 +1,11 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'androidx.navigation.safeargs'
-apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-apply plugin: 'org.jetbrains.kotlin.android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+}
 
 android {
 
@@ -30,12 +32,16 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     namespace 'com.baymax.weather.forecast'
@@ -64,11 +70,12 @@ dependencies {
     implementation "androidx.activity:activity-compose:$activity_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
     implementation "io.coil-kt:coil-compose:$coil_version"
-
-    //navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "io.github.raamcosta.compose-destinations:core:$compose_nav_version"
+    implementation "androidx.core:core-ktx:$android_core_version"
+    implementation "androidx.compose.material3:material3:$compose_material3_version"
+    ksp "io.github.raamcosta.compose-destinations:ksp:$compose_nav_version"
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
@@ -112,9 +119,6 @@ dependencies {
 
     // Preference
     implementation "androidx.preference:preference-ktx:$preference_version"
-
-    //lottie
-    implementation "com.airbnb.android:lottie:$lottie_version"
 
     //Security-Crypto
     implementation "androidx.security:security-crypto:$security_crypto_version"

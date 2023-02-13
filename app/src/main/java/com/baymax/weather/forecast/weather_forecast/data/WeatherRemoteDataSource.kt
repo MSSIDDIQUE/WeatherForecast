@@ -7,18 +7,18 @@ import javax.inject.Inject
 
 class WeatherRemoteDataSource @Inject constructor(
     private val weatherApiService: WeatherApiService,
-    private val prefHelper: PrefHelper
+    private val prefHelper: PrefHelper,
 ) : BaseDataSource() {
 
     suspend fun fetchWeatherForLocation(
         lat: Double,
         lng: Double,
-        apiKey: String
+        apiKey: String,
     ) = getResult {
         weatherApiService.getWeatherOfCity(
             lat.toString(),
             lng.toString(),
-            apiKey
+            apiKey,
         )
     }
 }

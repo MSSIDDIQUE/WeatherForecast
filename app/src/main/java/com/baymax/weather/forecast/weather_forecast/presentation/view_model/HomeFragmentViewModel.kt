@@ -7,10 +7,10 @@ import com.baymax.weather.forecast.fetch_location.data.CacheLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchPredictionsUseCase
 import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
-import com.baymax.weather.forecast.presentation.view_state.BaseViewState
 import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
+import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,34 +34,38 @@ class HomeFragmentViewModel @Inject constructor(
 
     val searchQuery = MutableStateFlow("")
 
+    fun setSearchQuery(query: String) {
+        searchQuery.value = query
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val predictions = searchQuery.debounce(1000).filter {
         if (it.length < 3) return@filter false else true
     }.transformLatest { searchQuery ->
         fetchPredictionsUseCase(searchQuery).collectLatest { response ->
             when (response) {
-                is ResponseWrapper.Failure -> emptyMap()
+                is ResponseWrapper.Failure -> emptyList()
                 is ResponseWrapper.Success -> response.data
             }.also { emit(it) }
         }
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = emptyMap(),
+        initialValue = emptyList(),
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState = location.filter { (lat, lng) ->
         if (lat == 0.0 && lng == 0.0) return@filter false else true
     }.transformLatest { (lat, lng) ->
-        emit(BaseViewState.Loading("Fetching Weather"))
+        emit(WeatherReportsUiState.Loading("Fetching Weather"))
         fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
             when (weatherState) {
                 is ResponseWrapper.Failure -> weatherState.msg?.let {
-                    BaseViewState.Error(it)
-                } ?: BaseViewState.Error("Something went wrong!")
+                    WeatherReportsUiState.Error(it)
+                } ?: WeatherReportsUiState.Error("Something went wrong!")
 
-                is ResponseWrapper.Success -> BaseViewState.Success(weatherState.data)
+                is ResponseWrapper.Success -> WeatherReportsUiState.Success(weatherState.data)
             }.also {
                 emit(it)
             }
@@ -69,7 +73,7 @@ class HomeFragmentViewModel @Inject constructor(
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = BaseViewState.Empty,
+        initialValue = WeatherReportsUiState.Idle,
     )
 
     fun updateLastLocation() = viewModelScope.launch {

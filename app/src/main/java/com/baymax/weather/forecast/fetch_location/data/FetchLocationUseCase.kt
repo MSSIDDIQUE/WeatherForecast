@@ -10,7 +10,7 @@ import javax.inject.Inject
 class FetchLocationUseCase @Inject constructor(
     private val repo: FetchLocationRepository,
     private val appContext: Application,
-    private val locationProvider: FusedLocationProviderClient
+    private val locationProvider: FusedLocationProviderClient,
 ) {
     suspend fun fetchLocationFromCache() = flow {
         val (lat, lng) = repo.getLastLocation()

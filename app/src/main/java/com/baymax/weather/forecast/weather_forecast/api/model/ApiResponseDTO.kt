@@ -5,5 +5,5 @@ data class ApiResponseDTO(
     val cnt: Int?,
     val cod: String?,
     val list: List<WeatherDTO>?,
-    val message: Int?
+    val message: Int?,
 )

@@ -17,5 +17,5 @@ data class TempInfoDTO(
     @SerializedName("temp_max")
     val tempMax: Double?,
     @SerializedName("temp_min")
-    val tempMin: Double?
+    val tempMin: Double?,
 )

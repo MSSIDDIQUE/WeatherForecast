@@ -10,5 +10,5 @@ data class WeatherDTO(
     val main: TempInfoDTO?,
     val rain: RainDTO?,
     val weather: List<WeatherSummaryDTO>?,
-    val wind: WindDTO?
+    val wind: WindDTO?,
 )

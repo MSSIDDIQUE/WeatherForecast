@@ -1,11 +1,11 @@
 package com.baymax.weather.forecast.di.main
 
 import android.content.Context
+import com.baymax.weather.forecast.di.MainScope
 import com.baymax.weather.forecast.fetch_location.api.GooglePlaceApiService
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationRemoteDataSource
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationRepository
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationRepositoryImpl
-import com.baymax.weather.forecast.utils.ConnectionLiveData
 import com.baymax.weather.forecast.utils.Constants
 import com.baymax.weather.forecast.utils.PrefHelper
 import com.baymax.weather.forecast.weather_forecast.api.WeatherApiService
@@ -27,12 +27,12 @@ class MainModule {
     @Provides
     fun provideWeatherApiServices(
         client: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: GsonConverterFactory,
     ): WeatherApiService {
         return getDynamicRetrofitClient(
             client,
             converterFactory,
-            Constants.WEATHER_API_BASE_URL
+            Constants.WEATHER_API_BASE_URL,
         ).create(WeatherApiService::class.java)
     }
 
@@ -40,12 +40,12 @@ class MainModule {
     @Provides
     fun provideGooglePlaceApiServices(
         client: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: GsonConverterFactory,
     ): GooglePlaceApiService {
         return getDynamicRetrofitClient(
             client,
             converterFactory,
-            Constants.GOOGLE_PLACE_API_BASE_URL
+            Constants.GOOGLE_PLACE_API_BASE_URL,
         ).create(GooglePlaceApiService::class.java)
     }
 
@@ -53,11 +53,11 @@ class MainModule {
     @Provides
     fun provideWeatherRemoteDataSource(
         weatherApiService: WeatherApiService,
-        prefHelper: PrefHelper
+        prefHelper: PrefHelper,
     ): WeatherRemoteDataSource {
         return WeatherRemoteDataSource(
             weatherApiService,
-            prefHelper
+            prefHelper,
         )
     }
 
@@ -65,13 +65,12 @@ class MainModule {
     @Provides
     fun provideSearchLocationRemoteDataSource(
         googlePlaceApiService: GooglePlaceApiService,
-        prefHelper: PrefHelper
     ): FetchLocationRemoteDataSource = FetchLocationRemoteDataSource(googlePlaceApiService)
 
     @MainScope
     @Provides
     fun provideLocationProviderClient(
-        context: Context
+        context: Context,
     ): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(context)
     }
@@ -80,13 +79,13 @@ class MainModule {
     @Provides
     fun provideWeatherRepository(
         prefHelper: PrefHelper,
-        remoteDataSource: WeatherRemoteDataSource
+        remoteDataSource: WeatherRemoteDataSource,
     ): WeatherRepository = WeatherRepositoryImpl(prefHelper, remoteDataSource)
 
     private fun getDynamicRetrofitClient(
         client: OkHttpClient,
         converterFactory: GsonConverterFactory,
-        baseUrl: String
+        baseUrl: String,
     ): Retrofit {
         return Retrofit.Builder()
             .client(client)
@@ -99,14 +98,6 @@ class MainModule {
     @Provides
     fun provideSearchLocationRepository(
         prefHelper: PrefHelper,
-        remoteDataSource: FetchLocationRemoteDataSource
+        remoteDataSource: FetchLocationRemoteDataSource,
     ): FetchLocationRepository = FetchLocationRepositoryImpl(prefHelper, remoteDataSource)
-
-    @MainScope
-    @Provides
-    fun provideConnectionLiveData(
-        context: Context
-    ): ConnectionLiveData {
-        return ConnectionLiveData(context)
-    }
 }

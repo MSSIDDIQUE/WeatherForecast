@@ -6,5 +6,5 @@ data class PredictionsResponse(
     @SerializedName("predictions")
     val predictions: List<Prediction>,
     @SerializedName("status")
-    val status: String
+    val status: String,
 )

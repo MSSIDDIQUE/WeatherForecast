@@ -14,7 +14,7 @@ interface GooglePlaceApiService {
         @Query("input")
         searchText: String,
         @Query(PrefHelper.GOOGLE_PLACE_API_KEY)
-        key: String
+        key: String,
     ): Response<PredictionsResponse>
 
     @GET("details/json")
@@ -22,6 +22,6 @@ interface GooglePlaceApiService {
         @Query("placeid")
         placeId: String,
         @Query(PrefHelper.GOOGLE_PLACE_API_KEY)
-        key: String
+        key: String,
     ): Response<PlaceIdResponse>
 }

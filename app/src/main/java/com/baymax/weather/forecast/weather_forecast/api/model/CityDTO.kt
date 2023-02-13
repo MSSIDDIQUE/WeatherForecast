@@ -8,5 +8,5 @@ data class CityDTO(
     val population: Int?,
     val sunrise: Long?,
     val sunset: Long?,
-    val timezone: Int?
+    val timezone: Int?,
 )

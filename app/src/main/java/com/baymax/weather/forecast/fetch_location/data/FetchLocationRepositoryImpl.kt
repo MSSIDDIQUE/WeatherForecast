@@ -13,24 +13,24 @@ import javax.inject.Inject
 
 class FetchLocationRepositoryImpl @Inject constructor(
     private val prefHelper: PrefHelper,
-    private val fetchRemoteDataSource: FetchLocationRemoteDataSource
+    private val fetchRemoteDataSource: FetchLocationRemoteDataSource,
 ) : FetchLocationRepository {
 
     override suspend fun getSuggestions(
-        searchText: String
+        searchText: String,
     ) = withContext(Dispatchers.IO) {
         fetchRemoteDataSource.fetchPredictions(
             searchText,
-            prefHelper.sharedPrefs[PrefHelper.GOOGLE_PLACE_API_KEY, ""]
+            prefHelper.sharedPrefs[PrefHelper.GOOGLE_PLACE_API_KEY, ""],
         )
     }
 
     override suspend fun getCoordinates(
-        placeId: String
+        placeId: String,
     ) = withContext(Dispatchers.IO) {
         fetchRemoteDataSource.fetchCoordinates(
             placeId,
-            prefHelper.sharedPrefs[PrefHelper.GOOGLE_PLACE_API_KEY, ""]
+            prefHelper.sharedPrefs[PrefHelper.GOOGLE_PLACE_API_KEY, ""],
         )
     }
 

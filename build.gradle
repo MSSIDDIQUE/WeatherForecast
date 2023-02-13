@@ -1,17 +1,19 @@
 buildscript {
     ext.activity_version = '1.7.0-alpha04'
     ext.android_core_version = '1.9.0'
-    ext.app_compat_version = '1.6.0'
+    ext.app_compat_version = '1.6.1'
     ext.coil_version = "2.2.2"
-    ext.compose_version = '1.4.0-alpha05'
+    ext.compose_version = '1.4.0-beta01'
+    ext.compose_material3_version = '1.0.1'
+    ext.compose_nav_version = '1.8.33-beta'
     ext.constraint_layout_version = '2.1.4'
     ext.coroutines_version = '1.6.4'
     ext.dagger_version = '2.44.2'
     ext.fragment_version = '1.5.5'
     ext.gson_version = '2.10.1'
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '1.8.10'
     ext.legacy_support_version = '1.0.0'
-    ext.lifecycle_version = '2.6.0-alpha05'
+    ext.lifecycle_version = '2.6.0-beta01'
     ext.location_version = '21.0.1'
     ext.lottie_version = '5.2.0'
     ext.material_design_version = '1.8.0'
@@ -30,7 +32,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:$secrets_gradle_plugin_version"
     }
 }
