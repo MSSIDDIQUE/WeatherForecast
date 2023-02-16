@@ -49,6 +49,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.baymax.launcherapp.ui.theme.DarkBlue
+import com.baymax.launcherapp.ui.theme.DarkerBlue
+import com.baymax.launcherapp.ui.theme.DarkestBlue
+import com.baymax.launcherapp.ui.theme.DullBlue
+import com.baymax.launcherapp.ui.theme.FluorescentPink
+import com.baymax.launcherapp.ui.theme.JetBlack
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherDAO
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
@@ -66,8 +72,8 @@ fun WeatherReportsScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF2E335A),
-                        Color(0xFF1C1B33),
+                        DarkBlue,
+                        DarkestBlue,
                     ),
                 ),
             ),
@@ -96,8 +102,8 @@ fun WeatherReportsScreen(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Black,
-                                    Color(0xFF27285C),
+                                    JetBlack,
+                                    DarkerBlue,
                                 ),
                             ),
                         ),
@@ -149,8 +155,8 @@ fun UpperCardView(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF2E335A),
-                            Color(0xFF3949AB),
+                            DarkBlue,
+                            DullBlue,
                         ),
                     ),
                 ),
@@ -184,7 +190,7 @@ fun UpperCardView(
                     )
                     Text(
                         text = currentWeather.weatherDescription,
-                        color = Color(0xFFD80073),
+                        color = FluorescentPink,
                         fontFamily = FontFamily(Font(R.font.handlee_regular)),
                         fontSize = 24.sp,
                         modifier = Modifier.wrapContentSize(align = Alignment.Center),
@@ -229,7 +235,7 @@ fun LowerCardView(
             ExtraWeatherDetailsView(placeHolder, value)
             if (idx != widgets.lastIndex) {
                 TabRowDefaults.Divider(
-                    color = Color(0xFF27285C),
+                    color = DarkerBlue,
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp),
@@ -248,7 +254,7 @@ fun CurrentWeatherLocationView(
         modifier = Modifier.width(IntrinsicSize.Max)
             .wrapContentHeight()
             .background(
-                color = Color(0xFF1C1B33),
+                color = DarkestBlue,
                 shape = RoundedCornerShape(25.dp),
             ).clickable {
                 onSearchClick()
@@ -261,7 +267,7 @@ fun CurrentWeatherLocationView(
                 .wrapContentWidth()
                 .wrapContentHeight()
                 .background(
-                    color = Color(0xFF1C1B33),
+                    color = DarkestBlue,
                     shape = RoundedCornerShape(25.dp),
                 )
                 .padding(horizontal = 10.dp),
@@ -272,7 +278,7 @@ fun CurrentWeatherLocationView(
                 painter = painterResource(R.drawable.ic_location_pin),
                 contentDescription = stringResource(R.string.location),
                 modifier = Modifier.padding(5.dp),
-                tint = Color(0xFFD80073),
+                tint = FluorescentPink,
             )
             Text(
                 text = city,
@@ -290,7 +296,7 @@ fun CurrentWeatherLocationView(
                 .wrapContentWidth()
                 .wrapContentHeight()
                 .background(
-                    color = Color.Black,
+                    color = JetBlack,
                     shape = RoundedCornerShape(25.dp),
                 )
                 .padding(6.dp),
@@ -300,7 +306,7 @@ fun CurrentWeatherLocationView(
             Icon(
                 Icons.Rounded.Search,
                 contentDescription = stringResource(R.string.search),
-                tint = Color(0xFFD80073),
+                tint = FluorescentPink,
             )
         }
     }
@@ -319,18 +325,18 @@ fun ExtraWeatherDetailsView(
             modifier = Modifier.size(40.dp),
             painter = painterResource(widgetPlaceholder.first),
             contentDescription = stringResource(widgetPlaceholder.second),
-            tint = Color(0xFF3949AB),
+            tint = DullBlue,
         )
         Text(
             text = stringResource(widgetPlaceholder.second),
-            color = Color(0xFF3949AB),
+            color = DullBlue,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 15.sp,
             modifier = Modifier.wrapContentSize(align = Alignment.Center),
         )
         Text(
             text = widgetValue,
-            color = Color(0xFFD80073),
+            color = FluorescentPink,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 16.sp,
             modifier = Modifier.wrapContentSize(align = Alignment.Center),
@@ -361,7 +367,7 @@ fun TemperatureScaleTypeView() {
                 .wrapContentWidth()
                 .height(IntrinsicSize.Min)
                 .background(
-                    color = Color(0xFF1C1B33),
+                    color = DarkestBlue,
                     shape = RoundedCornerShape(25.dp),
                 ),
             verticalArrangement = Arrangement.SpaceBetween,
@@ -374,9 +380,9 @@ fun TemperatureScaleTypeView() {
                         .wrapContentHeight()
                         .background(
                             color = if (scaleSwitchIndexState.value == idx) {
-                                Color(0xFFD80073)
+                                FluorescentPink
                             } else {
-                                Color(0xFF1C1B33)
+                                DarkestBlue
                             },
                             shape = RoundedCornerShape(25.dp),
                         )
@@ -421,7 +427,7 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
                 .padding(vertical = 5.dp, horizontal = 10.dp)
                 .height(IntrinsicSize.Min)
                 .background(
-                    color = Color(0xFF1C1B33),
+                    color = DarkestBlue,
                     shape = RoundedCornerShape(12.dp),
                 ),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -434,9 +440,9 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
                         .wrapContentHeight()
                         .background(
                             color = if (tabIndexState == idx) {
-                                Color(0xFF3949AB)
+                                DullBlue
                             } else {
-                                Color(0xFF1C1B33)
+                                DarkestBlue
                             },
                             shape = RoundedCornerShape(12.dp),
                         )
@@ -475,7 +481,7 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
                 ForecastListItemView(item)
                 if (idx != listOfForecastsTypes[tabIndexState].lastIndex) {
                     TabRowDefaults.Divider(
-                        color = Color(0xFF27285C),
+                        color = DarkerBlue,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
@@ -513,7 +519,7 @@ fun ForecastListItemView(item: WeatherDAO) {
             modifier = Modifier.wrapContentSize()
                 .padding(horizontal = 5.dp),
             text = item.weatherDescription,
-            color = Color(0xFFD80073),
+            color = FluorescentPink,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 20.sp,
             maxLines = 2,

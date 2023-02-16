@@ -46,6 +46,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.baymax.launcherapp.ui.theme.BrightWhite
+import com.baymax.launcherapp.ui.theme.DarkBlue
+import com.baymax.launcherapp.ui.theme.DarkestBlue
+import com.baymax.launcherapp.ui.theme.FluorescentPink
+import com.baymax.launcherapp.ui.theme.JetBlack
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionDAO
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
@@ -123,8 +128,8 @@ fun SearchLocationBottomSheetView(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.Black,
-                        Color(0xFF2E335A),
+                        JetBlack,
+                        DarkBlue,
                     ),
                 ),
             ),
@@ -153,7 +158,7 @@ fun SearchLocationBottomSheetView(
                     leadingIcon = {
                         Icon(
                             Icons.Rounded.Search,
-                            tint = Color(0xFFD80073),
+                            tint = FluorescentPink,
                             contentDescription = "Back button",
                             modifier = Modifier.size(30.dp),
                         )
@@ -174,7 +179,7 @@ fun SearchLocationBottomSheetView(
                     modifier = Modifier
                         .width(IntrinsicSize.Max)
                         .background(
-                            color = Color(0xFF1C1B33),
+                            color = DarkestBlue,
                             shape = RoundedCornerShape(
                                 topStart = 25.dp,
                                 topEnd = 25.dp,
@@ -183,10 +188,10 @@ fun SearchLocationBottomSheetView(
                             ),
                         ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFFD80073),
-                        textColor = Color(0xFFD80073),
-                        placeholderColor = Color.Black,
-                        cursorColor = Color(0xFFD80073),
+                        focusedBorderColor = FluorescentPink,
+                        textColor = FluorescentPink,
+                        placeholderColor = JetBlack,
+                        cursorColor = FluorescentPink,
                     ),
                     textStyle = TextStyle.Default.copy(
                         fontFamily = FontFamily(Font(R.font.handlee_regular)),
@@ -195,7 +200,7 @@ fun SearchLocationBottomSheetView(
                     trailingIcon = {
                         Icon(
                             Icons.Rounded.Clear,
-                            tint = Color(0xFFD80073),
+                            tint = FluorescentPink,
                             contentDescription = "Back button",
                             modifier = Modifier
                                 .size(20.dp)
@@ -211,7 +216,7 @@ fun SearchLocationBottomSheetView(
                         .width(IntrinsicSize.Max)
                         .height(IntrinsicSize.Max)
                         .background(
-                            color = Color(0xFF1C1B33),
+                            color = DarkestBlue,
                             shape = RoundedCornerShape(25.dp),
                         )
                         .padding(10.dp)
@@ -222,7 +227,7 @@ fun SearchLocationBottomSheetView(
                     Icon(
                         Icons.Rounded.MyLocation,
                         contentDescription = stringResource(R.string.current_location),
-                        tint = Color(0xFFD80073),
+                        tint = FluorescentPink,
                         modifier = Modifier.width(30.dp)
                             .height(30.dp),
                     )
@@ -240,7 +245,7 @@ fun SearchLocationBottomSheetView(
                 itemsIndexed(listOfPredictions.value) { idx, item ->
                     Text(
                         text = item.description,
-                        color = Color.White,
+                        color = BrightWhite,
                         fontFamily = FontFamily(Font(R.font.handlee_regular)),
                         fontSize = 16.sp,
                         modifier = Modifier
@@ -250,7 +255,7 @@ fun SearchLocationBottomSheetView(
                     )
                     if (idx != listOfPredictions.value.lastIndex) {
                         TabRowDefaults.Divider(
-                            color = Color(0xFF1C1B33),
+                            color = DarkestBlue,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)

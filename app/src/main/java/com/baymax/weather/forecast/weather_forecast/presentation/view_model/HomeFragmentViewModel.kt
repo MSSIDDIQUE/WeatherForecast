@@ -81,12 +81,8 @@ class HomeFragmentViewModel @Inject constructor(
             cacheLocationUseCase.isLastLocationCached() -> fetchLocationUseCase.fetchLocationFromCache()
                 .collectLatest { cachedLocation ->
                     setProgressBarState(ProgressBarViewState.Show("Fetching current location"))
-                    if (cachedLocation != null) {
-                        location.value = cachedLocation
-                        setProgressBarState(ProgressBarViewState.Hide)
-                    } else {
-                        updateCurrentLocation()
-                    }
+                    location.value = cachedLocation
+                    setProgressBarState(ProgressBarViewState.Hide)
                 }
 
             else -> updateCurrentLocation()
@@ -100,9 +96,13 @@ class HomeFragmentViewModel @Inject constructor(
                     SnackBarViewState.Error(response.msg ?: "Unable to fetch device location"),
                 )
 
-                is ResponseWrapper.Success -> {
-                    location.value = response.data
-                    cacheLocationUseCase.cacheInSharedPrefs(response.data)
+                is ResponseWrapper.Success -> response.data.let { (latestLat, latestLng) ->
+                    fetchLocationUseCase.fetchLocationFromCache().collectLatest { (cachedLat, cachedLng) ->
+                        if (latestLat != cachedLat && latestLng != cachedLng) {
+                            location.value = response.data
+                            cacheLocationUseCase.cacheInSharedPrefs(response.data)
+                        }
+                    }
                 }
             }.also { setProgressBarState(ProgressBarViewState.Hide) }
         }
