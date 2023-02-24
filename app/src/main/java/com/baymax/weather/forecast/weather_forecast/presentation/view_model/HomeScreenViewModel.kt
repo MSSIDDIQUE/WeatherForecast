@@ -1,18 +1,17 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.view_model
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baymax.weather.forecast.data.ResponseWrapper
 import com.baymax.weather.forecast.fetch_location.data.CacheLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchLocationUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchPredictionsUseCase
 import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
-import com.baymax.weather.forecast.presentation.view_models.BaseViewModel
-import com.baymax.weather.forecast.presentation.view_state.ProgressBarViewState
+import com.baymax.weather.forecast.presentation.model.SnackBarData
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
-import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsUiState
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsState
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -21,21 +20,27 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class HomeFragmentViewModel @Inject constructor(
+class HomeScreenViewModel @Inject constructor(
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val cacheLocationUseCase: CacheLocationUseCase,
     private val fetchLocationUseCase: FetchLocationUseCase,
     private val fetchPredictionsUseCase: FetchPredictionsUseCase,
-) : BaseViewModel() {
+) : ViewModel() {
+
     private val location = MutableStateFlow(LocationDAO(0.0, 0.0))
+
+    val snackBarState = MutableStateFlow<SnackBarViewState>(SnackBarViewState.Hidden)
 
     val searchQuery = MutableStateFlow("")
 
     fun setSearchQuery(query: String) {
         searchQuery.value = query
+    }
+
+    fun setSnackBarState(state: SnackBarViewState) {
+        snackBarState.value = state
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -58,14 +63,14 @@ class HomeFragmentViewModel @Inject constructor(
     val weatherState = location.filter { (lat, lng) ->
         if (lat == 0.0 && lng == 0.0) return@filter false else true
     }.transformLatest { (lat, lng) ->
-        emit(WeatherReportsUiState.Loading("Fetching Weather"))
+        emit(WeatherReportsState.Loading("Fetching Weather"))
         fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
             when (weatherState) {
                 is ResponseWrapper.Failure -> weatherState.msg?.let {
-                    WeatherReportsUiState.Error(it)
-                } ?: WeatherReportsUiState.Error("Something went wrong!")
+                    WeatherReportsState.Error(it)
+                } ?: WeatherReportsState.Error("Something went wrong!")
 
-                is ResponseWrapper.Success -> WeatherReportsUiState.Success(weatherState.data)
+                is ResponseWrapper.Success -> WeatherReportsState.Success(weatherState.data)
             }.also {
                 emit(it)
             }
@@ -73,47 +78,49 @@ class HomeFragmentViewModel @Inject constructor(
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(25000L),
-        initialValue = WeatherReportsUiState.Idle,
+        initialValue = WeatherReportsState.Idle,
     )
 
-    fun updateLastLocation() = viewModelScope.launch {
-        when {
-            cacheLocationUseCase.isLastLocationCached() -> fetchLocationUseCase.fetchLocationFromCache()
-                .collectLatest { cachedLocation ->
-                    setProgressBarState(ProgressBarViewState.Show("Fetching current location"))
-                    location.value = cachedLocation
-                    setProgressBarState(ProgressBarViewState.Hide)
-                }
-
-            else -> updateCurrentLocation()
-        }
+    fun updateCachedLocation() = viewModelScope.launch {
+        location.value = fetchLocationUseCase.fetchLocationFromCache()
     }
 
     fun updateCurrentLocation() = viewModelScope.launch {
         fetchLocationUseCase.fetchLocationFromGps().collectLatest { response ->
             when (response) {
                 is ResponseWrapper.Failure -> setSnackBarState(
-                    SnackBarViewState.Error(response.msg ?: "Unable to fetch device location"),
+                    SnackBarViewState.Show(
+                        SnackBarData(response.msg ?: "Unable to fetch device location")
+                    )
                 )
 
                 is ResponseWrapper.Success -> response.data.let { (latestLat, latestLng) ->
-                    fetchLocationUseCase.fetchLocationFromCache().collectLatest { (cachedLat, cachedLng) ->
-                        if (latestLat != cachedLat && latestLng != cachedLng) {
-                            location.value = response.data
-                            cacheLocationUseCase.cacheInSharedPrefs(response.data)
-                        }
+                    val (cachedLat, cachedLng) = withContext(Dispatchers.Default) {
+                        fetchLocationUseCase.fetchLocationFromCache()
+                    }
+                    if (latestLat != cachedLat && latestLng != cachedLng) {
+                        location.value = response.data
+                        cacheLocationUseCase.cacheInSharedPrefs(response.data)
+                        setSnackBarState(
+                            SnackBarViewState.Show(
+                                SnackBarData("Device location updated successfully")
+                            )
+                        )
+                    } else {
+                        setSnackBarState(
+                            SnackBarViewState.Show(
+                                SnackBarData("No change in device location")
+                            )
+                        )
                     }
                 }
-            }.also { setProgressBarState(ProgressBarViewState.Hide) }
+            }
         }
     }
 
     fun updateLocationFromPlaceId(placeId: String) = viewModelScope.launch {
         when (val response = fetchLocationUseCase.fetchLocationFromPlaceId(placeId)) {
-            is ResponseWrapper.Failure -> SnackBarViewState.Error(
-                response.msg ?: "Unable to fetch location",
-            )
-
+            is ResponseWrapper.Failure -> {}
             is ResponseWrapper.Success -> location.value = response.data
         }
     }

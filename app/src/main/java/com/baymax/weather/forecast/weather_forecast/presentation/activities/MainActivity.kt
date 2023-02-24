@@ -3,28 +3,31 @@ package com.baymax.weather.forecast.weather_forecast.presentation.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.hasLocationPermissions
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.isGpsActive
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.requestLocationPermission
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.turnOnGPS
-import com.baymax.weather.forecast.presentation.activities.BaseComposeActivity
+import com.baymax.weather.forecast.presentation.model.SnackBarData
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.HomeScreen
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.NavGraphs
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
-import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
+import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeScreenViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MainActivity : BaseComposeActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
         private const val MULTIPLE_LOCATION_PERMISSION = 1
@@ -32,31 +35,31 @@ class MainActivity : BaseComposeActivity() {
         private const val BACK_PRESS_INTERVAL: Long = 3 * 1000
     }
 
-    private val viewModel: HomeFragmentViewModel by viewModels { viewModelFactory }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: HomeScreenViewModel by viewModels { viewModelFactory }
 
     private var exit = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        updateLocation()
-    }
-
-    @Composable
-    override fun Content() {
-        DestinationsNavHost(navGraph = NavGraphs.root) {
-            composable(HomeScreenDestination) {
-                HomeScreen(viewModel = viewModel) {
-                    updateCurrentDeviceLocation()
+        setContent {
+            DestinationsNavHost(navGraph = NavGraphs.root) {
+                composable(HomeScreenDestination) {
+                    HomeScreen(viewModel = viewModel) {
+                        updateCurrentDeviceLocation()
+                    }
                 }
             }
         }
+        updateLocation()
     }
 
     private fun updateLocation() = lifecycleScope.launch {
         withContext(Dispatchers.Default) {
             viewModel.isLastLocationCached()
         }.also { available ->
-            if (available) viewModel.updateLastLocation() else updateCurrentDeviceLocation()
+            if (available) viewModel.updateCachedLocation() else updateCurrentDeviceLocation()
         }
     }
 
@@ -85,10 +88,12 @@ class MainActivity : BaseComposeActivity() {
             when (resultCode) {
                 Activity.RESULT_OK -> updateCurrentDeviceLocation()
                 Activity.RESULT_CANCELED -> viewModel.setSnackBarState(
-                    SnackBarViewState.Warning(
-                        getString(R.string.gps_warning),
-                        "Retry",
-                    ) { turnOnGPS() },
+                    SnackBarViewState.Show(
+                        SnackBarData(
+                            getString(R.string.gps_warning),
+                            "Retry",
+                        ) { turnOnGPS() }
+                    ),
                 )
             }
         }
@@ -99,7 +104,13 @@ class MainActivity : BaseComposeActivity() {
             if (exit) {
                 finishAffinity()
             } else {
-                viewModel.setSnackBarState(SnackBarViewState.Normal(getString(R.string.backpress_message)))
+                viewModel.setSnackBarState(
+                    SnackBarViewState.Show(
+                        SnackBarData(
+                            getString(R.string.backpress_message)
+                        )
+                    )
+                )
                 exit = true
                 delay(BACK_PRESS_INTERVAL)
                 exit = false

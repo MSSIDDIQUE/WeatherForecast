@@ -11,9 +11,7 @@ class FetchLocationUseCase @Inject constructor(
     private val appContext: Application,
     private val locationProvider: FusedLocationProviderClient,
 ) {
-    suspend fun fetchLocationFromCache() = flow {
-        emit(repo.getLastLocation())
-    }
+    suspend fun fetchLocationFromCache() = repo.getLastLocation()
 
     fun fetchLocationFromGps() = locationProvider.locationFlow(appContext)
 

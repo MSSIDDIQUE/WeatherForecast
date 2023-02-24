@@ -13,7 +13,7 @@ android {
         applicationId "com.baymax.weather.forecast"
         compileSdk 33
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 5
         versionName "3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -51,16 +51,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$app_compat_version"
     implementation "androidx.core:core-ktx:$android_core_version"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
-
-    //material design
     implementation "com.google.android.material:material:$material_design_version"
-
-    //Activity android
-    implementation "androidx.activity:activity-ktx:$activity_version"
-
-    //Fragment android
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
 
     //Jetpack Compose
     implementation "androidx.compose.ui:ui:$compose_version"
@@ -68,22 +59,11 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "com.airbnb.android:lottie-compose:$lottie_version"
     implementation "androidx.activity:activity-compose:$activity_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
     implementation "io.coil-kt:coil-compose:$coil_version"
     implementation "io.github.raamcosta.compose-destinations:core:$compose_nav_version"
-    implementation "androidx.core:core-ktx:$android_core_version"
-    implementation "androidx.compose.material3:material3:$compose_material3_version"
-    implementation "androidx.core:core-ktx:$android_core_version"
     ksp "io.github.raamcosta.compose-destinations:ksp:$compose_nav_version"
-
-    // Room
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
-    implementation "androidx.core:core-ktx:$android_core_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    kapt "androidx.room:room-compiler:$room_version"
 
     // Gson
     implementation "com.google.code.gson:gson:$gson_version"
@@ -100,20 +80,11 @@ dependencies {
     // Okhttp
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
-    // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-
     //Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-
-    //ThreeTenApiForDateTime
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.4.4'
 
     // Google-Location
     implementation "com.google.android.gms:play-services-location:$location_version"
@@ -128,7 +99,7 @@ dependencies {
     implementation "com.facebook.stetho:stetho-okhttp3:$stetho_version"
 
     // testing
-    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

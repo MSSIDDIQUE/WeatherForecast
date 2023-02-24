@@ -27,8 +27,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.HourglassBottom
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,68 +64,55 @@ fun WeatherReportsScreen(
     weatherReports: WeatherReportsDAO,
     onSearchClick: () -> Unit,
 ) = with(weatherReports) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        DarkBlue,
-                        DarkestBlue,
-                    ),
-                ),
-            ),
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            elevation = 4.dp,
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 0.dp,
+                bottomStart = 50.dp,
+                bottomEnd = 50.dp,
+            ),
         ) {
-            Card(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
-                elevation = 4.dp,
-                shape = RoundedCornerShape(
-                    topStart = 0.dp,
-                    topEnd = 0.dp,
-                    bottomStart = 50.dp,
-                    bottomEnd = 50.dp,
-                ),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    JetBlack,
-                                    DarkerBlue,
-                                ),
+                    .wrapContentHeight()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                JetBlack,
+                                DarkerBlue,
                             ),
                         ),
-                    Alignment.TopCenter,
+                    ),
+                Alignment.TopCenter,
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        UpperCardView(this@with, onSearchClick)
-                        LowerCardView(this@with)
-                    }
+                    UpperCardView(this@with, onSearchClick)
+                    LowerCardView(this@with)
                 }
             }
-            WeatherForecast(
-                listOf(
-                    hourlyWeatherForecast,
-                    dailyWeatherForecast,
-                ),
-            )
         }
+        WeatherForecast(
+            listOf(
+                hourlyWeatherForecast,
+                dailyWeatherForecast,
+            ),
+        )
     }
 }
 
@@ -198,7 +183,8 @@ fun UpperCardView(
                 }
             }
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(5.dp)
                     .wrapContentHeight(),
                 contentAlignment = Alignment.TopEnd,
@@ -251,12 +237,14 @@ fun CurrentWeatherLocationView(
     onSearchClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.width(IntrinsicSize.Max)
+        modifier = Modifier
+            .width(IntrinsicSize.Max)
             .wrapContentHeight()
             .background(
                 color = DarkestBlue,
                 shape = RoundedCornerShape(25.dp),
-            ).clickable {
+            )
+            .clickable {
                 onSearchClick()
             },
         horizontalArrangement = Arrangement.Center,
@@ -410,12 +398,13 @@ fun TemperatureScaleTypeView() {
 @Composable
 fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
     val listOfTabs = listOf(
-        Pair(Icons.Rounded.HourglassBottom, "Hourly"),
-        Pair(Icons.Rounded.CalendarMonth, "Weekly"),
+        Pair(R.drawable.ic_clock, "Hourly"),
+        Pair(R.drawable.ic_calendar, "Weekly"),
     )
     var tabIndexState by remember { mutableStateOf(1) }
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .wrapContentHeight()
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -452,11 +441,13 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
                         },
                 ) {
                     Row(
-                        modifier = Modifier.wrapContentSize().padding(horizontal = 15.dp),
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(horizontal = 15.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            value.first,
+                            painterResource(value.first),
                             contentDescription = "Hourly",
                             tint = Color.White,
                         )
@@ -507,7 +498,8 @@ fun ForecastListItemView(item: WeatherDAO) {
             contentDescription = item.weatherDescription,
         )
         Text(
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier
+                .wrapContentSize()
                 .padding(horizontal = 5.dp),
             text = item.dateTime,
             color = Color.White,
@@ -516,7 +508,8 @@ fun ForecastListItemView(item: WeatherDAO) {
             textAlign = TextAlign.Center,
         )
         Text(
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier
+                .wrapContentSize()
                 .padding(horizontal = 5.dp),
             text = item.weatherDescription,
             color = FluorescentPink,
@@ -525,7 +518,8 @@ fun ForecastListItemView(item: WeatherDAO) {
             maxLines = 2,
         )
         Text(
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier
+                .wrapContentSize()
                 .padding(horizontal = 5.dp),
             text = if (scaleSwitchIndexState.value == 0) item.temperatureF else item.temperatureC,
             color = Color.White,

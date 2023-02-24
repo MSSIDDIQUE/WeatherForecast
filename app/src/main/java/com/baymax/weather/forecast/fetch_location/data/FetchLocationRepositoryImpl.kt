@@ -1,6 +1,5 @@
 package com.baymax.weather.forecast.fetch_location.data
 
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.LocationDTO
 import com.baymax.weather.forecast.fetch_location.api.mappers.GooglePlacesDataMapper.toLocationDAO
 import com.baymax.weather.forecast.fetch_location.api.mappers.GooglePlacesDataMapper.toPredictionsDAO
 import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
@@ -38,11 +37,15 @@ class FetchLocationRepositoryImpl @Inject constructor(
         )
     }.map { toLocationDAO(it) }
 
-    override suspend fun setLastLocation(location: LocationDAO) = with(prefHelper) {
-        withContext(Dispatchers.IO) {
-            sharedPrefs[LAT] = location.lat.toString()
-            sharedPrefs[LNG] = location.lng.toString()
-            sharedPrefs[IS_LAST_LOCATION_CACHED] = true
+    override suspend fun setLastLocation(location: LocationDAO) = withContext(Dispatchers.IO) {
+        with(prefHelper) {
+            val lat = location.lat.toString()
+            val lng = location.lng.toString()
+            if (sharedPrefs[LAT, "0.0"] != lat && sharedPrefs[LNG, "0.0"] != lng) {
+                sharedPrefs[LAT] = lat
+                sharedPrefs[LNG] = lng
+                sharedPrefs[IS_LAST_LOCATION_CACHED] = true
+            }
         }
     }
 

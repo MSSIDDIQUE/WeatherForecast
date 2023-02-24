@@ -1,11 +1,6 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.SpanStyle
@@ -41,24 +35,14 @@ import kotlin.time.Duration.Companion.seconds
 @Destination(start = true)
 @Composable
 fun SplashScreen(navigator: DestinationsNavigator) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2E335A),
-                        Color(0xFF1C1B33),
-                    ),
-                ),
-            ),
-        Alignment.BottomCenter,
-    ) {
+    BaseScreenWrapper {
         Column(
             modifier = Modifier
+                .fillMaxHeight()
                 .wrapContentWidth()
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom
         ) {
             Text(
                 text = buildAnnotatedString {

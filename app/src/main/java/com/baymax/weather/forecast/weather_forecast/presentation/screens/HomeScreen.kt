@@ -1,51 +1,33 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.screens
 
+import android.view.Gravity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TabRowDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import com.baymax.launcherapp.ui.theme.BrightWhite
 import com.baymax.launcherapp.ui.theme.DarkBlue
 import com.baymax.launcherapp.ui.theme.DarkestBlue
@@ -53,9 +35,10 @@ import com.baymax.launcherapp.ui.theme.FluorescentPink
 import com.baymax.launcherapp.ui.theme.JetBlack
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionDAO
+import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
-import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeFragmentViewModel
-import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsUiState
+import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeScreenViewModel
+import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsState
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -63,21 +46,46 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun HomeScreen(
-    viewModel: HomeFragmentViewModel,
+    viewModel: HomeScreenViewModel,
     onCurrentLocationClick: () -> Unit,
-) {
-    when (val weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value) {
-        WeatherReportsUiState.Idle -> IdleScreen()
-        is WeatherReportsUiState.Error -> TODO()
-        is WeatherReportsUiState.Loading -> ProgressBarScreen(weatherState.message)
-        is WeatherReportsUiState.Success -> SearchLocationBottomSheet(
-            weatherReports = weatherState.weatherReports,
-            initSearchQuery = viewModel.searchQuery,
-            listOfPredictions = viewModel.predictions.collectAsStateWithLifecycle(),
-            onPredictionClick = viewModel::updateLocationFromPlaceId,
-            onSearchQueryUpdate = viewModel::setSearchQuery,
-            onCurrentLocationClick = onCurrentLocationClick,
-        )
+) = with(viewModel) {
+    val coroutineScope = rememberCoroutineScope()
+    val weatherState = weatherState.collectAsStateWithLifecycle().value
+    val snackBarState = snackBarState.collectAsStateWithLifecycle().value
+    BaseScreenWrapper { scaffoldState ->
+        when (weatherState) {
+            WeatherReportsState.Idle -> {}
+            is WeatherReportsState.Loading -> ProgressBarView(weatherState.message)
+            is WeatherReportsState.Success -> SearchLocationBottomSheet(
+                weatherReports = weatherState.weatherReports,
+                initSearchQuery = searchQuery,
+                listOfPredictions = predictions.collectAsStateWithLifecycle(),
+                onPredictionClick = ::updateLocationFromPlaceId,
+                onSearchQueryUpdate = ::setSearchQuery,
+                onCurrentLocationClick = onCurrentLocationClick,
+            )
+
+            is WeatherReportsState.Error -> LaunchedEffect(true) {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = weatherState.message,
+                    actionLabel = "",
+                    duration = SnackbarDuration.Long
+                )
+            }
+        }
+
+        when (snackBarState) {
+            SnackBarViewState.Hidden -> {}
+            is SnackBarViewState.Show -> with(snackBarState.snackBarData) {
+                coroutineScope.launch {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message,
+                        actionLabel,
+                        SnackbarDuration.Short
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -225,10 +233,11 @@ fun SearchLocationBottomSheetView(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Icon(
-                        Icons.Rounded.MyLocation,
+                        painter = painterResource(R.drawable.ic_my_location),
                         contentDescription = stringResource(R.string.current_location),
                         tint = FluorescentPink,
-                        modifier = Modifier.width(30.dp)
+                        modifier = Modifier
+                            .width(30.dp)
                             .height(30.dp),
                     )
                 }
@@ -265,5 +274,32 @@ fun SearchLocationBottomSheetView(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ProgressBarView(loadingText: String = stringResource(id = R.string.loading)) {
+    val context = LocalContext.current
+    val customView = remember { LottieAnimationView(context) }
+    Column(
+        Modifier.wrapContentSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        AndroidView({ customView }) { view ->
+            with(view) {
+                setAnimation(R.raw.loading_animation)
+                playAnimation()
+                repeatMode = LottieDrawable.RESTART
+                foregroundGravity = Gravity.CENTER
+            }
+        }
+        Text(
+            text = loadingText,
+            color = Color(0xFFD80073),
+            fontFamily = FontFamily(Font(R.font.handlee_regular)),
+            fontSize = 24.sp,
+            modifier = Modifier.wrapContentSize(align = Alignment.Center),
+        )
     }
 }
