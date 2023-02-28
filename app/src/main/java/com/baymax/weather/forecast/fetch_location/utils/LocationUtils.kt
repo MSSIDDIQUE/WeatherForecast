@@ -88,7 +88,6 @@ object LocationUtils {
     }
 
     fun Context.hasLocationPermissions() = listOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
     ).any {
         checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
@@ -107,7 +106,6 @@ object LocationUtils {
             this,
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
             ),
             MULTIPLE_LOCATION_PERMISSION,
         )

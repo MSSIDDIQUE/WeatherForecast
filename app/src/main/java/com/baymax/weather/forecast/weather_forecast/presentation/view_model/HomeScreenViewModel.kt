@@ -101,11 +101,6 @@ class HomeScreenViewModel @Inject constructor(
                     if (latestLat != cachedLat && latestLng != cachedLng) {
                         location.value = response.data
                         cacheLocationUseCase.cacheInSharedPrefs(response.data)
-                        setSnackBarState(
-                            SnackBarViewState.Show(
-                                SnackBarData("Device location updated successfully")
-                            )
-                        )
                     } else {
                         setSnackBarState(
                             SnackBarViewState.Show(
