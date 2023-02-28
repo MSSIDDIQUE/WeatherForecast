@@ -1,6 +1,7 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.screens
 
 import android.view.Gravity
+import android.view.animation.Animation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -69,7 +70,7 @@ fun HomeScreen(
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = weatherState.message,
                     actionLabel = "",
-                    duration = SnackbarDuration.Long
+                    duration = SnackbarDuration.Long,
                 )
             }
         }
@@ -81,7 +82,7 @@ fun HomeScreen(
                     scaffoldState.snackbarHostState.showSnackbar(
                         message,
                         actionLabel,
-                        SnackbarDuration.Short
+                        SnackbarDuration.Short,
                     )
                 }
             }
@@ -291,6 +292,7 @@ fun ProgressBarView(loadingText: String = stringResource(id = R.string.loading))
                 setAnimation(R.raw.loading_animation)
                 playAnimation()
                 repeatMode = LottieDrawable.RESTART
+                repeatCount = Animation.INFINITE
                 foregroundGravity = Gravity.CENTER
             }
         }

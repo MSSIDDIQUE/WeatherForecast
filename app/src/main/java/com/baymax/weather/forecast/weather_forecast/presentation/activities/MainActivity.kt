@@ -92,7 +92,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         SnackBarData(
                             getString(R.string.gps_warning),
                             "Retry",
-                        ) { turnOnGPS() }
+                        ) { turnOnGPS() },
                     ),
                 )
             }
@@ -107,9 +107,9 @@ class MainActivity : DaggerAppCompatActivity() {
                 viewModel.setSnackBarState(
                     SnackBarViewState.Show(
                         SnackBarData(
-                            getString(R.string.backpress_message)
-                        )
-                    )
+                            getString(R.string.backpress_message),
+                        ),
+                    ),
                 )
                 exit = true
                 delay(BACK_PRESS_INTERVAL)
