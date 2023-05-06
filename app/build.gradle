@@ -4,16 +4,17 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+    id 'com.google.devtools.ksp' version '1.8.20-1.0.11'
 }
 
 android {
 
+    compileSdkPreview = "UpsideDownCake"
+    buildToolsVersion = '34.0.0 rc3'
     defaultConfig {
         applicationId "com.baymax.weather.forecast"
-        compileSdk 33
-        minSdkVersion 23
-        targetSdkVersion 33
+        minSdk = 23
+        targetSdkPreview = "UpsideDownCake"
         versionCode 7
         versionName "3.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,27 +22,46 @@ android {
 
     buildTypes {
         release {
+            debuggable false
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debugMini {
+            initWith debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['debug']
         }
     }
 
     buildFeatures {
         compose = true
         dataBinding = true
+        buildConfig = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
+        kotlinCompilerExtensionVersion = "1.4.6"
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_19
+        targetCompatibility JavaVersion.VERSION_19
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "19"
     }
 
     namespace 'com.baymax.weather.forecast'
@@ -58,7 +78,6 @@ dependencies {
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "com.airbnb.android:lottie-compose:$lottie_version"
-    implementation "androidx.activity:activity-compose:$activity_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
     implementation "io.coil-kt:coil-compose:$coil_version"

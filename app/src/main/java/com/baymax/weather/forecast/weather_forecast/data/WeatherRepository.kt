@@ -7,5 +7,5 @@ interface WeatherRepository {
     suspend fun fetchWeather(
         lat: Double,
         lng: Double,
-    ): ResponseWrapper<WeatherReportsDAO>
+    ): ResponseWrapper<out WeatherReportsDAO>
 }

@@ -25,9 +25,10 @@ inline operator fun <reified T : Any> SharedPreferences.get(
     else -> throw UnsupportedOperationException("Not yet implemented")
 }
 
-inline fun <reified T, reified R> ResponseWrapper<T>.map(transform: (T) -> R): ResponseWrapper<R> {
+inline fun <reified T, reified R> ResponseWrapper<T>.map(transform: (T) -> R): ResponseWrapper<out R> {
     return when (this) {
         is ResponseWrapper.Success -> ResponseWrapper.Success(transform(data))
         is ResponseWrapper.Failure -> ResponseWrapper.Failure(msg)
+        else -> ResponseWrapper.Empty
     }
 }

@@ -49,8 +49,8 @@ class HomeScreenViewModel @Inject constructor(
     }.transformLatest { searchQuery ->
         fetchPredictionsUseCase(searchQuery).collectLatest { response ->
             when (response) {
-                is ResponseWrapper.Failure -> emptyList()
                 is ResponseWrapper.Success -> response.data
+                else -> emptyList()
             }.also { emit(it) }
         }
     }.distinctUntilChanged().stateIn(
@@ -71,6 +71,7 @@ class HomeScreenViewModel @Inject constructor(
                 } ?: WeatherReportsState.Error("Something went wrong!")
 
                 is ResponseWrapper.Success -> WeatherReportsState.Success(weatherState.data)
+                else -> WeatherReportsState.Idle
             }.also {
                 emit(it)
             }
@@ -109,14 +110,15 @@ class HomeScreenViewModel @Inject constructor(
                         )
                     }
                 }
+                else -> ResponseWrapper.Empty
             }
         }
     }
 
     fun updateLocationFromPlaceId(placeId: String) = viewModelScope.launch {
         when (val response = fetchLocationUseCase.fetchLocationFromPlaceId(placeId)) {
-            is ResponseWrapper.Failure -> {}
             is ResponseWrapper.Success -> location.value = response.data
+            else -> {}
         }
     }
 

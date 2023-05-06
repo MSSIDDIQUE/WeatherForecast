@@ -1,17 +1,18 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.screens
 
+import android.view.Gravity
+import android.view.animation.Animation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -21,10 +22,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.compose.ui.viewinterop.AndroidView
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -106,23 +106,23 @@ fun SplashScreen(navigator: DestinationsNavigator) {
 
 @Composable
 fun ShowSplashScreenAnimation(navigator: DestinationsNavigator) {
-    val speed by remember { mutableStateOf(1f) }
-    val isPlaying by remember { mutableStateOf(true) }
-    val composition = rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.splash_animation),
-    )
-    val progress by animateLottieCompositionAsState(
-        composition.value,
-        iterations = 1,
-        isPlaying = isPlaying,
-        speed = speed,
-        restartOnPlay = false,
-    )
-    LottieAnimation(
-        composition = composition.value,
-        progress = progress,
-        modifier = Modifier.fillMaxSize(),
-    )
+    val context = LocalContext.current
+    val customView = remember { LottieAnimationView(context) }
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        AndroidView({ customView }, modifier = Modifier.fillMaxSize()) { view ->
+            with(view) {
+                setAnimation(R.raw.splash_animation)
+                playAnimation()
+                repeatMode = LottieDrawable.RESTART
+                repeatCount = Animation.INFINITE
+                foregroundGravity = Gravity.CENTER
+            }
+        }
+    }
     LaunchedEffect(Unit) {
         delay(5.seconds)
         navigator.navigate(HomeScreenDestination)

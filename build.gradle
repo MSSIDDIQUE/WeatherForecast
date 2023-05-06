@@ -1,20 +1,20 @@
 buildscript {
-    ext.activity_version = '1.7.0-beta02'
-    ext.android_core_version = '1.9.0'
+    ext.agp_version = '8.2.0-alpha02'
+    ext.android_core_version = '1.12.0-alpha03'
     ext.app_compat_version = '1.6.1'
-    ext.coil_version = "2.2.2"
-    ext.compose_version = '1.4.0-beta02'
-    ext.compose_nav_version = '1.8.34-beta'
-    ext.coroutines_version = '1.6.4'
-    ext.dagger_version = '2.45'
+    ext.coil_version = '2.3.0'
+    ext.compose_version = '1.5.0-alpha03'
+    ext.compose_nav_version = '1.9.42-beta'
+    ext.coroutines_version = '1.7.0'
+    ext.dagger_version = '2.46'
     ext.gson_version = '2.10.1'
-    ext.kotlin_version = '1.8.10'
-    ext.lifecycle_version = '2.6.0-rc01'
+    ext.kotlin_version = '1.8.20'
+    ext.lifecycle_version = '2.6.1'
     ext.location_version = '21.0.1'
     ext.lottie_version = '6.0.0'
-    ext.material_design_version = '1.8.0'
+    ext.material_design_version = '1.9.0'
     ext.nav_version = '2.5.3'
-    ext.okhttp_version = '5.0.0-alpha.9'
+    ext.okhttp_version = '5.0.0-alpha.11'
     ext.preference_version = '1.2.0'
     ext.retrofit_version = '2.9.0'
     ext.secrets_gradle_plugin_version = '2.0.0'
@@ -25,10 +25,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:$secrets_gradle_plugin_version"
     }
+}
+
+ext {
+    sourceCompatibility = JavaVersion.VERSION_19
 }
 
 allprojects {

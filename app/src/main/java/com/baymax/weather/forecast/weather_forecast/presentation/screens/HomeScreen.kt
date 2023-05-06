@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -82,7 +83,7 @@ fun HomeScreen(
                     scaffoldState.snackbarHostState.showSnackbar(
                         message,
                         actionLabel,
-                        SnackbarDuration.Short,
+                        androidx.compose.material.SnackbarDuration.Short,
                     )
                 }
             }
@@ -305,3 +306,10 @@ fun ProgressBarView(loadingText: String = stringResource(id = R.string.loading))
         )
     }
 }
+
+@Preview("progressBarAnimation")
+@Composable
+fun ShowProgressBarAnimation(){
+    ProgressBarView()
+}
+

@@ -490,7 +490,7 @@ fun ForecastListItemView(item: WeatherDAO) {
         Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         Image(
             modifier = Modifier.size(60.dp),
@@ -509,13 +509,15 @@ fun ForecastListItemView(item: WeatherDAO) {
         )
         Text(
             modifier = Modifier
-                .wrapContentSize()
+                .width(150.dp)
+                .wrapContentHeight()
                 .padding(horizontal = 5.dp),
             text = item.weatherDescription,
             color = FluorescentPink,
             fontFamily = FontFamily(Font(R.font.handlee_regular)),
             fontSize = 20.sp,
             maxLines = 2,
+            textAlign = TextAlign.Center
         )
         Text(
             modifier = Modifier

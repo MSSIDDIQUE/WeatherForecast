@@ -24,7 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="WEATHER_API_KEY"
             android:value="${WEATHER_API_KEY}" />
@@ -32,7 +31,6 @@
         <meta-data
             android:name="GOOGLE_PLACE_API_KEY"
             android:value="${GOOGLE_PLACE_API_KEY}" />
-
     </application>
 
 </manifest>

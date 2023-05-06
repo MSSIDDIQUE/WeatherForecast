@@ -1,7 +1,7 @@
 package com.baymax.weather.forecast.fetch_location.api
 
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PlaceIdResponseDTO
-import com.baymax.weather.forecast.fetch_location.api.data_transfer_model.PredictionsResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.model.PlaceIdResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.model.PredictionsResponseDTO
 import com.baymax.weather.forecast.utils.PrefHelper
 import retrofit2.Response
 import retrofit2.http.GET
