@@ -83,7 +83,7 @@ fun HomeScreen(
                     scaffoldState.snackbarHostState.showSnackbar(
                         message,
                         actionLabel,
-                        androidx.compose.material.SnackbarDuration.Short,
+                        SnackbarDuration.Short,
                     )
                 }
             }
