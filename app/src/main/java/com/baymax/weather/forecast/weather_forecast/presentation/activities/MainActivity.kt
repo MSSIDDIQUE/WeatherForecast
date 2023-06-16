@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.hasLocationPermissions
@@ -14,6 +15,7 @@ import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.requestLoc
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.turnOnGPS
 import com.baymax.weather.forecast.presentation.model.SnackBarData
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
+import com.baymax.weather.forecast.weather_forecast.presentation.model.HomeScreenData
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.HomeScreen
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.NavGraphs
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
@@ -46,9 +48,17 @@ class MainActivity : DaggerAppCompatActivity() {
         setContent {
             DestinationsNavHost(navGraph = NavGraphs.root) {
                 composable(HomeScreenDestination) {
-                    HomeScreen(viewModel = viewModel) {
-                        updateCurrentDeviceLocation()
-                    }
+                    HomeScreen(
+                        HomeScreenData(
+                            weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value,
+                            snackBarState = viewModel.snackBarState.collectAsStateWithLifecycle().value,
+                            searchQueryState = viewModel.searchQuery.collectAsStateWithLifecycle().value,
+                            predictionsState = viewModel.predictions.collectAsStateWithLifecycle().value,
+                            onCurrentLocationClick = { updateCurrentDeviceLocation() },
+                            onSearchQueryUpdate = { query -> viewModel.setSearchQuery(query) },
+                            onPredictionClick = { placeId -> viewModel.updateLocationFromPlaceId(placeId) }
+                        )
+                    )
                 }
             }
         }

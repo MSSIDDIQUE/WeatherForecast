@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.baymax.launcherapp.ui.theme.BrightWhite
@@ -38,32 +37,28 @@ import com.baymax.launcherapp.ui.theme.JetBlack
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionDAO
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
+import com.baymax.weather.forecast.weather_forecast.presentation.model.HomeScreenData
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
-import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeScreenViewModel
 import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsState
 import com.ramcosta.composedestinations.annotation.Destination
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Destination
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel,
-    onCurrentLocationClick: () -> Unit,
-) = with(viewModel) {
+    data: HomeScreenData
+) = with(data) {
     val coroutineScope = rememberCoroutineScope()
-    val weatherState = weatherState.collectAsStateWithLifecycle().value
-    val snackBarState = snackBarState.collectAsStateWithLifecycle().value
     BaseScreenWrapper { scaffoldState ->
         when (weatherState) {
             WeatherReportsState.Idle -> {}
             is WeatherReportsState.Loading -> ProgressBarView(weatherState.message)
             is WeatherReportsState.Success -> SearchLocationBottomSheet(
                 weatherReports = weatherState.weatherReports,
-                initSearchQuery = searchQuery,
-                listOfPredictions = predictions.collectAsStateWithLifecycle(),
-                onPredictionClick = ::updateLocationFromPlaceId,
-                onSearchQueryUpdate = ::setSearchQuery,
+                initSearchQuery = searchQueryState,
+                listOfPredictions = predictionsState,
+                onPredictionClick = onPredictionClick,
+                onSearchQueryUpdate = onSearchQueryUpdate,
                 onCurrentLocationClick = onCurrentLocationClick,
             )
 
@@ -95,8 +90,8 @@ fun HomeScreen(
 @Composable
 fun SearchLocationBottomSheet(
     weatherReports: WeatherReportsDAO,
-    initSearchQuery: MutableStateFlow<String>,
-    listOfPredictions: State<List<PredictionDAO>>,
+    initSearchQuery: String,
+    listOfPredictions: List<PredictionDAO>,
     onPredictionClick: (String) -> Unit,
     onSearchQueryUpdate: (String) -> Unit,
     onCurrentLocationClick: () -> Unit,
@@ -126,8 +121,8 @@ fun SearchLocationBottomSheet(
 
 @Composable
 fun SearchLocationBottomSheetView(
-    initSearchQuery: MutableStateFlow<String>,
-    listOfPredictions: State<List<PredictionDAO>>,
+    initSearchQuery: String,
+    listOfPredictions: List<PredictionDAO>,
     onPredictionClick: (String) -> Unit,
     onSearchQueryUpdate: (String) -> Unit,
     onCurrentLocationClick: () -> Unit,
@@ -163,7 +158,7 @@ fun SearchLocationBottomSheetView(
             ) {
                 OutlinedTextField(
                     singleLine = true,
-                    value = initSearchQuery.collectAsStateWithLifecycle().value,
+                    value = initSearchQuery,
                     onValueChange = { onSearchQueryUpdate(it) },
                     leadingIcon = {
                         Icon(
@@ -253,7 +248,7 @@ fun SearchLocationBottomSheetView(
                 contentPadding = PaddingValues(5.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                itemsIndexed(listOfPredictions.value) { idx, item ->
+                itemsIndexed(listOfPredictions) { idx, item ->
                     Text(
                         text = item.description,
                         color = BrightWhite,
@@ -264,7 +259,7 @@ fun SearchLocationBottomSheetView(
                             .padding(horizontal = 20.dp, vertical = 5.dp)
                             .clickable { onPredictionClick(item.placeId) },
                     )
-                    if (idx != listOfPredictions.value.lastIndex) {
+                    if (idx != listOfPredictions.lastIndex) {
                         TabRowDefaults.Divider(
                             color = DarkestBlue,
                             modifier = Modifier
@@ -309,7 +304,7 @@ fun ProgressBarView(loadingText: String = stringResource(id = R.string.loading))
 
 @Preview("progressBarAnimation")
 @Composable
-fun ShowProgressBarAnimation(){
+fun ShowProgressBarAnimation() {
     ProgressBarView()
 }
 
