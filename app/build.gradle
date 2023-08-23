@@ -4,16 +4,16 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.21-1.0.11'
+    id 'com.google.devtools.ksp' version '1.9.0-1.0.13'
 }
 
 android {
     compileSdkPreview = "UpsideDownCake"
-    buildToolsVersion = '34.0.0 rc3'
+    buildToolsVersion = '34.0.0'
     defaultConfig {
         applicationId "com.baymax.weather.forecast"
         minSdk = 23
-        targetSdk 33
+        targetSdk 34
         versionCode 7
         versionName "3.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -43,7 +43,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     compileOptions {

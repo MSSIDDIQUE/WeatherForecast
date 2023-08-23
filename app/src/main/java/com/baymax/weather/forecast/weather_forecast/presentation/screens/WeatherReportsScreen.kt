@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -401,7 +402,7 @@ fun WeatherForecast(listOfForecastsTypes: List<List<WeatherDAO>>) {
         Pair(R.drawable.ic_clock, "Hourly"),
         Pair(R.drawable.ic_calendar, "Weekly"),
     )
-    var tabIndexState by remember { mutableStateOf(1) }
+    var tabIndexState by remember { mutableIntStateOf(1) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
