@@ -1,13 +1,16 @@
 package com.baymax.weather.forecast.fetch_location.data
 
-import com.baymax.weather.forecast.data.ResponseWrapper
-import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
-import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionDAO
+import com.baymax.weather.forecast.data.ApiResponse
+import com.baymax.weather.forecast.fetch_location.api.model.PlaceIdErrorResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.model.PlaceIdSuccessResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.model.PredictionsErrorResponseDTO
+import com.baymax.weather.forecast.fetch_location.api.model.PredictionsSuccessResponseDTO
+import com.baymax.weather.forecast.fetch_location.presentation.model.CoordinatesDAO
 
 interface FetchLocationRepository {
-    suspend fun getSuggestions(searchText: String): ResponseWrapper<out List<PredictionDAO>>
-    suspend fun getCoordinates(placeId: String): ResponseWrapper<out LocationDAO>
-    suspend fun setLastLocation(location: LocationDAO)
-    suspend fun getLastLocation(): LocationDAO
+    suspend fun  getSuggestions(searchText: String): ApiResponse<PredictionsSuccessResponseDTO, PredictionsErrorResponseDTO>
+    suspend fun getCoordinates(placeId: String): ApiResponse<PlaceIdSuccessResponseDTO, PlaceIdErrorResponseDTO>
+    suspend fun setLastLocation(location: CoordinatesDAO)
+    suspend fun getLastLocation(): CoordinatesDAO
     suspend fun isLocationCached(): Boolean
 }

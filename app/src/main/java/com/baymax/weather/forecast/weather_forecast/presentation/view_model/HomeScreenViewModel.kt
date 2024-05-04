@@ -2,11 +2,12 @@ package com.baymax.weather.forecast.weather_forecast.presentation.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.baymax.weather.forecast.data.ResponseWrapper
 import com.baymax.weather.forecast.fetch_location.data.CacheLocationUseCase
-import com.baymax.weather.forecast.fetch_location.data.FetchLocationUseCase
+import com.baymax.weather.forecast.fetch_location.data.FetchCoordinatesUseCase
 import com.baymax.weather.forecast.fetch_location.data.FetchPredictionsUseCase
-import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
+import com.baymax.weather.forecast.fetch_location.presentation.model.CoordinatesDAO
+import com.baymax.weather.forecast.fetch_location.presentation.model.LocationCoordinatesState
+import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionsState
 import com.baymax.weather.forecast.presentation.model.SnackBarData
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.data.FetchWeatherUseCase
@@ -25,11 +26,11 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val cacheLocationUseCase: CacheLocationUseCase,
-    private val fetchLocationUseCase: FetchLocationUseCase,
+    private val fetchCoordinatesUseCase: FetchCoordinatesUseCase,
     private val fetchPredictionsUseCase: FetchPredictionsUseCase,
 ) : ViewModel() {
 
-    private val location = MutableStateFlow(LocationDAO(0.0, 0.0))
+    private val location = MutableStateFlow(CoordinatesDAO(0.0, 0.0))
 
     val snackBarState = MutableStateFlow<SnackBarViewState>(SnackBarViewState.Hidden)
 
@@ -49,7 +50,7 @@ class HomeScreenViewModel @Inject constructor(
     }.transformLatest { searchQuery ->
         fetchPredictionsUseCase(searchQuery).collectLatest { response ->
             when (response) {
-                is ResponseWrapper.Success -> response.data
+                is PredictionsState.Matches -> response.list
                 else -> emptyList()
             }.also { emit(it) }
         }
@@ -64,18 +65,7 @@ class HomeScreenViewModel @Inject constructor(
         if (lat == 0.0 && lng == 0.0) return@filter false else true
     }.transformLatest { (lat, lng) ->
         emit(WeatherReportsState.Loading("Fetching Weather"))
-        fetchWeatherUseCase(lat, lng).collectLatest { weatherState ->
-            when (weatherState) {
-                is ResponseWrapper.Failure -> weatherState.msg?.let {
-                    WeatherReportsState.Error(it)
-                } ?: WeatherReportsState.Error("Something went wrong!")
-
-                is ResponseWrapper.Success -> WeatherReportsState.Success(weatherState.data)
-                else -> WeatherReportsState.Idle
-            }.also {
-                emit(it)
-            }
-        }
+        emit(fetchWeatherUseCase(lat, lng))
     }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(25000L),
@@ -83,41 +73,36 @@ class HomeScreenViewModel @Inject constructor(
     )
 
     fun updateCachedLocation() = viewModelScope.launch {
-        location.value = fetchLocationUseCase.fetchLocationFromCache()
+        location.value = fetchCoordinatesUseCase.fetchLocationFromCache()
     }
 
     fun updateCurrentLocation() = viewModelScope.launch {
-        fetchLocationUseCase.fetchLocationFromGps().collectLatest { response ->
-            when (response) {
-                is ResponseWrapper.Failure -> setSnackBarState(
-                    SnackBarViewState.Show(
-                        SnackBarData(response.msg ?: "Unable to fetch device location")
-                    )
+        fetchCoordinatesUseCase.fetchLocationFromGps().collectLatest { result ->
+            when(result){
+                is LocationCoordinatesState.Error -> setSnackBarState(
+                    SnackBarViewState.Show(SnackBarData(result.errorMessage ?: "Unable to fetch device location"))
                 )
-
-                is ResponseWrapper.Success -> response.data.let { (latestLat, latestLng) ->
+                is LocationCoordinatesState.Found -> result.coordinatesDao.let { (latestLat, latestLng) ->
                     val (cachedLat, cachedLng) = withContext(Dispatchers.Default) {
-                        fetchLocationUseCase.fetchLocationFromCache()
+                        fetchCoordinatesUseCase.fetchLocationFromCache()
                     }
-                    if (latestLat != cachedLat && latestLng != cachedLng) {
-                        location.value = response.data
-                        cacheLocationUseCase.cacheInSharedPrefs(response.data)
+                    if (latestLat != cachedLat || latestLng != cachedLng) {
+                        location.value = result.coordinatesDao
+                        cacheLocationUseCase.cacheInSharedPrefs(result.coordinatesDao)
                     } else {
                         setSnackBarState(
-                            SnackBarViewState.Show(
-                                SnackBarData("No change in device location")
-                            )
+                            SnackBarViewState.Show(SnackBarData("No change in device location"))
                         )
                     }
                 }
-                else -> ResponseWrapper.Empty
+                LocationCoordinatesState.NotFound -> TODO()
             }
         }
     }
 
     fun updateLocationFromPlaceId(placeId: String) = viewModelScope.launch {
-        when (val response = fetchLocationUseCase.fetchLocationFromPlaceId(placeId)) {
-            is ResponseWrapper.Success -> location.value = response.data
+        when (val response = fetchCoordinatesUseCase.fetchLocationFromPlaceId(placeId)) {
+            is LocationCoordinatesState.Found -> location.value = response.coordinatesDao
             else -> {}
         }
     }

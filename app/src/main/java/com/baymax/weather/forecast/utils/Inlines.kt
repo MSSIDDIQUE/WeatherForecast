@@ -2,7 +2,14 @@ package com.baymax.weather.forecast.utils
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.baymax.weather.forecast.data.ResponseWrapper
+import com.baymax.weather.forecast.data.ApiResponse
+import com.baymax.weather.forecast.data.HttpExceptions
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.request
+import kotlinx.serialization.SerializationException
 
 operator fun SharedPreferences.set(key: String, value: Any?) = when (value) {
     is String? -> edit { putString(key, value) }
@@ -25,10 +32,26 @@ inline operator fun <reified T : Any> SharedPreferences.get(
     else -> throw UnsupportedOperationException("Not yet implemented")
 }
 
-inline fun <reified T, reified R> ResponseWrapper<T>.map(transform: (T) -> R): ResponseWrapper<out R> {
-    return when (this) {
-        is ResponseWrapper.Success -> ResponseWrapper.Success(transform(data))
-        is ResponseWrapper.Failure -> ResponseWrapper.Failure(msg)
-        else -> ResponseWrapper.Empty
+suspend inline fun <reified T, reified E> HttpClient.safeRequest(
+    block: HttpRequestBuilder.() -> Unit,
+): ApiResponse<T, E> =
+    try {
+        val response = request { block() }
+        ApiResponse.Success(response.body())
+    } catch (exception: ClientRequestException) {
+        ApiResponse.Error.HttpError(
+            code = exception.response.status.value,
+            errorBody = exception.response.body(),
+            errorMessage = "Status Code: ${exception.response.status.value} - API Key Missing",
+        )
+    } catch (exception: HttpExceptions) {
+        ApiResponse.Error.HttpError(
+            code = exception.response.status.value,
+            errorBody = exception.response.body(),
+            errorMessage = exception.message,
+        )
+    } catch (e: SerializationException) {
+        ApiResponse.Error.SerializationError(errorMessage = e.message)
+    } catch (e: Exception) {
+        ApiResponse.Error.GenericError(errorMessage = e.message)
     }
-}

@@ -9,8 +9,8 @@ import android.location.LocationManager
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.baymax.weather.forecast.data.ResponseWrapper
-import com.baymax.weather.forecast.fetch_location.presentation.model.LocationDAO
+import com.baymax.weather.forecast.fetch_location.presentation.model.CoordinatesDAO
+import com.baymax.weather.forecast.fetch_location.presentation.model.LocationCoordinatesState
 import com.baymax.weather.forecast.utils.Constants
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -51,17 +51,17 @@ object LocationUtils {
     @SuppressLint("MissingPermission")
     fun FusedLocationProviderClient.locationFlow(
         context: Context,
-    ): Flow<ResponseWrapper<LocationDAO>> = callbackFlow {
+    ): Flow<LocationCoordinatesState> = callbackFlow {
         val callBack = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 val location = locationResult.lastLocation
-                val userLocation = LocationDAO(
+                val userLocation = CoordinatesDAO(
                     lat = location?.latitude ?: 0.0,
                     lng = location?.longitude ?: 0.0,
                 )
                 try {
-                    this@callbackFlow.trySend(ResponseWrapper.Success(userLocation)).isSuccess
+                    this@callbackFlow.trySend(LocationCoordinatesState.Found(userLocation)).isSuccess
                     removeLocationUpdates(this)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -78,8 +78,8 @@ object LocationUtils {
                     close(e)
                 }
 
-                !hasLocationPermissions() -> trySend(ResponseWrapper.Failure("Please provide location permission"))
-                else -> trySend(ResponseWrapper.Failure("Please turn on your GPS"))
+                !hasLocationPermissions() -> trySend(LocationCoordinatesState.Error("Please provide location permission"))
+                else -> trySend(LocationCoordinatesState.Error("Please turn on your GPS"))
             }
         }
         awaitClose {

@@ -10,7 +10,7 @@ class PrefHelper(val context: Context) {
     companion object keys {
         const val WEATHER_API_KEY: String = "appid"
         const val LAT: String = "lat"
-        const val LNG: String = "lng"
+        const val LNG: String = "lon"
         const val GOOGLE_PLACE_API_KEY: String = "key"
         const val IS_LAST_LOCATION_CACHED: String = "is_last_location_cached"
     }

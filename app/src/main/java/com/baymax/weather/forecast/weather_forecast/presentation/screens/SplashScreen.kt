@@ -27,6 +27,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
+import com.baymax.weather.forecast.weather_forecast.presentation.utils.BaseScreenWrapper
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

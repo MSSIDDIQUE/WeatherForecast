@@ -39,6 +39,7 @@ import com.baymax.weather.forecast.fetch_location.presentation.model.PredictionD
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
 import com.baymax.weather.forecast.weather_forecast.presentation.model.HomeScreenData
 import com.baymax.weather.forecast.weather_forecast.presentation.model.WeatherReportsDAO
+import com.baymax.weather.forecast.weather_forecast.presentation.utils.BaseScreenWrapper
 import com.baymax.weather.forecast.weather_forecast.presentation.view_state.WeatherReportsState
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.weather_forecast.presentation.screens
+package com.baymax.weather.forecast.weather_forecast.presentation.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
