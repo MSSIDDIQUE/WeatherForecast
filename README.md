@@ -21,7 +21,7 @@ The main vision or motive of this application is to experiment all the new andro
 
 *Database* : Room
 
-*Network Client* : Retrofit with Okhttp3 
+*Network Client* : Ktor 
 
 *Depenedecy Injection Framework* : Dagger 2
 
