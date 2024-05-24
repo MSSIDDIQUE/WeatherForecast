@@ -4,7 +4,8 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.9.23-1.0.20'
+    id 'com.google.devtools.ksp' version '2.0.0-1.0.21'
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
 }
 
 android {
@@ -42,17 +43,9 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
-    }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_19
-        targetCompatibility JavaVersion.VERSION_19
-    }
-
-    kotlinOptions {
-        jvmTarget = "19"
+        sourceCompatibility JavaVersion.VERSION_20
+        targetCompatibility JavaVersion.VERSION_20
     }
 
     namespace 'com.baymax.weather.forecast'
@@ -111,7 +104,6 @@ dependencies {
 
     // testing
     testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.mockito:mockito-core:$mokito_version"
     androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

@@ -19,8 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep,allowobfuscation,allowshrinking interface retrofit2.Call
--keep,allowobfuscation,allowshrinking class retrofit2.Response
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 -keep class com.baymax.weather.forecast.weather_forecast.api.model.** {*;}
 -keep class com.baymax.weather.forecast.fetch_location.api.model.** {*;}

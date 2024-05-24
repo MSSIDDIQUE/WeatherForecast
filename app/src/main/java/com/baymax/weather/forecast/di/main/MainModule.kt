@@ -96,7 +96,7 @@ class MainModule {
     fun provideWeatherRepository(
         prefHelper: PrefHelper,
         remoteDataSource: WeatherRemoteDataSource,
-    ): WeatherRepository = WeatherRepositoryImpl(prefHelper, remoteDataSource)
+    ): WeatherRepository = WeatherRepositoryImpl(remoteDataSource)
 
     @MainScope
     @Provides

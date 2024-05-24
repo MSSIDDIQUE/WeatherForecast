@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -48,17 +49,25 @@ class MainActivity : DaggerAppCompatActivity() {
         setContent {
             DestinationsNavHost(navGraph = NavGraphs.root) {
                 composable(HomeScreenDestination) {
-                    HomeScreen(
-                        HomeScreenData(
-                            weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value,
-                            snackBarState = viewModel.snackBarState.collectAsStateWithLifecycle().value,
-                            searchQueryState = viewModel.searchQuery.collectAsStateWithLifecycle().value,
-                            predictionsState = viewModel.predictions.collectAsStateWithLifecycle().value,
-                            onCurrentLocationClick = { updateCurrentDeviceLocation() },
-                            onSearchQueryUpdate = { query -> viewModel.setSearchQuery(query) },
-                            onPredictionClick = { placeId -> viewModel.updateLocationFromPlaceId(placeId) }
+                    CompositionLocalProvider(
+                        androidx.lifecycle.compose.LocalLifecycleOwner provides navBackStackEntry
+                    ) {
+                        HomeScreen(
+                            HomeScreenData(
+                                weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value,
+                                snackBarState = viewModel.snackBarState.collectAsStateWithLifecycle().value,
+                                searchQueryState = viewModel.searchQuery.collectAsStateWithLifecycle().value,
+                                predictionsState = viewModel.predictions.collectAsStateWithLifecycle().value,
+                                onCurrentLocationClick = { updateCurrentDeviceLocation() },
+                                onSearchQueryUpdate = { query -> viewModel.setSearchQuery(query) },
+                                onPredictionClick = { placeId ->
+                                    viewModel.updateLocationFromPlaceId(
+                                        placeId
+                                    )
+                                }
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
