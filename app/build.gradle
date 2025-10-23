@@ -1,20 +1,21 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.secrets.gradle.plugin)
     id 'kotlin-kapt'
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '2.0.0-1.0.21'
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
 }
 
 android {
-    compileSdkPreview = "UpsideDownCake"
-    buildToolsVersion = '34.0.0'
+    compileSdk = libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
+    
     defaultConfig {
         applicationId "com.baymax.weather.forecast"
-        minSdk = 23
-        targetSdk 34
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode 7
         versionName "3.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -25,7 +26,7 @@ android {
             debuggable false
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
 
@@ -33,7 +34,7 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -44,8 +45,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_20
-        targetCompatibility JavaVersion.VERSION_20
+        sourceCompatibility JavaVersion.VERSION_22
+        targetCompatibility JavaVersion.VERSION_22
+    }
+
+    kotlin {
+        jvmToolchain(22)
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_22
+        }
     }
 
     namespace 'com.baymax.weather.forecast'
@@ -53,58 +61,59 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$app_compat_version"
-    implementation "androidx.core:core-ktx:$android_core_version"
-    implementation "com.google.android.material:material:$material_design_version"
 
-    //Jetpack Compose
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling:$compose_version"
-    implementation "com.airbnb.android:lottie-compose:$lottie_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
-    implementation "io.coil-kt:coil-compose:$coil_version"
-    implementation "io.github.raamcosta.compose-destinations:core:$compose_nav_version"
-    ksp "io.github.raamcosta.compose-destinations:ksp:$compose_nav_version"
+    // androidx.core.* & androidx.appcompat.*
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
 
-    // Kotlin Android Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    // com.google.android.material.*
+    implementation libs.material
 
-    // Ktor
-    implementation "io.ktor:ktor-client-core:$ktor_version"
-    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
-    implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
-    implementation "io.ktor:ktor-serialization-gson:$ktor_version"
+    // androidx.compose.* - Compose UI & Material
+    implementation libs.bundles.androidx.compose
 
+    // androidx.navigation.* - Navigation
+    implementation libs.androidx.navigation.compose
 
-    implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor_version"
+    // androidx.lifecycle.* - Lifecycle & ViewModel
+    implementation libs.bundles.androidx.lifecycle
 
-    //kotlinx serialization
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
+    // com.airbnb.android.* - Animations
+    implementation libs.lottie.compose
 
-    //Dagger
-    implementation "com.google.dagger:dagger:$dagger_version"
-    implementation "com.google.dagger:dagger-android-support:$dagger_version"
-    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    // io.coil-kt.* - Image Loading
+    implementation libs.coil.compose
 
-    // Google-Location
-    implementation "com.google.android.gms:play-services-location:$location_version"
+    // org.jetbrains.kotlinx.coroutines.* - Coroutines
+    implementation libs.bundles.kotlinx.coroutines
 
-    // Preference
-    implementation "androidx.preference:preference-ktx:$preference_version"
+    // io.ktor.* - Networking
+    implementation libs.bundles.ktor
 
-    //Security-Crypto
-    implementation "androidx.security:security-crypto:$security_crypto_version"
+    // com.squareup.okhttp3.* - HTTP Logging
+    implementation libs.okhttp.logging.interceptor
 
-    //Stetho
-    implementation "com.facebook.stetho:stetho-okhttp3:$stetho_version"
+    // org.jetbrains.kotlinx.serialization.* - Serialization
+    implementation libs.kotlinx.serialization.json
 
-    // testing
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    // com.google.dagger.* - Dependency Injection
+    implementation libs.bundles.dagger
+    kapt libs.dagger.android.processor
+    kapt libs.dagger.compiler
+
+    // com.google.android.gms.* - Google Play Services
+    implementation libs.play.services.location
+
+    // androidx.preference.* & androidx.security.* - Storage & Security
+    implementation libs.androidx.preference.ktx
+    implementation libs.androidx.security.crypto
+
+    // com.facebook.stetho.* - Debug Tools
+    implementation libs.stetho.okhttp3
+
+    // Testing
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.arch.core.testing
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.androidx.test.espresso.core
 }

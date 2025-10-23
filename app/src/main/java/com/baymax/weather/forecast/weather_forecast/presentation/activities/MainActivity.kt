@@ -1,13 +1,12 @@
 package com.baymax.weather.forecast.weather_forecast.presentation.activities
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.baymax.weather.forecast.R
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.hasLocationPermissions
@@ -16,13 +15,8 @@ import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.requestLoc
 import com.baymax.weather.forecast.fetch_location.utils.LocationUtils.turnOnGPS
 import com.baymax.weather.forecast.presentation.model.SnackBarData
 import com.baymax.weather.forecast.presentation.view_state.SnackBarViewState
-import com.baymax.weather.forecast.weather_forecast.presentation.model.HomeScreenData
-import com.baymax.weather.forecast.weather_forecast.presentation.screens.HomeScreen
-import com.baymax.weather.forecast.weather_forecast.presentation.screens.NavGraphs
-import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
-import com.baymax.weather.forecast.weather_forecast.presentation.view_model.HomeScreenViewModel
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.baymax.weather.forecast.weather_forecast.presentation.navigation.AppNavigation
+import com.baymax.weather.forecast.weather_forecast.presentation.viewmodel.HomeScreenViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -46,31 +40,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            DestinationsNavHost(navGraph = NavGraphs.root) {
-                composable(HomeScreenDestination) {
-                    CompositionLocalProvider(
-                        androidx.lifecycle.compose.LocalLifecycleOwner provides navBackStackEntry
-                    ) {
-                        HomeScreen(
-                            HomeScreenData(
-                                weatherState = viewModel.weatherState.collectAsStateWithLifecycle().value,
-                                snackBarState = viewModel.snackBarState.collectAsStateWithLifecycle().value,
-                                searchQueryState = viewModel.searchQuery.collectAsStateWithLifecycle().value,
-                                predictionsState = viewModel.predictions.collectAsStateWithLifecycle().value,
-                                onCurrentLocationClick = { updateCurrentDeviceLocation() },
-                                onSearchQueryUpdate = { query -> viewModel.setSearchQuery(query) },
-                                onPredictionClick = { placeId ->
-                                    viewModel.updateLocationFromPlaceId(
-                                        placeId
-                                    )
-                                }
-                            )
-                        )
-                    }
-                }
-            }
-        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
+        setContent { AppNavigation(viewModel) }
         updateLocation()
     }
 
@@ -105,8 +77,8 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_SETTINGS_REQUEST) {
             when (resultCode) {
-                Activity.RESULT_OK -> updateCurrentDeviceLocation()
-                Activity.RESULT_CANCELED -> viewModel.setSnackBarState(
+                RESULT_OK -> updateCurrentDeviceLocation()
+                RESULT_CANCELED -> viewModel.setSnackBarState(
                     SnackBarViewState.Show(
                         SnackBarData(
                             getString(R.string.gps_warning),

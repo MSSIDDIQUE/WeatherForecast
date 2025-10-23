@@ -1,4 +1,4 @@
-package com.baymax.weather.forecast.weather_forecast.presentation.view_model
+package com.baymax.weather.forecast.weather_forecast.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,7 +27,7 @@ class HomeScreenViewModel @Inject constructor(
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val cacheLocationUseCase: CacheLocationUseCase,
     private val fetchCoordinatesUseCase: FetchCoordinatesUseCase,
-    private val fetchPredictionsUseCase: FetchPredictionsUseCase,
+    private val fetchPredictionsUseCase: FetchPredictionsUseCase
 ) : ViewModel() {
 
     private val location = MutableStateFlow(CoordinatesDAO(0.0, 0.0))
@@ -44,7 +44,7 @@ class HomeScreenViewModel @Inject constructor(
         snackBarState.value = state
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val predictions = searchQuery.debounce(1000).filter {
         if (it.length < 3) return@filter false else true
     }.transformLatest { searchQuery ->

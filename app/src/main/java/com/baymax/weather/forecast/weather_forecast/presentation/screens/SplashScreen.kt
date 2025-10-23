@@ -23,21 +23,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.baymax.weather.forecast.R
-import com.baymax.weather.forecast.weather_forecast.presentation.screens.destinations.HomeScreenDestination
 import com.baymax.weather.forecast.weather_forecast.presentation.utils.BaseScreenWrapper
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-@RootNavGraph(start = true)
-@Destination
 @Composable
-fun SplashScreen(navigator: DestinationsNavigator) {
+fun SplashScreen(navigator: NavHostController) {
     BaseScreenWrapper {
         Column(
             modifier = Modifier
@@ -108,7 +103,7 @@ fun SplashScreen(navigator: DestinationsNavigator) {
 }
 
 @Composable
-fun ShowSplashScreenAnimation(navigator: DestinationsNavigator) {
+fun ShowSplashScreenAnimation(navigator: NavHostController) {
     val context = LocalContext.current
     val customView = remember { LottieAnimationView(context) }
     Column(
@@ -128,6 +123,6 @@ fun ShowSplashScreenAnimation(navigator: DestinationsNavigator) {
     }
     LaunchedEffect(Unit) {
         delay(5.seconds)
-        navigator.navigate(HomeScreenDestination)
+        navigator.navigate("home")
     }
 }

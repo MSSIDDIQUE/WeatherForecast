@@ -15,9 +15,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.baymax.weather.forecast.weather_forecast.presentation.activities.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
